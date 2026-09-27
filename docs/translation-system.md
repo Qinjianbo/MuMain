@@ -284,7 +284,7 @@ Locale=zh-CN
 ```
 
 The Simplified Chinese resource files cover all entries in the English source:
-`Game` (3,250), `Dialog` (233), `Editor` (142), and `Metadata` (59). Keep the
+`Game` (3,253), `Dialog` (233), `Editor` (142), and `Metadata` (59). Keep the
 English keys, legacy-ID comments, formatting arguments, command tokens, URLs,
 and text separators unchanged when editing translations. Font family names
 such as `Gulim` are identifiers, not prose to translate. Source entries that the
@@ -307,6 +307,10 @@ verified against an installed official Simplified Chinese client's binary
 resources. When comparing another client version, check meaning and format
 arguments as well as legacy IDs; do not replace this project's quest amounts
 or requirements with values from a different version.
+
+Quest window titles, skill cooldowns, and the Lucky Item exchange/refining
+dialog now follow the selected UI language. Chat-command help is translated;
+the command tokens themselves remain unchanged.
 
 After rebuilding, check the login/options screens, character attributes,
 inventory tooltips, NPC quests, and editor on the target platform. Confirm that

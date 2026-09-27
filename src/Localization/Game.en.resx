@@ -12970,4 +12970,13 @@
   <data name="ChatCommandsUnknownCommand" xml:space="preserve">
     <value>This command is not available anymore.</value>
   </data>
+  <data name="SkillCooldownSeconds" xml:space="preserve">
+    <value>Cooldown: %.1f sec</value>
+  </data>
+  <data name="LuckyItemTradeNpc" xml:space="preserve">
+    <value>Lucky Item Exchange</value>
+  </data>
+  <data name="LuckyItemTradeDescription" xml:space="preserve">
+    <value>Exchange or refine Lucky Items here.</value>
+  </data>
 </root>

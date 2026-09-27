@@ -5866,11 +5866,11 @@ void SEASON3B::CLuckyTradeMenuMsgBox::SetButtonInfo()
     x = GetPos().x + msgboxhalfwidth - btnhalfwidth;
     y = GetPos().y + 85;
     m_BtnTrade.SetInfo(CNewUIMessageBoxMng::IMAGE_MSGBOX_BTN_EMPTY, x, y, width, height, CNewUIMessageBoxButton::MSGBOX_BTN_SIZE_EMPTY);
-    m_BtnTrade.SetText(L"럭키아이템 교환");	// "GlobalText"
+    m_BtnTrade.SetText(I18N::Game::ExchangeLuckyItem);
 
     y = GetPos().y + 120;
     m_BtnRefinery.SetInfo(CNewUIMessageBoxMng::IMAGE_MSGBOX_BTN_EMPTY, x, y, width, height, CNewUIMessageBoxButton::MSGBOX_BTN_SIZE_EMPTY);
-    m_BtnRefinery.SetText(L"럭키아이템 제련");	// "GlobalText"
+    m_BtnRefinery.SetText(I18N::Game::RefineLuckyItem);
 
     width = MSGBOX_BTN_EMPTY_SMALL_WIDTH;
     btnhalfwidth = width / 2.f;
@@ -5903,20 +5903,17 @@ void SEASON3B::CLuckyTradeMenuMsgBox::RenderFrame()
 
 void SEASON3B::CLuckyTradeMenuMsgBox::RenderTexts()
 {
-    wchar_t szText[256] = { 0, };
     float fPos_x = GetPos().x + 10;
     float fPos_y = GetPos().y + 10;
 
     g_pRenderText->SetBgColor(0, 0, 0, 0);
     g_pRenderText->SetTextColor(255, 255, 255, 255);
     g_pRenderText->SetFont(g_hFontBold);
-    mu_swprintf(szText, L"럭키아이템 교환NPC");	// "LuckyItem Trade NPC"
-    g_pRenderText->RenderText(fPos_x, fPos_y, szText, MSGBOX_WIDTH - 20.0f, 0, RT3_SORT_CENTER);
+    g_pRenderText->RenderText(fPos_x, fPos_y, I18N::Game::LuckyItemTradeNpc, MSGBOX_WIDTH - 20.0f, 0, RT3_SORT_CENTER);
 
     fPos_y += 15;
     g_pRenderText->SetFont(g_hFont);
-    mu_swprintf(szText, L"럭키아이템으로 교환하거나 제련할 수 있습니?");
-    g_pRenderText->RenderText(fPos_x, fPos_y + 1 * 18, szText, MSGBOX_WIDTH - 20.0f, 0, RT3_SORT_CENTER);
+    g_pRenderText->RenderText(fPos_x, fPos_y + 1 * 18, I18N::Game::LuckyItemTradeDescription, MSGBOX_WIDTH - 20.0f, 0, RT3_SORT_CENTER);
 }
 
 void SEASON3B::CLuckyTradeMenuMsgBox::RenderButtons()

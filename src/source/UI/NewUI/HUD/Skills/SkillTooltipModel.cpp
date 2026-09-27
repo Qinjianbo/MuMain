@@ -28,9 +28,7 @@ constexpr int GLOBAL_TEXT_NEED_MORE_STAT = 74;
 constexpr int GLOBAL_TEXT_MASTERY_TYPE_BASE = 1080;
 
 // SkillAttribute.Delay is stored in milliseconds; the tooltip displays it as
-// seconds with one decimal. No GlobalText entry exists for this line yet, so
-// the format string lives here until a localized one is added.
-constexpr wchar_t kCooldownFormat[] = L"Cooldown: %.1f sec";
+// seconds with one decimal.
 constexpr float kMillisPerSecond = 1000.0f;
 
 bool IsCastleSiegeOnlySkill(int skillType)
@@ -456,7 +454,7 @@ void EmitBodyStats(Model& m, int skillType, int iDistance, int iMana, int iSkill
     if (iDelayMs > 0)
     {
         wchar_t buf[MAX_TOOLTIP_LINE_TEXT];
-        mu_swprintf(buf, kCooldownFormat, iDelayMs / kMillisPerSecond);
+        mu_swprintf(buf, I18N::Game::SkillCooldownSeconds, iDelayMs / kMillisPerSecond);
         AddRaw(m, buf, LineColor::White);
     }
     EndSection(m, before);

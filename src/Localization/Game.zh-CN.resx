@@ -608,31 +608,31 @@
     <comment>legacy_id=148</comment>
   </data>
   <data name="/trade(pointing player): trade" xml:space="preserve">
-    <value>/trade(pointing player): trade</value>
+    <value>/trade（指向玩家）：交易</value>
     <comment>legacy_id=149</comment>
   </data>
   <data name="/party(pointing player): form a party" xml:space="preserve">
-    <value>/party(pointing player): form a party</value>
+    <value>/party（指向玩家）：组队</value>
     <comment>legacy_id=150</comment>
   </data>
   <data name="/guild(pointing player): form a guild" xml:space="preserve">
-    <value>/guild(pointing player): form a guild</value>
+    <value>/guild（指向玩家）：申请加入战盟</value>
     <comment>legacy_id=151</comment>
   </data>
   <data name="/war &lt;guild name&gt;: Declare Guild War" xml:space="preserve">
-    <value>/war &lt;guild name&gt;: Declare Guild War</value>
+    <value>/war &lt;战盟名称&gt;：宣战</value>
     <comment>legacy_id=152</comment>
   </data>
   <data name="/&lt;item name&gt;: item info" xml:space="preserve">
-    <value>/&lt;item name&gt;: item info</value>
+    <value>/&lt;物品名称&gt;：查看物品信息</value>
     <comment>legacy_id=153</comment>
   </data>
   <data name="/warp &lt;world&gt;: Warp to another world" xml:space="preserve">
-    <value>/warp &lt;world&gt;: Warp to another world</value>
+    <value>/warp &lt;地图名称&gt;：传送到其他地图</value>
     <comment>legacy_id=154</comment>
   </data>
   <data name="/filter word1 word2: View Chats with word" xml:space="preserve">
-    <value>/filter word1 word2: View Chats with word</value>
+    <value>/filter 关键词1 关键词2：查看包含关键词的聊天</value>
     <comment>legacy_id=155</comment>
   </data>
   <data name="Move cursor down-&gt; Adjust chat window" xml:space="preserve">
@@ -2126,7 +2126,7 @@
     <comment>legacy_id=561</comment>
   </data>
   <data name="The TEST server is intended for testing," xml:space="preserve">
-    <value>TEST 服务器用于测试，</value>
+    <value>测试服务器用于测试，</value>
     <comment>legacy_id=563</comment>
   </data>
   <data name="therefore, data loss may occur." xml:space="preserve">
@@ -3006,7 +3006,7 @@
     <comment>legacy_id=797</comment>
   </data>
   <data name="Error1009GameGuardHasFailedToRun" xml:space="preserve">
-    <value>[error1009]：GameGuard 运行失败。尝试重新安装 GameGuard 安装档。</value>
+    <value>[error1009]：GameGuard 运行失败。请尝试重新安装 GameGuard。</value>
     <comment>legacy_id=798</comment>
   </data>
   <data name="[error1010] : The game or GameGuard has been altered." xml:space="preserve">
@@ -12969,5 +12969,14 @@
   </data>
   <data name="ChatCommandsUnknownCommand" xml:space="preserve">
     <value>此命令已不可用。</value>
+  </data>
+  <data name="SkillCooldownSeconds" xml:space="preserve">
+    <value>冷却时间：%.1f 秒</value>
+  </data>
+  <data name="LuckyItemTradeNpc" xml:space="preserve">
+    <value>幸运物品兑换</value>
+  </data>
+  <data name="LuckyItemTradeDescription" xml:space="preserve">
+    <value>可在此兑换或精炼幸运物品。</value>
   </data>
 </root>
