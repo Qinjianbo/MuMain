@@ -265,8 +265,55 @@ for narrow groups. For wide groups, `%s` / `%ls` via the bounds-checked
 2. Add a display name for the locale to
    `tools/ResxGen/CppEmitter.cs#KnownLanguageDisplayNames` so the language
    dropdown shows it in its own language (e.g. `["fr"] = "Français"`).
-3. Build. `ResxGen` picks up the new locale automatically from the filename;
+3. Add the locale code and wide-string display name to `s_Languages` in
+   `src/source/UI/NewUI/Options/NewUIOptionWindow.cpp` so players can select it
+   in the Options window.
+4. Build. `ResxGen` picks up the new locale automatically from the filename;
    `GetAvailableLocales` will include it next run.
+
+## Simplified Chinese (`zh-CN`)
+
+Build the client after updating the resources, then select **简体中文** in the
+Options window. The language dropdown shows five entries at a time; scroll
+down inside the open dropdown to find **简体中文**, just above **繁體中文**.
+Alternatively, set the executable directory's `config.ini`:
+
+```ini
+[UI]
+Locale=zh-CN
+```
+
+The Simplified Chinese resource files cover all entries in the English source:
+`Game` (3,250), `Dialog` (233), `Editor` (142), and `Metadata` (59). Keep the
+English keys, legacy-ID comments, formatting arguments, command tokens, URLs,
+and text separators unchanged when editing translations. Font family names
+such as `Gulim` are identifiers, not prose to translate. Source entries that the
+generator already skips because their keys have no ASCII identifier remain
+subject to that existing limitation.
+
+The translation starts from the existing Traditional Chinese resources and the
+English source, with corrections to terminology and missing translations.
+NPC dialogue is translated from English. The Chinese official site's
+[class and quest guide](https://mu.zhaouc.com/Guide/GameSystem/08_quest.html),
+[map guide](https://mu.zhaouc.com/Guide/GameIntro/02_area17.html),
+[Illusion Temple guide](https://mu.zhaouc.com/Guide/GameFeature/07_feature.html),
+[Doppelganger guide](https://mu.zhaouc.com/Guide/GameFeature/08_feature.html),
+[socket-item guide](https://mu.zhaouc.com/Guide/ItemSystem/02_itemSys.html),
+[Dark Lord equipment guide](https://mu.zhaouc.com/player/event/099y/day7.htm), and
+[Fenrir guide](https://mu.zhaouc.com/news/Update/203.html)
+provide terminology references. For example, `Zen` is 金币, `Party` is 队伍,
+`Guild` is 战盟, and `Doppelganger` is 生魂广场. These files have **not** been
+verified against an installed official Simplified Chinese client's binary
+resources. When comparing another client version, check meaning and format
+arguments as well as legacy IDs; do not replace this project's quest amounts
+or requirements with values from a different version.
+
+After rebuilding, check the login/options screens, character attributes,
+inventory tooltips, NPC quests, and editor on the target platform. Confirm that
+Chinese glyphs render and that longer text fits. If glyphs appear as squares,
+check the platform's Chinese font availability. Item/skill names loaded from
+separate game data, server-supplied messages, and text embedded in images are
+outside these four resource groups and need separate localization.
 
 ## Migration history
 
