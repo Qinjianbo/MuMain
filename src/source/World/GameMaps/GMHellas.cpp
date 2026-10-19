@@ -2,8 +2,8 @@
 //  GMHellas.cpp
 //////////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
-#include "UI/Legacy/UIWindows.h"
 #include "Render/Textures/ZzzOpenglUtil.h"
+#include "Render/Renderer/MuRenderer.h"
 #include "Render/Textures/ZzzTexture.h"
 #include "Render/Models/ZzzBMD.h"
 #include "Render/Terrain/ZzzLodTerrain.h"
@@ -15,12 +15,13 @@
 #include "Engine/Physics/PhysicsManager.h"
 #include "Render/Terrain/CSWaterTerrain.h"
 #include "Audio/DSPlaySound.h"
-#include "UI/NewUI/NewUISystem.h"
+#include "UI/Core/WindowSystem.h"
 #include "World/MapInfra/MapManager.h"
 #include "Character/CharacterManager.h"
 #include "GameLogic/Skills/SkillManager.h"
 #include "Camera/CameraProjection.h"
 #include "I18N/All.h"
+#include "Render/Text/CUIRenderText.h"
 
 extern  int  WaterTextureNumber;
 extern	wchar_t TextList[50][100];
@@ -126,7 +127,7 @@ void RenderWaterTerrain(int Texture, float xf, float yf, float SizeX, float Size
 
 void SettingHellasColor()
 {
-    SetClearColor(0.f, 0.f, 0.f, 1.f);
+    mu::GetRenderer().SetClearColor(0.f, 0.f, 0.f, 1.f);
 }
 
 BYTE GetHellasLevel(CLASS_TYPE Class, int Level)
@@ -182,7 +183,7 @@ bool GetUseLostMap(bool bDrawAlert)
 
     if (bDrawAlert && Hero->SafeZone)
     {
-        g_pSystemLogBox->AddText(I18N::Game::CanTBeUsedInTheSafeZone, SEASON3B::TYPE_ERROR_MESSAGE);
+        g_pSystemLogBox->AddText(I18N::Game::CanTBeUsedInTheSafeZone, mu::ui::window::TYPE_ERROR_MESSAGE);
         return false;
     }
 
@@ -195,7 +196,7 @@ bool GetUseLostMap(bool bDrawAlert)
     {
         wchar_t Text[100];
         mu_swprintf(Text, I18N::Game::OnlyAboveLevelDCanUse, g_iKalimaLevel[startIndex][0]);
-        g_pSystemLogBox->AddText(Text, SEASON3B::TYPE_ERROR_MESSAGE);
+        g_pSystemLogBox->AddText(Text, mu::ui::window::TYPE_ERROR_MESSAGE);
     }
 
     return false;
@@ -276,7 +277,6 @@ void AddObjectDescription(wchar_t* Text, vec3_t position)
 
 void RenderObjectDescription()
 {
-    glColor3f(1.f, 1.f, 1.f);
     while (!g_qObjDes.empty())
     {
         ObjectDescript QD = g_qObjDes.front();
@@ -346,11 +346,11 @@ bool MoveHellasObjectSetting(int& objCount, int object)
 
         CreateParticle(BITMAP_LIGHT, Position, Hero->Object.Angle, Light, 7, 1.f, &Hero->Object);
 
-        if (rand_fps_check(15))
+        if (rand() % 15 == 0)
         {
             vec3_t Angle = { 0.f, 0.f, 0.f };
             Position[2] = Hero->Object.Position[2] + 800.f;
-            CreateEffect(9, Position, Angle, Light);
+            CreateEffect(MODEL_KALIMA_FALLING_STONE, Position, Angle, Light);
 
             PlayBuffer(SOUND_KALIMA_FALLING_STONE);
         }
@@ -553,7 +553,7 @@ bool RenderHellasObjectMesh(OBJECT* o, BMD* b)
     {
         Vector(1.0f, 1.0f, 1.0f, b->BodyLight);
         if (o->AnimationFrame > 3 && o->Alpha > 0.2f)
-            o->Alpha -= 0.02f;
+            o->Alpha -= 0.02f * FPS_ANIMATION_FACTOR;
         b->RenderBody(RENDER_TEXTURE | RENDER_DARK, o->Alpha, o->BlendMesh, o->BlendMeshLight, o->BlendMeshTexCoordU, o->BlendMeshTexCoordV, o->HiddenMesh);
         b->RenderBody(RENDER_TEXTURE | RENDER_DARK, o->Alpha, o->BlendMesh, o->BlendMeshLight, o->BlendMeshTexCoordU, o->BlendMeshTexCoordV, o->HiddenMesh);
         Vector(0.0f, 0.0f, 0.0f, b->BodyLight);
@@ -1436,7 +1436,7 @@ bool MoveHellasMonsterVisual(OBJECT* o, BMD* b)
             Vector(2.f, 30.f, 0.f, p);
             b->TransformPosition(o->BoneTransform[6], p, Position, true);
             Vector(1.0f, 0.2f, 0.0f, Light);
-            CreateParticleFpsChecked(BITMAP_SMOKE, Position, o->Angle, Light, 17);
+            CreateParticle(BITMAP_SMOKE, Position, o->Angle, Light, 17);
         }
         return true;
 
@@ -1468,7 +1468,7 @@ bool MoveHellasMonsterVisual(OBJECT* o, BMD* b)
                 {
                     Vector(0.0f, 0.3f, 1.0f, Light);
                 }
-                CreateParticleFpsChecked(BITMAP_SMOKE, Position, o->Angle, Light, 17);
+                CreateParticle(BITMAP_SMOKE, Position, o->Angle, Light, 17);
             }
         }
         return true;
@@ -1596,22 +1596,26 @@ bool RenderHellasMonsterVisual(CHARACTER* c, OBJECT* o, BMD* b)
                 if (o->CurrentAction == MONSTER01_SHOCK)
                 {
                     if (o->AnimationFrame > 10.0f && o->PKKey > 10)
-                        o->PKKey -= 1;
+                        o->PKKey -= REFERENCE_FRAME_STEP;
                     else if (o->AnimationFrame > 4.0f)
-                        o->PKKey += 1;
+                        o->PKKey += REFERENCE_FRAME_STEP;
                     else o->PKKey = 10;
 
                     fRoar = o->PKKey * 0.15f;
                     if (o->AnimationFrame > 4.0f && o->AnimationFrame < 6.0f)
                     {
-                        if (o->AnimationFrame < 5.0f) o->Skill += 3;
-                        else if (o->Skill > 3) o->Skill -= 3;
+                        if (o->AnimationFrame < 5.0f)
+                            o->Skill += 3 * REFERENCE_FRAME_STEP;
+                        else if (o->Skill > 3)
+                            o->Skill -= 3 * REFERENCE_FRAME_STEP;
                         fRoar += o->Skill * 0.15f;
                     }
                     else if (o->AnimationFrame > 8.0f && o->AnimationFrame < 10.0f)
                     {
-                        if (o->AnimationFrame < 9.0f) o->Skill += 3;
-                        else if (o->Skill > 3) o->Skill -= 3;
+                        if (o->AnimationFrame < 9.0f)
+                            o->Skill += 3 * REFERENCE_FRAME_STEP;
+                        else if (o->Skill > 3)
+                            o->Skill -= 3 * REFERENCE_FRAME_STEP;
                         fRoar += o->Skill * 0.15f;
                     }
                     else
@@ -1668,7 +1672,7 @@ bool RenderHellasMonsterVisual(CHARACTER* c, OBJECT* o, BMD* b)
                         Position[0] = o->Position[0] + sinf(fAngle) * fDistance;
                         Position[1] = o->Position[1] + cosf(fAngle) * fDistance;
                         Position[2] = o->Position[2] + 800.f;
-                        CreateEffectFpsChecked(9, Position, Angle, Light);
+                        CreateEffectFpsChecked(MODEL_KALIMA_FALLING_STONE, Position, Angle, Light);
                     }
                 }
             }

@@ -1,6 +1,4 @@
-// MapManager.cpp: implementation of the CMapManager class.
-//////////////////////////////////////////////////////////////////////
-
+﻿
 #include "stdafx.h"
 #include "World/MapInfra/MapManager.h"
 #include "Camera/CameraMove.h"
@@ -8,7 +6,7 @@
 #include "Audio/DSPlaySound.h"
 #include "Render/Sprites/GlobalBitmap.h"
 #include "Data/DataHandler/LoadData.h"
-#include "UI/NewUI/NewUISystem.h"
+#include "UI/Core/WindowSystem.h"
 #include "GameLogic/Items/PersonalShopTitleImp.h"
 #include "Render/Models/ZzzBMD.h"
 #include "Engine/Object/ZzzCharacter.h"
@@ -20,7 +18,9 @@
 #include "GameLogic/Events/w_CursedTemple.h"
 #include "Network/Server/WSclient.h"
 #include "I18N/All.h"
-
+#ifdef _EDITOR
+#include "Core/Utilities/WorldClearing.h"
+#endif
 
 CMapManager gMapManager;
 
@@ -109,7 +109,7 @@ void CMapManager::Load() // OK
         gLoadData.AccessModel(MODEL_BOSS_HEAD, L"Data\\Object6\\", L"BossHead", 1);
         gLoadData.AccessModel(MODEL_PRINCESS, L"Data\\Object6\\", L"Princess", 1);
         for (int i = MODEL_BIG_METEO1; i <= MODEL_PRINCESS; i++)
-            gLoadData.OpenTexture(i, L"Object6\\");
+            gLoadData.OpenTexture(i, L"Object6\\", GL_NEAREST);
         break;
     case WD_6STADIUM:
         gLoadData.AccessModel(MODEL_BUG01, L"Data\\Object7\\", L"Bug", 1);
@@ -1120,7 +1120,7 @@ void CMapManager::Load() // OK
 
         mu_swprintf(DirName, L"Data\\Object%d\\", iMapWorld);
         for (i = MODEL_WORLD_OBJECT; i < MAX_WORLD_OBJECTS; i++)
-            gLoadData.AccessModel(i, DirName, L"Object", i + 1);
+            gLoadData.AccessModel(i, DirName, L"Object", i + 1, true);
 
         mu_swprintf(DirName, L"Object%d\\", iMapWorld);
         for (i = MODEL_WORLD_OBJECT; i < MAX_WORLD_OBJECTS; i++)
@@ -1507,15 +1507,22 @@ void CMapManager::LoadWorld(int Map)
         g_pNewUIMiniMap->LoadImages(WorldName);
     }
 
-    CreateTerrainVBO();
+    Bitmaps.LogTextureFilteringSummary("world loaded");
 }
 
 void CMapManager::DeleteObjects()
 {
-    DestroyTerrainVBO();
-    for (int i = MODEL_WORLD_OBJECT; i < MAX_WORLD_OBJECTS; i++)
+#ifdef _EDITOR
+    // The editor removes what its effect preview created while the pools
+    // still hold it.
+    Core::WorldClearing::Notify();
+#endif
+    if (Models != nullptr)
     {
-        Models[i].Release();
+        for (int i = MODEL_WORLD_OBJECT; i < MAX_WORLD_OBJECTS; i++)
+        {
+            Models[i].Release();
+        }
     }
 
     for (int i = 0; i < 16; i++)

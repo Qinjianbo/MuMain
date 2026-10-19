@@ -2,11 +2,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "UI/Legacy/UIManager.h"
+#include "UI/Placement/WindowPlacement.h"
+#include "UI/Core/UIManager.h"
 #include "Render/Textures/ZzzOpenglUtil.h"
-#include "Render/Core/RenderConfig.h"
-#include "Render/Core/BindState.h"
-#include "Render/RHI/RHI.h"
+#include "Render/Renderer/MuRenderer.h"
 #include "Render/Models/ZzzBMD.h"
 #include "Render/Terrain/ZzzLodTerrain.h"
 #include "Engine/Object/ZzzInfomation.h"
@@ -23,6 +22,7 @@
 #include "Scenes/SceneCore.h"
 
 #include "Core/Utilities/Debouncer.h"
+#include "Core/Utilities/Log/MuLogger.h"
 #include "GameLogic/Quests/CSQuest.h"
 #include "App/Platform/Windows/Local.h"
 #include "GameLogic/Items/PersonalShopTitleImp.h"
@@ -36,18 +36,28 @@
 #include "GameLogic/Items/CComGem.h"
 #include "GameLogic/Events/Cinematic/CDirection.h"
 #include "GameLogic/Items/ChangeRingManager.h"
+#include "GameLogic/Items/ItemCategories.h"
+#include "GameLogic/Items/ItemLevelBonus.h"
+#include "Render/Items/ItemDisplay.h"
+#include "Data/GameData/ItemData/ItemModelSlots.h"
+#include "UI/Scaling/UITransform.h"
+#include "GameLogic/Items/ShopRestrictions.h"
+#include "GameLogic/Items/TradeRestrictions.h"
 #include "GameLogic/Items/MixMgr.h"
-#include "UI/NewUI/Dialogs/NewUICommonMessageBox.h"
-#include "UI/NewUI/Dialogs/NewUICustomMessageBox.h"
-#include "UI/NewUI/Inventory/NewUIInventoryCtrl.h"
+#include "UI/Dialogs/CommonMessageBox.h"
+#include "UI/Dialogs/GenericConfirmDialog.h"
+#include "UI/Dialogs/CustomMessageBox.h"
+#include "UI/Inventory/InventoryCtrl.h"
+#include "UI/Tooltip/LegacyTextListTooltip.h"
+#include "UI/Scaling/UITransform.h"
+#include "UI/Inventory/MyShopInventory.h" // ShowPersonalShopItemValueDialog
 #include "GameLogic/Events/w_CursedTemple.h"
 #include "Network/Server/SocketSystem.h"
 #include "World/MapInfra/PortalMgr.h"
-#include "UI/NewUI/NewUISystem.h"
+#include "UI/Core/WindowSystem.h"
 #include "Network/Server/ServerListManager.h"
 #include <algorithm>
 #include <time.h>
-#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -55,10 +65,9 @@
 #include "Character/CharacterManager.h"
 #include "GameLogic/Skills/SkillManager.h"
 #include "Camera/CameraProjection.h"
+#include "Render/Text/CUIRenderText.h"
 
-extern CUITextInputBox* g_pSingleTextInputBox;
 extern int g_iChatInputType;
-extern CUIGuildListBox* g_pGuildListBox;
 
 int			g_nTaxRate = 0;
 int			g_nChaosTaxRate = 0;
@@ -86,7 +95,6 @@ ITEM g_PersonalShopInven[MAX_PERSONALSHOP_INVEN];
 ITEM g_PersonalShopBackup[MAX_PERSONALSHOP_INVEN];
 bool g_bEnablePersonalShop = false;
 int g_iPShopWndType = PSHOPWNDTYPE_NONE;
-POINT g_ptPersonalShop = { 0, 0 };
 int g_iPersonalShopMsgType = 0;
 wchar_t g_szPersonalShopTitle[MAX_SHOPTITLE + 1] = { 0, };
 
@@ -144,25 +152,6 @@ static  int iStateNum = 4;
 
 	// ※
 
-static bool IsDivineArchangelWeaponItem(int itemType)
-{
-    return itemType == ITEM_DIVINE_SWORD_OF_ARCHANGEL
-        || itemType == ITEM_DIVINE_CB_OF_ARCHANGEL
-        || itemType == ITEM_DIVINE_STAFF_OF_ARCHANGEL
-        || itemType == ITEM_DIVINE_STICK_OF_ARCHANGEL
-        || itemType == ITEM_DIVINE_SCEPTER_OF_ARCHANGEL;
-}
-
-static bool IsDivineArchangelWeaponModel(int modelType)
-{
-    return modelType == MODEL_DIVINE_STAFF_OF_ARCHANGEL
-        || modelType == MODEL_DIVINE_STICK_OF_ARCHANGEL
-        || modelType == MODEL_DIVINE_SWORD_OF_ARCHANGEL
-        || modelType == MODEL_DIVINE_CB_OF_ARCHANGEL
-        || modelType == MODEL_DIVINE_SCEPTER_OF_ARCHANGEL;
-}
-
-
 #ifdef _PVP_ADD_MOVE_SCROLL
 extern CMurdererMove g_MurdererMove;
 #endif	// _PVP_ADD_MOVE_SCROLL
@@ -173,27 +162,27 @@ int getLevelGeneration(int level, unsigned int* color)
     if (level >= 300)
     {
         lvl = 300;
-        *color = (255 << 24) + (255 << 16) + (153 << 8) + (255);
+        *color = (255u << 24) + (255 << 16) + (153 << 8) + (255);
     }
     else if (level >= 200)
     {
         lvl = 200;
-        *color = (255 << 24) + (255 << 16) + (230 << 8) + (210);
+        *color = (255u << 24) + (255 << 16) + (230 << 8) + (210);
     }
     else if (level >= 100)
     {
         lvl = 100;
-        *color = (255 << 24) + (24 << 16) + (201 << 8) + (0);
+        *color = (255u << 24) + (24 << 16) + (201 << 8) + (0);
     }
     else if (level >= 50)
     {
         lvl = 50;
-        *color = (255 << 24) + (0 << 16) + (150 << 8) + (255);
+        *color = (255u << 24) + (0 << 16) + (150 << 8) + (255);
     }
     else
     {
         lvl = 10;
-        *color = (255 << 24) + (0 << 16) + (0 << 8) + (255);
+        *color = (255u << 24) + (0 << 16) + (0 << 8) + (255);
     }
     return lvl;
 }
@@ -218,7 +207,7 @@ int RenderTextList(int sx, int sy, int TextNum, int Tab, int iSort = RT3_SORT_CE
             g_pRenderText->SetFont(g_hFont);
         }
 
-        GetTextExtentPoint32(g_pRenderText->GetFontDC(), TextList[i], lstrlen(TextList[i]), &Size[i]);
+        Size[i] = g_pRenderText->MeasureText(TextList[i], lstrlen(TextList[i]));
 
         if (TextWidth < Size[i].cx)
         {
@@ -228,43 +217,22 @@ int RenderTextList(int sx, int sy, int TextNum, int Tab, int iSort = RT3_SORT_CE
 
     if (Tab == 0)
     {
-        sx -= (TextWidth + Tab) * REFERENCE_WIDTH / WindowWidth / 2;
+        sx -= (TextWidth + Tab) / 2;
     }
 
     for (int i = 0; i < TextNum; i++)
     {
-        g_pRenderText->SetTextColor(0xffffffff);
-
         switch (TextListColor[i])
         {
-        case TEXT_COLOR_WHITE:
-        case TEXT_COLOR_DARKRED:
-        case TEXT_COLOR_DARKBLUE:
-        case TEXT_COLOR_DARKYELLOW:
-            glColor3f(1.f, 1.f, 1.f);
-            break;
-        case TEXT_COLOR_BLUE:
-            glColor3f(0.5f, 0.7f, 1.f);
-            break;
-        case TEXT_COLOR_GRAY:
-            glColor3f(0.4f, 0.4f, 0.4f);
-            break;
-        case TEXT_COLOR_GREEN_BLUE:
-            glColor3f(1.f, 1.f, 1.f);
-            break;
-        case TEXT_COLOR_RED:
-            glColor3f(1.f, 0.2f, 0.1f);
-            break;
-        case TEXT_COLOR_YELLOW:
-            glColor3f(1.f, 0.8f, 0.1f);
-            break;
-        case TEXT_COLOR_GREEN:
-            glColor3f(0.1f, 1.f, 0.5f);
-            break;
-        case TEXT_COLOR_PURPLE:
-            glColor3f(1.f, 0.1f, 1.f);
-            break;
+        case TEXT_COLOR_BLUE: g_pRenderText->SetTextColor(128, 179, 255, 255); break;
+        case TEXT_COLOR_GRAY: g_pRenderText->SetTextColor(102, 102, 102, 255); break;
+        case TEXT_COLOR_RED: g_pRenderText->SetTextColor(255, 51, 26, 255); break;
+        case TEXT_COLOR_YELLOW: g_pRenderText->SetTextColor(255, 204, 26, 255); break;
+        case TEXT_COLOR_GREEN: g_pRenderText->SetTextColor(26, 255, 128, 255); break;
+        case TEXT_COLOR_PURPLE: g_pRenderText->SetTextColor(255, 26, 255, 255); break;
+        default: g_pRenderText->SetTextColor(255, 255, 255, 255); break;
         }
+
         if (TEXT_COLOR_DARKRED == TextListColor[i])
         {
             g_pRenderText->SetBgColor(160, 0, 0, 255);
@@ -305,7 +273,6 @@ int RenderTextList(int sx, int sy, int TextNum, int Tab, int iSort = RT3_SORT_CE
 void RenderTipTextList(const int sx, const int sy, int TextNum, int Tab, int iSort, int iRenderPoint, BOOL bUseBG)
 {
     SIZE TextSize = { 0, 0 };
-    int TextLine = 0; int EmptyLine = 0;
     float fWidth = 0; float fHeight = 0;
     for (int i = 0; i < TextNum; ++i)
     {
@@ -324,33 +291,26 @@ void RenderTipTextList(const int sx, const int sy, int TextNum, int Tab, int iSo
             g_pRenderText->SetFont(g_hFont);
         }
 
-        GetTextExtentPoint32(g_pRenderText->GetFontDC(), TextList[i], lstrlen(TextList[i]), &TextSize);
+        TextSize = g_pRenderText->MeasureText(TextList[i], lstrlen(TextList[i]));
 
         if (fWidth < TextSize.cx)
             fWidth = TextSize.cx;
 
-        if (TextList[i][0] == '\n')
-        {
-            ++EmptyLine;
-        }
-        else
-        {
-            ++TextLine;
-        }
+        const bool halfLine = TextList[i][0] == '\n';
+        const bool spacer = halfLine || (TextList[i][0] == L' ' && TextList[i][1] == L'\0');
+        const SIZE lineSize = spacer ? g_pRenderText->MeasureText(L"Q", 1) : TextSize;
+        fHeight += static_cast<float>(lineSize.cy) * (halfLine ? 0.55f : 1.1f);
     }
 
-    fHeight = TextSize.cy * TextLine + TextSize.cy / 2.0f * EmptyLine;
-    fHeight /= g_fScreenRate_y / 1.1f;
     EnableAlphaTest();
-    fWidth /= g_fScreenRate_x;
     if (Tab > 0)
-        fWidth = Tab / g_fScreenRate_x * 2;
+        fWidth = Tab * 2;
     fWidth += 4;
     int iPos_x = sx - fWidth / 2;
     if (iPos_x < 0) iPos_x = 0;
-    if (iPos_x + fWidth > (int)WindowWidth / g_fScreenRate_x)
+    if (iPos_x + fWidth > REFERENCE_WIDTH)
     {
-        iPos_x = ((int)WindowWidth) / g_fScreenRate_x - fWidth - 1;
+        iPos_x = REFERENCE_WIDTH - fWidth - 1;
     }
 
     float fsx = iPos_x + 1;
@@ -370,15 +330,13 @@ void RenderTipTextList(const int sx, const int sy, int TextNum, int Tab, int iSo
 
     if (bUseBG == TRUE && TextNum > 0)
     {
-        glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
-        RenderColor((float)iPos_x - 1, fsy - 1, (float)fWidth + 1, (float)1);
-        RenderColor((float)iPos_x - 1, fsy - 1, (float)1, (float)fHeight + 1);
-        RenderColor((float)iPos_x - 1 + fWidth + 1, (float)fsy - 1, (float)1, (float)fHeight + 1);
-        RenderColor((float)iPos_x - 1, fsy - 1 + fHeight + 1, (float)fWidth + 2, (float)1);
+        RenderColor((float)iPos_x - 1, fsy - 1, (float)fWidth + 1, (float)1, 1.0f, 1);
+        RenderColor((float)iPos_x - 1, fsy - 1, (float)1, (float)fHeight + 1, 1.0f, 1);
+        RenderColor((float)iPos_x - 1 + fWidth + 1, (float)fsy - 1, (float)1, (float)fHeight + 1, 1.0f, 1);
+        RenderColor((float)iPos_x - 1, fsy - 1 + fHeight + 1, (float)fWidth + 2, (float)1, 1.0f, 1);
 
-        glColor4f(0.0f, 0.0f, 0.0f, 0.8f);
-        RenderColor((float)iPos_x, fsy, (float)fWidth, (float)fHeight);
-        EnableTexture2D();
+        RenderColor((float)iPos_x, fsy, (float)fWidth, (float)fHeight, 0.8f, 1);
+        mu::GetRenderer().SetTexture2D(true);
     }
 
     for (int i = 0; i < TextNum; i++)
@@ -395,50 +353,23 @@ void RenderTipTextList(const int sx, const int sy, int TextNum, int Tab, int iSo
         float fHeight = 0;
         if (TextList[i][0] == 0x0a || (TextList[i][0] == ' ' && TextList[i][1] == 0x00))
         {
-            GetTextExtentPoint32(g_pRenderText->GetFontDC(), TextList[i], lstrlen(TextList[i]), &TextSize);
-            fHeight = (float)TextSize.cy / g_fScreenRate_y / (TextList[i][0] == 0x0a ? 2.0f : 1.0f);
+            TextSize = g_pRenderText->MeasureText(L"Q", 1);
+            fHeight = static_cast<float>(TextSize.cy) / (TextList[i][0] == 0x0a ? 2.0f : 1.0f);
         }
         else
         {
-            g_pRenderText->SetTextColor(0xffffffff);
             switch (TextListColor[i])
             {
-            case TEXT_COLOR_WHITE:
-            case TEXT_COLOR_DARKRED:
-            case TEXT_COLOR_DARKBLUE:
-            case TEXT_COLOR_DARKYELLOW:
-                glColor3f(1.f, 1.f, 1.f);
-                break;
-            case TEXT_COLOR_BLUE:
-                glColor3f(0.5f, 0.7f, 1.f);
-                break;
-            case TEXT_COLOR_GRAY:
-                glColor3f(0.4f, 0.4f, 0.4f);
-                break;
-            case TEXT_COLOR_GREEN_BLUE:
-                glColor3f(1.f, 1.f, 1.f);
-                break;
-            case TEXT_COLOR_RED:
-                glColor3f(1.f, 0.2f, 0.1f);
-                break;
-            case TEXT_COLOR_YELLOW:
-                glColor3f(1.f, 0.8f, 0.1f);
-                break;
-            case TEXT_COLOR_GREEN:
-                glColor3f(0.1f, 1.f, 0.5f);
-                break;
-            case TEXT_COLOR_PURPLE:
-                glColor3f(1.f, 0.1f, 1.f);
-                break;
-            case TEXT_COLOR_REDPURPLE:
-                glColor3f(0.8f, 0.5f, 0.8f);
-                break;
-            case TEXT_COLOR_VIOLET:
-                glColor3f(0.7f, 0.4f, 1.0f);
-                break;
-            case TEXT_COLOR_ORANGE:
-                glColor3f(0.9f, 0.42f, 0.04f);
-                break;
+            case TEXT_COLOR_BLUE: g_pRenderText->SetTextColor(128, 179, 255, 255); break;
+            case TEXT_COLOR_GRAY: g_pRenderText->SetTextColor(102, 102, 102, 255); break;
+            case TEXT_COLOR_RED: g_pRenderText->SetTextColor(255, 51, 26, 255); break;
+            case TEXT_COLOR_YELLOW: g_pRenderText->SetTextColor(255, 204, 26, 255); break;
+            case TEXT_COLOR_GREEN: g_pRenderText->SetTextColor(26, 255, 128, 255); break;
+            case TEXT_COLOR_PURPLE: g_pRenderText->SetTextColor(255, 26, 255, 255); break;
+            case TEXT_COLOR_REDPURPLE: g_pRenderText->SetTextColor(204, 128, 204, 255); break;
+            case TEXT_COLOR_VIOLET: g_pRenderText->SetTextColor(179, 102, 255, 255); break;
+            case TEXT_COLOR_ORANGE: g_pRenderText->SetTextColor(230, 107, 10, 255); break;
+            default: g_pRenderText->SetTextColor(255, 255, 255, 255); break;
             }
             if (TEXT_COLOR_DARKRED == TextListColor[i])
             {
@@ -468,7 +399,6 @@ void RenderTipTextList(const int sx, const int sy, int TextNum, int Tab, int iSo
         fsy += fHeight * 1.1f;
     }
 
-    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     DisableAlphaBlend();
 }
 
@@ -476,7 +406,7 @@ void SendRequestUse(int Index, int Target, bool addPoints)
 {
     if (!IsCanUseItem())
     {
-        g_pSystemLogBox->AddText(I18N::Game::YouCannotUseYourItemsWhileUsingTheVaultOrWhileTrading, SEASON3B::TYPE_ERROR_MESSAGE);
+        g_pSystemLogBox->AddText(I18N::Game::YouCannotUseYourItemsWhileUsingTheVaultOrWhileTrading, mu::ui::window::TYPE_ERROR_MESSAGE);
         return;
     }
     if (EnableUse > 0)
@@ -532,7 +462,7 @@ bool SendRequestEquipmentItem(STORAGE_TYPE iSrcType, int iSrcIndex, ITEM* pItem,
 
 bool IsCanUseItem()
 {
-    if (g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_STORAGE) || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_TRADE))
+    if (g_pNewUISystem->IsVisible(mu::ui::window::INTERFACE_STORAGE) || g_pNewUISystem->IsVisible(mu::ui::window::INTERFACE_TRADE))
     {
         return false;
     }
@@ -544,7 +474,7 @@ bool IsCanUseItem()
 
 bool IsCanTrade()
 {
-    if (g_pUIManager->IsOpen(INTERFACE_PERSONALSHOPSALE) || g_pUIManager->IsOpen(INTERFACE_PERSONALSHOPPURCHASE))
+    if (g_pUIManager->IsOpen(MUTEX_PERSONALSHOPSALE) || g_pUIManager->IsOpen(MUTEX_PERSONALSHOPPURCHASE))
     {
         return false;
     }
@@ -559,63 +489,60 @@ bool IsRequireClassRenderItem(const short sType)
     if (
         sType == ITEM_WEAPON_OF_ARCHANGEL
         || sType == ITEM_ARMOR_OF_GUARDSMAN
-        || sType == ITEM_WING + 26
+        || sType == ITEM_GEM_OF_SECRET
         || (sType >= ITEM_PACKED_JEWEL_OF_BLESS && sType <= ITEM_PACKED_JEWEL_OF_SOUL)
-        || (sType >= ITEM_HELPER + 43 && sType <= ITEM_HELPER + 45)
+        || GameLogic::Items::IsSealType(sType)
         || sType == ITEM_TRANSFORMATION_RING
         || (sType >= ITEM_ELITE_TRANSFER_SKELETON_RING && sType <= ITEM_GAME_MASTER_TRANSFORMATION_RING)
         || sType == ITEM_HORN_OF_FENRIR
         || sType == ITEM_JEWEL_OF_CHAOS
-        || sType == ITEM_RED_RIBBON_BOX
-        || sType == ITEM_GREEN_RIBBON_BOX
-        || sType == ITEM_BLUE_RIBBON_BOX
+        || GameLogic::Items::IsRibbonBoxType(sType)
         )
     {
         return false;
     }
 
-    if ((sType >= ITEM_HELPER + 43 && sType <= ITEM_HELPER + 45)
-        || (sType >= ITEM_HELPER + 46 && sType <= ITEM_HELPER + 48)
-        || (sType >= ITEM_HELPER + 125 && sType <= ITEM_HELPER + 127)
-        || (sType == ITEM_POTION + 54)
-        || (sType >= ITEM_POTION + 58 && sType <= ITEM_POTION + 62)
-        || (sType == ITEM_POTION + 53)
-        || (sType >= ITEM_POTION + 70 && sType <= ITEM_POTION + 71)
-        || (sType >= ITEM_POTION + 72 && sType <= ITEM_POTION + 77)
-        || (sType >= ITEM_TYPE_CHARM_MIXWING + EWS_BEGIN
-            && sType <= ITEM_TYPE_CHARM_MIXWING + EWS_END)
-        || (sType == ITEM_HELPER + 59)
-        || (sType >= ITEM_HELPER + 54 && sType <= ITEM_HELPER + 58)
-        || (sType >= ITEM_POTION + 78 && sType <= ITEM_POTION + 82)
-        || (sType == ITEM_HELPER + 60)
-        || (sType == ITEM_HELPER + 61)
-        || (sType == ITEM_POTION + 91)
-        || (sType == ITEM_POTION + 94)
-        || (sType >= ITEM_POTION + 92 && sType <= ITEM_POTION + 93)
-        || (sType == ITEM_POTION + 95)
-        || (sType >= ITEM_HELPER + 62 && sType <= ITEM_HELPER + 63)
-        || (sType >= ITEM_POTION + 97 && sType <= ITEM_POTION + 98)
-        || (sType == ITEM_POTION + 96)
-        || (sType == ITEM_DEMON || sType == ITEM_SPIRIT_OF_GUARDIAN)
+    if (GameLogic::Items::IsSealType(sType)
+        || GameLogic::Items::IsEventTicketType(sType)
+        || GameLogic::Items::IsDoppelgangerOrVarkaTicketType(sType)
+        || (sType == ITEM_CHAOS_CARD)
+        || (sType >= ITEM_RARE_ITEM_TICKET_1 && sType <= ITEM_RARE_ITEM_TICKET_5)
+        || (sType == ITEM_TALISMAN_OF_LUCK)
+        || GameLogic::Items::IsElitePotionType(sType)
+        || GameLogic::Items::IsBuffScrollType(sType)
+        || GameLogic::Items::IsWingMixCharmType(sType)
+        || (sType == ITEM_SEAL_OF_MOBILITY)
+        || GameLogic::Items::IsResetFruitType(sType)
+        || GameLogic::Items::IsElixirType(sType)
+        || (sType == ITEM_INDULGENCE)
+        || (sType == ITEM_ILLUSION_TEMPLE_TICKET)
+        || (sType == ITEM_SUMMONER_CHARACTER_CARD)
+        || (sType == ITEM_MEDIUM_ELITE_HEALING_POTION)
+        || (sType >= ITEM_CHAOS_CARD_GOLD && sType <= ITEM_CHAOS_CARD_RARE)
+        || (sType == ITEM_CHAOS_CARD_MINI)
+        || GameLogic::Items::IsHealingOrDivinitySealType(sType)
+        || GameLogic::Items::IsBattleOrStrengthScrollType(sType)
+        || (sType == ITEM_TALISMAN_OF_CHAOS_ASSEMBLY)
+        || (GameLogic::Items::IsDemonOrSpiritOfGuardianType(sType))
         || (sType == ITEM_PET_RUDOLF)
         || (sType == ITEM_SNOWMAN_TRANSFORMATION_RING)
         || (sType == ITEM_PANDA_TRANSFORMATION_RING)
         || (sType == ITEM_SKELETON_TRANSFORMATION_RING)
-        || (sType == ITEM_HELPER + 69)
-        || (sType == ITEM_HELPER + 70)
-        || (sType == ITEM_HELPER + 71 || sType == ITEM_HELPER + 72 || sType == ITEM_HELPER + 73 || sType == ITEM_HELPER + 74 || sType == ITEM_HELPER + 75)
+        || (sType == ITEM_TALISMAN_OF_RESURRECTION)
+        || (sType == ITEM_TALISMAN_OF_MOBILITY)
+        || GameLogic::Items::IsGambleItemType(sType)
         || (sType == ITEM_PET_PANDA)
         || (sType == ITEM_PET_UNICORN)
-        || sType == ITEM_HELPER + 81
-        || sType == ITEM_HELPER + 82
-        || sType == ITEM_HELPER + 93
-        || sType == ITEM_HELPER + 94
-        || sType == ITEM_HELPER + 121
-        || (sType >= ITEM_POTION + 145 && sType <= ITEM_POTION + 150)
+        || sType == ITEM_TALISMAN_OF_GUARDIAN
+        || sType == ITEM_TALISMAN_OF_ITEM_PROTECTION
+        || sType == ITEM_MASTER_SEAL_OF_ASCENSION
+        || sType == ITEM_MASTER_SEAL_OF_WEALTH
+        || sType == ITEM_OPEN_ACCESS_TICKET_TO_CHAOS_CASTLE
+        || (sType >= ITEM_RARE_ITEM_TICKET_7 && sType <= ITEM_RARE_ITEM_TICKET_12)
 #ifdef LJH_ADD_SYSTEM_OF_EQUIPPING_ITEM_FROM_INVENTORY
         || g_pMyInventory->IsInvenItem(sType)
 #endif //LJH_ADD_SYSTEM_OF_EQUIPPING_ITEM_FROM_INVENTORY
-        || (sType == ITEM_POTION + 133)
+        || (sType == ITEM_ELITE_SD_POTION)
         )
     {
         return false;
@@ -801,115 +728,51 @@ void RequireClass(ITEM_ATTRIBUTE* pItem)
     }
 }
 
-const int iMaxLevel = 15;
-const int iMaxColumn = 17;
-int g_iCurrentItem = -1;
-int g_iItemInfo[iMaxLevel + 1][iMaxColumn];
+int g_iItemInfo[iMaxLevel + 1][_COLUMN_TYPE_COUNT];
 
-void RenderHelpLine(int iColumnType, const wchar_t* pPrintStyle, int& TabSpace, const wchar_t* pGapText, int Pos_y, int iType)
+namespace
 {
-    int iCurrMaxLevel = iMaxLevel;
-
-    if (iType == 5)
-        iCurrMaxLevel = 0;
-
-    for (int Level = 0; Level <= iCurrMaxLevel; ++Level)
+// The column the magic power goes into: Curse for summoner books, Attack for sceptres, WIZDmg for
+// the other items.
+int GetItemInfoMagicColumn(int itemType)
+{
+    if (GameLogic::Items::IsSummonerBookType(itemType))
     {
-        mu_swprintf(TextList[TextNum], pPrintStyle, g_iItemInfo[Level][iColumnType]);
-        if (g_iItemInfo[Level][_COLUMN_TYPE_CAN_EQUIP] == TRUE)
-        {
-            TextListColor[Level] = TEXT_COLOR_WHITE;
-        }
-        else
-        {
-            TextListColor[Level] = TEXT_COLOR_RED;
-        }
-        TextBold[Level] = false;
-        ++TextNum;
+        return _COLUMN_TYPE_CURSE;
     }
-
-    SIZE TextSize;
-    RenderTipTextList(TabSpace, Pos_y, TextNum, 0, RT3_SORT_CENTER, FALSE);
-
-    if (pGapText == NULL)
+    if (GameLogic::Items::IsSceptreType(itemType))
     {
-        GetTextExtentPoint32(g_pRenderText->GetFontDC(), TextList[TextNum - 1], lstrlen(TextList[TextNum - 1]), &TextSize);
+        return _COLUMN_TYPE_PET_ATTACK;
     }
-    else
-    {
-        GetTextExtentPoint32(g_pRenderText->GetFontDC(), pGapText, wcslen(pGapText), &TextSize);
-    }
-    TabSpace += int(TextSize.cx / g_fScreenRate_x);
-    if (iType == 6)
-    {
-        TabSpace += 5;
-    }
-    TextNum -= iCurrMaxLevel + 1;
+    return _COLUMN_TYPE_MAGIC;
 }
 
-void RenderHelpCategory(int iColumnType, int Pos_x, int Pos_y)
+// Whether the hero reaches every requirement of a row: the window shows the row white, else red.
+bool CanEquipItemInfoRow(const int (&row)[_COLUMN_TYPE_COUNT], const ItemInfoHeroStats& hero)
 {
-    const wchar_t* pText = NULL;
+    return row[_COLUMN_TYPE_REQSTR] <= hero.strength && row[_COLUMN_TYPE_REQDEX] <= hero.dexterity &&
+           row[_COLUMN_TYPE_REQENG] <= hero.energy && row[_COLUMN_TYPE_REQVIT] <= hero.vitality &&
+           row[_COLUMN_TYPE_REQCHA] <= hero.charisma && row[_COLUMN_TYPE_REQNLV] <= hero.level;
+}
+} // namespace
 
-    switch (iColumnType)
-    {
-    case _COLUMN_TYPE_LEVEL:
-        pText = I18N::Game::LV;
-        break;
-    case _COLUMN_TYPE_ATTMIN: case _COLUMN_TYPE_ATTMAX:
-        pText = I18N::Game::ATKDmg;
-        break;
-    case _COLUMN_TYPE_MAGIC:
-        pText = I18N::Game::WIZDmg;
-        break;
-    case _COLUMN_TYPE_CURSE:
-        pText = I18N::Game::Curse;
-        break;
-    case _COLUMN_TYPE_PET_ATTACK:
-        pText = I18N::Game::Attack;
-        break;
-    case _COLUMN_TYPE_DEFENCE:
-        pText = I18N::Game::DEF;
-        break;
-    case _COLUMN_TYPE_DEFRATE:
-        pText = I18N::Game::DEFRate;
-        break;
-    case _COLUMN_TYPE_REQSTR:
-        pText = I18N::Game::STR;
-        break;
-    case _COLUMN_TYPE_REQDEX:
-        pText = I18N::Game::AGI;
-        break;
-    case _COLUMN_TYPE_REQENG:
-        pText = I18N::Game::ENG;
-        break;
-    case _COLUMN_TYPE_REQCHA:
-        pText = I18N::Game::Command;
-        break;
-    case _COLUMN_TYPE_REQVIT:
-        pText = I18N::Game::STA;
-        break;
-    case _COLUMN_TYPE_REQNLV:
-        pText = I18N::Game::ReqLV;
-        break;
-    default:
-        break;
-    }
-    mu_swprintf(TextList[TextNum], pText);
-    TextListColor[TextNum] = TEXT_COLOR_BLUE;
-    TextNum++;
-    RenderTipTextList(Pos_x, Pos_y, TextNum, 0, RT3_SORT_RIGHT, FALSE);
-    TextNum = 0;
+ItemInfoHeroStats GetItemInfoHeroStats()
+{
+    return {CharacterAttribute->Level,
+            static_cast<WORD>(CharacterAttribute->Strength + CharacterAttribute->AddStrength),
+            static_cast<WORD>(CharacterAttribute->Dexterity + CharacterAttribute->AddDexterity),
+            static_cast<WORD>(CharacterAttribute->Energy + CharacterAttribute->AddEnergy),
+            static_cast<WORD>(CharacterAttribute->Vitality + CharacterAttribute->AddVitality),
+            static_cast<WORD>(CharacterAttribute->Charisma + CharacterAttribute->AddCharisma)};
 }
 
+// Not cached per item: the levels the hero can equip follow the hero's level and stats, and the
+// values follow the item editor's changes.
 void ComputeItemInfo(int iHelpItem)
 {
-    if (g_iCurrentItem == iHelpItem)
-        return;
-    else
-        g_iCurrentItem = iHelpItem;
-
-    ITEM_ATTRIBUTE* p = &ItemAttribute[ItemHelp];
+    ITEM_ATTRIBUTE* p = &ItemAttribute[iHelpItem];
+    const int magicColumn = GetItemInfoMagicColumn(iHelpItem);
+    const ItemInfoHeroStats hero = GetItemInfoHeroStats();
 
     for (int Level = 0; Level <= iMaxLevel; Level++)
     {
@@ -927,49 +790,19 @@ void ComputeItemInfo(int iHelpItem)
 
         if (DamageMin > 0)
         {
-            DamageMin += (std::min<int>(9, Level) * 3);
-            switch (Level - 9)
-            {
-            case 6: DamageMin += 9; break;	// +15
-            case 5: DamageMin += 8; break;	// +14
-            case 4: DamageMin += 7; break;	// +13
-            case 3: DamageMin += 6; break;	// +12
-            case 2: DamageMin += 5; break;	// +11
-            case 1: DamageMin += 4; break;	// +10
-            default: break;
-            };
+            DamageMin += GameLogic::Items::GetItemLevelBonus(Level);
         }
         if (DamageMax > 0)
         {
-            DamageMax += (std::min<int>(9, Level) * 3);
-            switch (Level - 9)
-            {
-            case 6: DamageMax += 9; break;	// +15
-            case 5: DamageMax += 8; break;	// +14
-            case 4: DamageMax += 7; break;	// +13
-            case 3: DamageMax += 6; break;	// +12
-            case 2: DamageMax += 5; break;	// +11
-            case 1: DamageMax += 4; break;	// +10
-            default: break;
-            };
+            DamageMax += GameLogic::Items::GetItemLevelBonus(Level);
         }
 
         if (Magic > 0)
         {
-            Magic += (std::min<int>(9, Level) * 3);	// ~ +9
-            switch (Level - 9)
-            {
-            case 6: Magic += 9; break;		// +15
-            case 5: Magic += 8; break;		// +14
-            case 4: Magic += 7; break;	    // +13
-            case 3: Magic += 6; break;		// +12
-            case 2: Magic += 5; break;		// +11
-            case 1: Magic += 4; break;		// +10
-            default: break;
-            };
+            Magic += GameLogic::Items::GetItemLevelBonus(Level);
             Magic /= 2;
 
-            if (IsCepterItem(ItemHelp) == false)
+            if (!GameLogic::Items::IsSceptreType(iHelpItem))
             {
                 Magic += Level * 2;
             }
@@ -977,38 +810,18 @@ void ComputeItemInfo(int iHelpItem)
 
         if (Defense > 0)
         {
-            if (ItemHelp >= ITEM_SHIELD && ItemHelp < ITEM_SHIELD + MAX_ITEM_INDEX)
+            if (iHelpItem >= ITEM_SHIELD && iHelpItem < ITEM_SHIELD + MAX_ITEM_INDEX)
             {
                 Defense += Level;
             }
             else
             {
-                Defense += (std::min<int>(9, Level) * 3);	// ~ +9
-                switch (Level - 9)
-                {
-                case 6: Defense += 9; break;	// +15
-                case 5: Defense += 8; break;	// +14
-                case 4: Defense += 7; break;	// +13
-                case 3: Defense += 6; break;	// +12
-                case 2: Defense += 5; break;	// +11
-                case 1: Defense += 4; break;	// +10
-                default: break;
-                };
+                Defense += GameLogic::Items::GetItemLevelBonus(Level);
             }
         }
         if (Blocking > 0)
         {
-            Blocking += (std::min<int>(9, Level) * 3);	// ~ +9
-            switch (Level - 9)
-            {
-            case 6: Blocking += 9; break;	// +15
-            case 5: Blocking += 8; break;	// +14
-            case 4: Blocking += 7; break;	// +13
-            case 3: Blocking += 6; break;	// +12
-            case 2: Blocking += 5; break;	// +11
-            case 1: Blocking += 4; break;	// +10
-            default: break;
-            };
+            Blocking += GameLogic::Items::GetItemLevelBonus(Level);
         }
 
         if (p->RequireLevel)
@@ -1037,13 +850,13 @@ void ComputeItemInfo(int iHelpItem)
 
         if (p->RequireEnergy)
         {
-            if (ItemHelp >= ITEM_BOOK_OF_SAHAMUTT && ItemHelp <= ITEM_STAFF + 29)
+            if (GameLogic::Items::IsSummonerBookType(iHelpItem))
             {
                 RequireEnergy = 20 + p->RequireEnergy * (p->Level + Level * 1) * 3 / 100;
             }
             else
             {
-                if ((p->RequireLevel > 0) && (ItemHelp >= ITEM_ETC && ItemHelp < ITEM_ETC + MAX_ITEM_INDEX))
+                if ((p->RequireLevel > 0) && (iHelpItem >= ITEM_ETC && iHelpItem < ITEM_ETC + MAX_ITEM_INDEX))
                 {
                     RequireEnergy = 20 + (p->RequireEnergy) * (p->RequireLevel) * 4 / 100;
                 }
@@ -1061,20 +874,13 @@ void ComputeItemInfo(int iHelpItem)
         if (p->RequireCharisma)	RequireCharisma = 20 + p->RequireCharisma * (p->Level + Level * 3) * 3 / 100;
         else RequireCharisma = 0;
 
+        // The window shows every column with a value at +0, so the row starts empty: no column of
+        // the item shown before stays.
+        std::ranges::fill(g_iItemInfo[Level], 0);
         g_iItemInfo[Level][_COLUMN_TYPE_LEVEL] = Level;
         g_iItemInfo[Level][_COLUMN_TYPE_ATTMIN] = DamageMin;
         g_iItemInfo[Level][_COLUMN_TYPE_ATTMAX] = DamageMax;
-
-        if (ItemHelp >= ITEM_BOOK_OF_SAHAMUTT && ItemHelp <= ITEM_STAFF + 29)
-        {
-            g_iItemInfo[Level][_COLUMN_TYPE_CURSE] = Magic;
-        }
-        else
-        {
-            g_iItemInfo[Level][_COLUMN_TYPE_MAGIC] = Magic;
-        }
-
-        g_iItemInfo[Level][_COLUMN_TYPE_PET_ATTACK] = Magic;
+        g_iItemInfo[Level][magicColumn] = Magic;
         g_iItemInfo[Level][_COLUMN_TYPE_DEFENCE] = Defense;
         g_iItemInfo[Level][_COLUMN_TYPE_DEFRATE] = Blocking;
         g_iItemInfo[Level][_COLUMN_TYPE_REQSTR] = RequireStrength;
@@ -1083,34 +889,7 @@ void ComputeItemInfo(int iHelpItem)
         g_iItemInfo[Level][_COLUMN_TYPE_REQCHA] = RequireCharisma;
         g_iItemInfo[Level][_COLUMN_TYPE_REQVIT] = RequireVitality;
         g_iItemInfo[Level][_COLUMN_TYPE_REQNLV] = RequireLevel;
-
-        if (IsCepterItem(ItemHelp) == true)
-
-        {
-            g_iItemInfo[Level][_COLUMN_TYPE_MAGIC] = 0;
-        }
-        else
-        {
-            g_iItemInfo[Level][_COLUMN_TYPE_PET_ATTACK] = 0;
-        }
-
-        WORD Strength, Dexterity, Energy, Vitality, Charisma;
-
-        Strength = CharacterAttribute->Strength + CharacterAttribute->AddStrength;
-        Dexterity = CharacterAttribute->Dexterity + CharacterAttribute->AddDexterity;
-        Energy = CharacterAttribute->Energy + CharacterAttribute->AddEnergy;
-        Vitality = CharacterAttribute->Vitality + CharacterAttribute->AddVitality;
-        Charisma = CharacterAttribute->Charisma + CharacterAttribute->AddCharisma;
-
-        if (RequireStrength <= Strength
-            && RequireDexterity <= Dexterity
-            && RequireEnergy <= Energy
-            && RequireVitality <= Vitality
-            && RequireCharisma <= Charisma
-            && RequireLevel <= CharacterAttribute->Level)
-            g_iItemInfo[Level][_COLUMN_TYPE_CAN_EQUIP] = TRUE;
-        else
-            g_iItemInfo[Level][_COLUMN_TYPE_CAN_EQUIP] = FALSE;
+        g_iItemInfo[Level][_COLUMN_TYPE_CAN_EQUIP] = CanEquipItemInfoRow(g_iItemInfo[Level], hero) ? TRUE : FALSE;
     }
 }
 
@@ -1118,18 +897,18 @@ unsigned int getGoldColor(DWORD Gold)
 {
     if (Gold >= 10000000)
     {
-        return  (255 << 24) + (0 << 16) + (0 << 8) + (255);
+        return (255u << 24) + (0 << 16) + (0 << 8) + (255);
     }
     else if (Gold >= 1000000)
     {
-        return  (255 << 24) + (0 << 16) + (150 << 8) + (255);
+        return (255u << 24) + (0 << 16) + (150 << 8) + (255);
     }
     else if (Gold >= 100000)
     {
-        return  (255 << 24) + (24 << 16) + (201 << 8) + (0);
+        return (255u << 24) + (24 << 16) + (201 << 8) + (0);
     }
 
-    return  (255 << 24) + (150 << 16) + (220 << 8) + (255);
+    return (255u << 24) + (150 << 16) + (220 << 8) + (255);
 }
 
 void ConvertGold(double dGold, wchar_t* szText, int iDecimals /*= 0*/)
@@ -1238,7 +1017,7 @@ int64_t CalcRepairCost(int64_t ItemValue, int Durability, int MaxDurability, sho
         // Adjust for 0 durability
         if (Durability <= 0)
         {
-            if (Type == ITEM_DARK_HORSE_ITEM || Type == ITEM_DARK_RAVEN_ITEM)
+            if (GameLogic::Items::IsDarkLordPetType(Type))
             {
                 repairGold *= 2;
             }
@@ -1281,7 +1060,7 @@ int64_t ConvertRepairGold(int64_t Gold, int Durability, int MaxDurability, short
 {
     int64_t repairGold = 0;
 
-    if (g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_NPCSHOP) && g_pNPCShop->IsRepairShop()) {
+    if (g_pNewUISystem->IsVisible(mu::ui::window::INTERFACE_NPCSHOP) && g_pNPCShop->IsRepairShop()) {
         repairGold = CalcRepairCost(Gold, Durability, MaxDurability, Type, false);
     }
     else if (g_pMyInventory->IsVisible() && !g_pNPCShop->IsVisible()) {
@@ -1309,7 +1088,7 @@ void RepairAllGold(void)
             int Level = ip->Level;
             int maxDurability = CalcMaxDurability(ip, p, Level);
 
-            if (IsRepairBan(ip) == true)
+            if (GameLogic::Items::IsRepairBan(ip) == true)
             {
                 continue;
             }
@@ -1319,7 +1098,8 @@ void RepairAllGold(void)
             {
                 int gold = ConvertRepairGold(ItemValue(ip, 2), ip->Durability, maxDurability, ip->Type, text);
 
-                if (Check_LuckyItem(ip->Type))	gold = 0;
+                if (GameLogic::Items::IsLuckyItemType(ip->Type))
+                    gold = 0;
                 AllRepairGold += gold;
             }
         }
@@ -1337,205 +1117,17 @@ void RepairAllGold(void)
             int Level = pItem->Level;
             int maxDurability = CalcMaxDurability(pItem, p, Level);
 
-            if (pItem->Type >= ITEM_POTION + 55 && pItem->Type <= ITEM_POTION + 57)
+            if (GameLogic::Items::IsRepairBan(pItem))
             {
                 continue;
             }
-            //. item filtering
-            if ((pItem->Type >= ITEM_HELPER && pItem->Type <= ITEM_DARK_RAVEN_ITEM) || pItem->Type == ITEM_TRANSFORMATION_RING || pItem->Type == ITEM_SPIRIT)
-                continue;
-            if (pItem->Type == ITEM_BOLT || pItem->Type == ITEM_ARROWS || pItem->Type >= ITEM_POTION)
-                continue;
-            if (pItem->Type >= ITEM_ORB_OF_TWISTING_SLASH && pItem->Type <= ITEM_ORB_OF_DEATH_STAB)
-                continue;
-            if ((pItem->Type >= ITEM_LOCHS_FEATHER && pItem->Type <= ITEM_WEAPON_OF_ARCHANGEL) || pItem->Type == ITEM_POTION + 21)
-                continue;
-            if (pItem->Type == ITEM_WIZARDS_RING)
-                continue;
-            if (pItem->Type == ITEM_MOONSTONE_PENDANT)
-                continue;
-
-            if (pItem->Type >= ITEM_HELPER + 46 && pItem->Type <= ITEM_HELPER + 48)
-            {
-                continue;
-            }
-            if (pItem->Type >= ITEM_HELPER + 125 && pItem->Type <= ITEM_HELPER + 127)
-            {
-                continue;
-            }
-            if (pItem->Type >= ITEM_POTION + 145 && pItem->Type <= ITEM_POTION + 150)
-            {
-                continue;
-            }
-            if (pItem->Type >= ITEM_POTION + 58 && pItem->Type <= ITEM_POTION + 62)
-            {
-                continue;
-            }
-            if (pItem->Type == ITEM_POTION + 53)
-            {
-                continue;
-            }
-            if (pItem->Type == ITEM_HELPER + 43 || pItem->Type == ITEM_HELPER + 44 || pItem->Type == ITEM_HELPER + 45)
-            {
-                continue;
-            }
-            if (pItem->Type >= ITEM_POTION + 70 && pItem->Type <= ITEM_POTION + 71)
-            {
-                continue;
-            }
-            if (pItem->Type >= ITEM_POTION + 72 && pItem->Type <= ITEM_POTION + 77)
-            {
-                continue;
-            }
-            if (pItem->Type == ITEM_HELPER + 59)
-            {
-                continue;
-            }
-            if (pItem->Type >= ITEM_HELPER + 54 && pItem->Type <= ITEM_HELPER + 58)
-            {
-                continue;
-            }
-            if (pItem->Type == ITEM_HELPER + 60)
-            {
-                continue;
-            }
-            if (pItem->Type == ITEM_HELPER + 61)
-            {
-                continue;
-            }
-            if (pItem->Type == ITEM_POTION + 91)
-            {
-                continue;
-            }
-            if (pItem->Type >= ITEM_POTION + 92 && pItem->Type <= ITEM_POTION + 93)
-            {
-                continue;
-            }
-            if (pItem->Type == ITEM_POTION + 95)
-            {
-                continue;
-            }
-            if (pItem->Type == ITEM_POTION + 95)
-            {
-                continue;
-            }
-            if (pItem->Type >= ITEM_HELPER + 62 && pItem->Type <= ITEM_HELPER + 63)
-            {
-                continue;
-            }
-            if (pItem->Type >= ITEM_POTION + 97 && pItem->Type <= ITEM_POTION + 98)
-            {
-                continue;
-            }
-            if (pItem->Type == ITEM_POTION + 140)
-            {
-                continue;
-            }
-            if (pItem->Type == ITEM_POTION + 96)
-            {
-                continue;
-            }
-            if (pItem->Type == ITEM_DEMON || pItem->Type == ITEM_SPIRIT_OF_GUARDIAN)
-            {
-                continue;
-            }
-            if (pItem->Type == ITEM_PET_RUDOLF)
-            {
-                continue;
-            }
-            if (pItem->Type == ITEM_PET_PANDA)
-            {
-                continue;
-            }
-            if (pItem->Type == ITEM_PET_UNICORN)
-            {
-                continue;
-            }
-            if (pItem->Type == ITEM_PET_SKELETON)
-            {
-                continue;
-            }
-            if (pItem->Type == ITEM_SNOWMAN_TRANSFORMATION_RING)
-            {
-                continue;
-            }
-            if (pItem->Type == ITEM_PANDA_TRANSFORMATION_RING)
-            {
-                continue;
-            }
-            if (pItem->Type == ITEM_SKELETON_TRANSFORMATION_RING)
-            {
-                continue;
-            }
-            if (pItem->Type == ITEM_HELPER + 69)
-                continue;
-            if (pItem->Type == ITEM_HELPER + 70)
-                continue;
-
-            if (pItem->Type == ITEM_HORN_OF_FENRIR)
-                continue;
-
-            if (pItem->Type == ITEM_HELPER + 66)
-                continue;
-
-            if (pItem->Type == ITEM_HELPER + 71
-                || pItem->Type == ITEM_HELPER + 72
-                || pItem->Type == ITEM_HELPER + 73
-                || pItem->Type == ITEM_HELPER + 74
-                || pItem->Type == ITEM_HELPER + 75)
-                continue;
-
-            if (pItem->Type == ITEM_HELPER + 81)
-                continue;
-            if (pItem->Type == ITEM_HELPER + 82)
-                continue;
-            if (pItem->Type == ITEM_HELPER + 93)
-                continue;
-            if (pItem->Type == ITEM_HELPER + 94)
-                continue;
-
-            if (pItem->Type >= ITEM_TYPE_CHARM_MIXWING + EWS_BEGIN && pItem->Type <= ITEM_TYPE_CHARM_MIXWING + EWS_END)
-            {
-                continue;
-            }
-            if (pItem->Type == ITEM_HELPER + 97 || pItem->Type == ITEM_HELPER + 98 || pItem->Type == ITEM_POTION + 91)
-                continue;
-
-            if (pItem->Type == ITEM_HELPER + 121)
-                continue;
-
-#ifdef LJH_ADD_SYSTEM_OF_EQUIPPING_ITEM_FROM_INVENTORY
-            if (g_pMyInventory->IsInvenItem(pItem->Type))
-                continue;
-
-#endif //LJH_ADD_SYSTEM_OF_EQUIPPING_ITEM_FROM_INVENTORY
-
-            if (pItem->Type >= ITEM_WING + 130 && pItem->Type <= ITEM_WING + 134)
-                continue;
-            if (pItem->Type == ITEM_HELPER + 109)
-                continue;
-            if (pItem->Type == ITEM_HELPER + 110)
-                continue;
-            if (pItem->Type == ITEM_HELPER + 111)
-                continue;
-            if (pItem->Type == ITEM_HELPER + 112)
-                continue;
-            if (pItem->Type == ITEM_HELPER + 113)
-                continue;
-            if (pItem->Type == ITEM_HELPER + 114)
-                continue;
-            if (pItem->Type == ITEM_HELPER + 115)
-                continue;
-            if (pItem->Type == ITEM_HELPER + 107)
-                continue;
-
-            if (Check_ItemAction(pItem, eITEM_REPAIR))	continue;
 
             //. check durability
             if (pItem->Durability < maxDurability)
             {
                 int gold = ConvertRepairGold(ItemValue(pItem, 2), pItem->Durability, maxDurability, pItem->Type, text);
-                if (Check_LuckyItem(pItem->Type))	gold = 0;
+                if (GameLogic::Items::IsLuckyItemType(pItem->Type))
+                    gold = 0;
                 AllRepairGold += gold;
             }
         }
@@ -1552,8 +1144,6 @@ int CharacterInfoStartX;
 int CharacterInfoStartY;
 int GuildStartX;
 int GuildStartY;
-int GuildListStartX;
-int GuildListStartY;
 int SommonTable[] = { 2,7,14,8,9,41 };
 
 wchar_t ChaosEventName[][100] = {
@@ -1573,7 +1163,8 @@ WORD CalcMaxDurability(const ITEM* ip, ITEM_ATTRIBUTE* p, int Level)
 {
     WORD maxDurability = p->Durability;
 
-    if (ip->Type >= ITEM_STAFF && ip->Type < ITEM_STAFF + MAX_ITEM_INDEX)
+    // Staffs, sticks and books have a durability of their own for magic.
+    if (p->MagicDur > 0)
     {
         maxDurability = p->MagicDur;
     }
@@ -1620,7 +1211,7 @@ WORD CalcMaxDurability(const ITEM* ip, ITEM_ATTRIBUTE* p, int Level)
                     }
     }
 
-    if (ip->Type == ITEM_DARK_HORSE_ITEM || ip->Type == ITEM_DARK_RAVEN_ITEM)
+    if (GameLogic::Items::IsDarkLordPet(ip))
     {
         maxDurability = 255;
     }
@@ -1629,18 +1220,13 @@ WORD CalcMaxDurability(const ITEM* ip, ITEM_ATTRIBUTE* p, int Level)
     {
         maxDurability += 20;
     }
-    else if (ip->ExcellentFlags > 0 &&
-        (ip->Type<ITEM_WINGS_OF_SPIRITS || ip->Type>ITEM_WINGS_OF_DARKNESS) &&
-        !IsDivineArchangelWeaponItem(ip->Type)
-        && ip->Type != ITEM_CAPE_OF_LORD
-        && (ip->Type<ITEM_WING_OF_STORM || ip->Type>ITEM_CAPE_OF_EMPEROR)
-        && (ip->Type<ITEM_WINGS_OF_DESPAIR || ip->Type>ITEM_WING_OF_DIMENSION)
-        && !(ip->Type >= ITEM_CAPE_OF_FIGHTER && ip->Type <= ITEM_CAPE_OF_OVERRULE))
+    else if (ip->ExcellentFlags > 0 && !GameLogic::Items::IsSecondOrThirdTierWing(ip) &&
+             !GameLogic::Items::IsDivineArchangelWeapon(ip))
     {
         maxDurability += 15;
     }
 
-    if (Check_LuckyItem(ip->Type))
+    if (GameLogic::Items::IsLuckyItemType(ip->Type))
     {
         maxDurability = 255;
     }
@@ -1652,7 +1238,7 @@ void GetItemName(int iType, int iLevel, wchar_t* Text)
 {
     ITEM_ATTRIBUTE* p = &ItemAttribute[iType];
 
-    if (iType >= ITEM_SCROLL_OF_EMPEROR_RING_OF_HONOR && iType <= ITEM_SOUL_SHARD_OF_WIZARD)
+    if (GameLogic::Items::IsSecondClassQuestItemType(iType))
     {
         if (iType == ITEM_SCROLL_OF_EMPEROR_RING_OF_HONOR)
         {
@@ -1741,7 +1327,7 @@ void GetItemName(int iType, int iLevel, wchar_t* Text)
         case 1: mu_swprintf(Text, L"%ls %ls", I18N::Game::DarkRaven, p->Name); break;
         }
     }
-    else if (iType == ITEM_POTION + 21)
+    else if (iType == ITEM_RENA)
     {
         switch (iLevel)
         {
@@ -1846,7 +1432,7 @@ void GetItemName(int iType, int iLevel, wchar_t* Text)
         else
             mu_swprintf(Text, L"%ls +%d", p->Name, iLevel);
     }
-    else if (IsDivineArchangelWeaponItem(iType))
+    else if (GameLogic::Items::IsDivineArchangelWeaponType(iType))
     {
         if (iLevel == 0)
             mu_swprintf(Text, L"%ls", p->Name);
@@ -1865,9 +1451,7 @@ void GetItemName(int iType, int iLevel, wchar_t* Text)
     {
         mu_swprintf(Text, L"%ls +%d", I18N::Game::JewelOfSoul, iLevel + 1);
     }
-    else if ((iType >= ITEM_SEED_FIRE && iType <= ITEM_SEED_EARTH)
-        || (iType >= ITEM_SPHERE_MONO && iType <= ITEM_SPHERE_5)
-        || (iType >= ITEM_SEED_SPHERE_FIRE_1 && iType <= ITEM_SEED_SPHERE_EARTH_5))
+    else if (GameLogic::Items::IsSocketSeedOrSphereType(iType))
     {
         mu_swprintf(Text, L"%ls", p->Name);
     }
@@ -2110,8 +1694,17 @@ void GetSpecialOptionText(int Type, wchar_t* Text, WORD Option, BYTE Value, int 
     }
 }
 
-void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bItemTextListBoxUse)
+// (sx, sy) in the screen's 640x480 stretch, `screen`.
+static void RenderItemInfo(const UI::Scaling::Transform& screen, int sx, int sy, ITEM* ip, bool Sell, int Inventype,
+                           bool bItemTextListBoxUse)
 {
+    // Unconditional: the early returns below (and the pet-item delegation further down, which
+    // renders its own tooltip via giPetManager::RenderPetItemInfo() instead) used to mean "this
+    // frame draws nothing" under the old per-frame native draw -- already equivalent to "hidden"
+    // for that item. The shared tooltip document is persistent, so this replicates that; the real
+    // Show() call near the end of this function makes it visible again once actually reached.
+    UI::Tooltip::HideLegacyTextList();
+
     if (ip->Type == -1)
         return;
 
@@ -2135,7 +1728,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextList[i][0] = 0;
     }
 
-    if (!Sell && (ip->Type == ITEM_DARK_HORSE_ITEM || ip->Type == ITEM_DARK_RAVEN_ITEM))
+    if (!Sell && (GameLogic::Items::IsDarkLordPet(ip)))
     {
         static DebouncedAction debouncedPetInfoRequest([ip, Inventype]()
             {
@@ -2157,7 +1750,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
 
         debouncedPetInfoRequest.invoke();
 
-        giPetManager::RenderPetItemInfo(sx, sy, ip, Inventype);
+        giPetManager::RenderPetItemInfo(screen, sx, sy, ip, Inventype);
         return;
     }
 
@@ -2168,26 +1761,25 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
 
     if (ip->Type == ITEM_JEWEL_OF_BLESS || ip->Type == ITEM_JEWEL_OF_SOUL || ip->Type == ITEM_JEWEL_OF_CHAOS || ip->Type == ITEM_JEWEL_OF_GUARDIAN ||
         (COMGEM::isCompiledGem(ip)) ||
-        ip->Type == ITEM_FLAME_OF_DEATH_BEAM_KNIGHT || ip->Type == ITEM_HORN_OF_HELL_MAINE || ip->Type == ITEM_FEATHER_OF_DARK_PHOENIX ||
-        ip->Type == ITEM_EYE_OF_ABYSSAL ||
+        GameLogic::Items::IsThirdClassQuestItem(ip) ||
         ip->Type == ITEM_FLAME_OF_CONDOR || ip->Type == ITEM_FEATHER_OF_CONDOR ||
         ip->Type == ITEM_POTION + 100 ||
         (ip->Type >= ITEM_POTION + 141 && ip->Type <= ITEM_POTION + 144) ||
-        (ip->Type >= ITEM_HELPER + 135 && ip->Type <= ITEM_HELPER + 145) ||
+        GameLogic::Items::IsLuckyItemTicket(ip) ||
         (ip->Type == ITEM_POTION + 160 || ip->Type == ITEM_POTION + 161) ||
         ip->Type == ITEM_JEWEL_OF_LIFE || ip->Type == ITEM_JEWEL_OF_CREATION)
     {
         Color = TEXT_COLOR_YELLOW;
     }
-    else if (IsDivineArchangelWeaponItem(ip->Type))
+    else if (GameLogic::Items::IsDivineArchangelWeapon(ip))
     {
         Color = TEXT_COLOR_PURPLE;
     }
-    else if (ip->Type == ITEM_DEVILS_EYE || ip->Type == ITEM_DEVILS_KEY || ip->Type == ITEM_DEVILS_INVITATION)
+    else if (GameLogic::Items::IsDevilSquareItem(ip))
     {
         Color = TEXT_COLOR_YELLOW;
     }
-    else if (ip->Type == ITEM_SCROLL_OF_ARCHANGEL || ip->Type == ITEM_BLOOD_BONE)
+    else if (GameLogic::Items::IsBloodCastleTicketPart(ip))
     {
         Color = TEXT_COLOR_YELLOW;
     }
@@ -2247,7 +1839,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         Color = TEXT_COLOR_YELLOW;
     }
 
-    if (g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_NPCSHOP) && !IsSellingBan(ip))
+    if (g_pNewUISystem->IsVisible(mu::ui::window::INTERFACE_NPCSHOP) && !GameLogic::Items::IsSellingBan(ip))
     {
         wchar_t Text[100];
         {
@@ -2272,16 +1864,30 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
             mu_swprintf(TextList[TextNum], L"\n"); TextNum++; SkipNum++;
         }
     }
-    if ((Inventype == SEASON3B::TOOLTIP_TYPE_MY_SHOP || Inventype == SEASON3B::TOOLTIP_TYPE_PURCHASE_SHOP)
-        && !IsPersonalShopBan(ip))
+    if ((Inventype == mu::ui::window::TOOLTIP_TYPE_MY_SHOP || Inventype == mu::ui::window::TOOLTIP_TYPE_PURCHASE_SHOP)
+        && !GameLogic::Items::IsPersonalShopBan(ip))
     {
         {
-            int price = 0;
+            GameLogic::PersonalShop::ItemPrice itemPrice;
             int indexInv = g_pMyShopInventory->GetInventoryCtrl()->GetIndexByItem(ip);
             wchar_t Text[100];
 
-            if (GetPersonalItemPrice(indexInv, price, g_IsPurchaseShop))
+            const bool hasPrice = GetPersonalItemPrice(indexInv, itemPrice, g_IsPurchaseShop);
+            if (hasPrice && itemPrice.Kind != GameLogic::PersonalShop::PriceKind::Zen)
             {
+                // The server tells the player when the jewels or coins are not enough.
+                mu_swprintf(Text, L"%d %ls", itemPrice.Amount, GameLogic::PersonalShop::GetCurrencyName(itemPrice));
+                mu_swprintf(TextList[TextNum], I18N::Game::SellingPriceS, Text);
+                TextListColor[TextNum] = TEXT_COLOR_YELLOW;
+                TextBold[TextNum] = true;
+                TextNum++;
+                mu_swprintf(TextList[TextNum], L"\n");
+                TextNum++;
+                SkipNum++;
+            }
+            else if (hasPrice)
+            {
+                const int price = itemPrice.Amount;
                 ConvertGold(price, Text);
                 mu_swprintf(TextList[TextNum], I18N::Game::SellingPriceS, Text);
 
@@ -2319,7 +1925,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         }
     }
 
-    if (ip->Type >= ITEM_SCROLL_OF_EMPEROR_RING_OF_HONOR && ip->Type <= ITEM_SOUL_SHARD_OF_WIZARD)
+    if (GameLogic::Items::IsSecondClassQuestItem(ip))
     {
         if (ip->Type == ITEM_SCROLL_OF_EMPEROR_RING_OF_HONOR)
         {
@@ -2412,7 +2018,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         case 1: mu_swprintf(TextList[TextNum], L"%ls", I18N::Game::CrestOfMonarch); break;
         }
     }
-    else if (ip->Type == ITEM_POTION + 21)
+    else if (ip->Type == ITEM_RENA)
     {
         Color = TEXT_COLOR_YELLOW;
         switch (Level)
@@ -2444,7 +2050,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         case 3: mu_swprintf(TextList[TextNum], I18N::Game::RingOfGlory); break;
         }
     }
-    else if (ip->Type == ITEM_HELPER + 107)
+    else if (ip->Type == ITEM_LETHAL_WIZARDS_RING)
     {
         Color = TEXT_COLOR_YELLOW;
         mu_swprintf(TextList[TextNum], p->Name);
@@ -2457,7 +2063,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         case 1: mu_swprintf(TextList[TextNum], I18N::Game::PotionOfSoul); break;
         }
     }
-    else if (ip->Type == ITEM_HELPER + 7)
+    else if (ip->Type == ITEM_CONTRACT_SUMMON)
     {
         switch (Level)
         {
@@ -2605,7 +2211,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
             mu_swprintf(TextList[TextNum], L"%ls", p->Name);
         }
     }
-    else if (IsDivineArchangelWeaponItem(ip->Type))
+    else if (GameLogic::Items::IsDivineArchangelWeapon(ip))
     {
         if (Level == 0)
             mu_swprintf(TextList[TextNum], L"%ls", p->Name);
@@ -2618,16 +2224,14 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         mu_swprintf(TextList[TextNum], L"%ls +%d", I18N::Game::Lookup(nGlobalIndex), Level + 1);
     }
     else if (ip->Type == ITEM_GEMSTONE || ip->Type == ITEM_JEWEL_OF_HARMONY ||
-        ip->Type == ITEM_LOWER_REFINE_STONE || ip->Type == ITEM_HIGHER_REFINE_STONE ||
+        GameLogic::Items::IsRefineStone(ip) ||
         ip->Type == ITEM_MOONSTONE_PENDANT
         )
     {
         mu_swprintf(TextList[TextNum], L"%ls", p->Name);
         Color = TEXT_COLOR_YELLOW;
     }
-    else if ((ip->Type >= ITEM_SEED_FIRE && ip->Type <= ITEM_SEED_EARTH)
-        || (ip->Type >= ITEM_SPHERE_MONO && ip->Type <= ITEM_SPHERE_5)
-        || (ip->Type >= ITEM_SEED_SPHERE_FIRE_1 && ip->Type <= ITEM_SEED_SPHERE_EARTH_5))
+    else if (GameLogic::Items::IsSocketSeedOrSphere(ip))
     {
         mu_swprintf(TextList[TextNum], L"%ls", p->Name);
         Color = TEXT_COLOR_VIOLET;
@@ -2637,7 +2241,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         Color = TEXT_COLOR_YELLOW;
         mu_swprintf(TextList[TextNum], L"%ls", p->Name);
     }
-    else if (ITEM_SUSPICIOUS_SCRAP_OF_PAPER <= ip->Type && ip->Type <= ITEM_COMPLETE_SECROMICON)
+    else if (GameLogic::Items::IsSecromiconQuestItem(ip))
     {
         Color = TEXT_COLOR_YELLOW;
         mu_swprintf(TextList[TextNum], L"%ls", p->Name);
@@ -2748,7 +2352,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         mu_swprintf(TextList[TextNum], I18N::Game::IncreasesAcquisitionRateOfManaAfterHuntingMonstersMana8); TextListColor[TextNum] = TEXT_COLOR_BLUE; TextBold[TextNum] = false; TextNum++;
     }
 
-    if (ip->Type >= ITEM_SCROLL_OF_EMPEROR_RING_OF_HONOR && ip->Type <= ITEM_SOUL_SHARD_OF_WIZARD)
+    if (GameLogic::Items::IsSecondClassQuestItem(ip))
     {
         mu_swprintf(TextList[TextNum], I18N::Game::QuestItem);
         TextListColor[TextNum] = TEXT_COLOR_WHITE;
@@ -2773,14 +2377,14 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
             TextNum++;
         }
     }
-    else if (ip->Type >= ITEM_HELPER + 46 && ip->Type <= ITEM_HELPER + 48)
+    else if (GameLogic::Items::IsEventTicket(ip))
     {
         int iMap = 0;
-        if (ip->Type == ITEM_HELPER + 46)
+        if (ip->Type == ITEM_DEVIL_SQUARE_TICKET)
             iMap = 39;
-        else if (ip->Type == ITEM_HELPER + 47)
+        else if (ip->Type == ITEM_BLOOD_CASTLE_TICKET)
             iMap = 56;
-        else if (ip->Type == ITEM_HELPER + 48)
+        else if (ip->Type == ITEM_KALIMA_TICKET)
             iMap = 58;
 
         mu_swprintf(TextList[TextNum], I18N::Game::EnablesEntranceIntoS, I18N::Game::Lookup(iMap));
@@ -2797,14 +2401,14 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextNum++;
     }
 
-    else if (ip->Type >= ITEM_HELPER + 125 && ip->Type <= ITEM_HELPER + 127)
+    else if (GameLogic::Items::IsDoppelgangerOrVarkaTicket(ip))
     {
         int iMap = 0;
-        if (ip->Type == ITEM_HELPER + 125)
+        if (ip->Type == ITEM_OPEN_ACCESS_TICKET_TO_DOPPELGANGER)
             iMap = 3057;
-        else if (ip->Type == ITEM_HELPER + 126)
+        else if (ip->Type == ITEM_OPEN_ACCESS_TICKET_TO_VARKA)
             iMap = 2806;
-        else if (ip->Type == ITEM_HELPER + 127)
+        else if (ip->Type == ITEM_OPEN_ACCESS_TICKET_TO_VARKA_7)
             iMap = 3107;
 
         mu_swprintf(TextList[TextNum], I18N::Game::EnablesEntranceIntoS, I18N::Game::Lookup(iMap));
@@ -2816,14 +2420,14 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_POTION + 54)
+    else if (ip->Type == ITEM_CHAOS_CARD)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::YouCanAchieveSpecialItemsWithCombinations);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type >= ITEM_POTION + 58 && ip->Type <= ITEM_POTION + 62)
+    else if (ip->Type >= ITEM_RARE_ITEM_TICKET_1 && ip->Type <= ITEM_RARE_ITEM_TICKET_5)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::CongratulationsPleaseContactCSTeamAndChangeItToItem);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
@@ -2837,21 +2441,21 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type >= ITEM_POTION + 145 && ip->Type <= ITEM_POTION + 150)
+    else if (ip->Type >= ITEM_RARE_ITEM_TICKET_7 && ip->Type <= ITEM_RARE_ITEM_TICKET_12)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::CongratulationsPleaseContactCSTeamAndChangeItToItem);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_POTION + 53)
+    else if (ip->Type == ITEM_TALISMAN_OF_LUCK)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::IncreasesTheCombinationRateButOnlyUpToTheMaximumRate);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_HELPER + 43)
+    else if (ip->Type == ITEM_SEAL_OF_ASCENSION)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::IncreasesExperienceGained);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
@@ -2870,7 +2474,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_HELPER + 44)
+    else if (ip->Type == ITEM_SEAL_OF_WEALTH)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::IncreasesExperienceGainedAndItemDropRate);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
@@ -2889,7 +2493,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_HELPER + 45)
+    else if (ip->Type == ITEM_SEAL_OF_SUSTENANCE)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::PreventsExperiencesToBeGained);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
@@ -2904,25 +2508,25 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type >= ITEM_POTION + 70 && ip->Type <= ITEM_POTION + 71)
+    else if (GameLogic::Items::IsElitePotion(ip))
     {
         mu_swprintf(TextList[TextNum], I18N::Game::NumberOfItemsD, ip->Durability);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
         TextBold[TextNum] = false;
         TextNum++;
 
-        int index = ip->Type - (ITEM_POTION + 70);
+        int index = ip->Type - (ITEM_ELITE_HEALING_POTION);
 
         mu_swprintf(TextList[TextNum], I18N::Game::Lookup(2500 + index));
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type >= ITEM_POTION + 72 && ip->Type <= ITEM_POTION + 77)
+    else if (GameLogic::Items::IsBuffScroll(ip))
     {
         const ITEM_ADD_OPTION& Item_data = g_pItemAddOptioninfo->GetItemAddOtioninfo(ip->Type);
 
-        mu_swprintf(TextList[TextNum], I18N::Game::Lookup(2503 + (ip->Type - (ITEM_POTION + 72))), Item_data.m_byValue1);
+        mu_swprintf(TextList[TextNum], I18N::Game::Lookup(2503 + (ip->Type - (ITEM_SCROLL_OF_QUICKNESS))), Item_data.m_byValue1);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
         TextBold[TextNum] = false;
         TextNum++;
@@ -2932,14 +2536,14 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_HELPER + 59)
+    else if (ip->Type == ITEM_SEAL_OF_MOBILITY)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::YouMayFreelyMoveOnward);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type >= ITEM_HELPER + 54 && ip->Type <= ITEM_HELPER + 58)
+    else if (GameLogic::Items::IsResetFruit(ip))
     {
         DWORD statpoint = 0;
         statpoint = ip->Durability * 10;
@@ -2960,7 +2564,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         mu_swprintf(TextList[TextNum], I18N::Game::ItCanBeUsedWithItemRemoved);
         TextNum++;
 
-        if (ip->Type == ITEM_HELPER + 58)
+        if (ip->Type == ITEM_RESET_FRUIT_CONTROL)
         {
             if (gCharacterManager.GetBaseClass(Hero->Class) == CLASS_DARK_LORD)
             {
@@ -2975,9 +2579,9 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
             TextNum++;
         }
     }
-    else if (ip->Type >= ITEM_POTION + 78 && ip->Type <= ITEM_POTION + 82)
+    else if (GameLogic::Items::IsElixir(ip))
     {
-        int index = ip->Type - (ITEM_POTION + 78);
+        int index = ip->Type - (ITEM_ELIXIR_OF_STRENGTH);
         DWORD value = 0;
 
         mu_swprintf(TextList[TextNum], I18N::Game::NumberOfItemsD, ip->Durability);
@@ -3001,7 +2605,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
 
-        if (ip->Type == ITEM_POTION + 82)
+        if (ip->Type == ITEM_ELIXIR_OF_CONTROL)
         {
             mu_swprintf(TextList[TextNum], I18N::Game::DarkLordUseOnly);
             TextListColor[TextNum] = TEXT_COLOR_YELLOW;
@@ -3021,14 +2625,14 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_HELPER + 60)
+    else if (ip->Type == ITEM_INDULGENCE)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::ItReducesTheKillingRate);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_HELPER + 62)
+    else if (ip->Type == ITEM_SEAL_OF_HEALING)
     {
         const ITEM_ADD_OPTION& Item_data = g_pItemAddOptioninfo->GetItemAddOtioninfo(ip->Type);
 
@@ -3049,7 +2653,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_HELPER + 63)
+    else if (ip->Type == ITEM_SEAL_OF_DIVINITY)
     {
         const ITEM_ADD_OPTION& Item_data = g_pItemAddOptioninfo->GetItemAddOtioninfo(ip->Type);
 
@@ -3066,7 +2670,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_POTION + 97)
+    else if (ip->Type == ITEM_SCROLL_OF_BATTLE)
     {
         const ITEM_ADD_OPTION& Item_data = g_pItemAddOptioninfo->GetItemAddOtioninfo(ip->Type);
 
@@ -3080,7 +2684,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_POTION + 98)
+    else if (ip->Type == ITEM_SCROLL_OF_STRENGTH)
     {
         const ITEM_ADD_OPTION& Item_data = g_pItemAddOptioninfo->GetItemAddOtioninfo(ip->Type);
 
@@ -3093,7 +2697,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_POTION + 140)
+    else if (ip->Type == ITEM_SCROLL_OF_HEALING)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::AutomaticHPRecoveryD, 3);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
@@ -3104,7 +2708,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_POTION + 96)
+    else if (ip->Type == ITEM_TALISMAN_OF_CHAOS_ASSEMBLY)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::Minimum1015LevelItemUpgrade);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
@@ -3200,35 +2804,35 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_HELPER + 107)
+    else if (ip->Type == ITEM_LETHAL_WIZARDS_RING)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::CannotRepair);
         TextListColor[TextNum] = TEXT_COLOR_RED;
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_HELPER + 104)
+    else if (ip->Type == ITEM_MAX_AG_BOOST_AURA)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::IncreaseMaxAGLevel);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_HELPER + 105)
+    else if (ip->Type == ITEM_MAX_SD_BOOST_AURA)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::IncreaseMaxSDLevelx10);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_HELPER + 103)
+    else if (ip->Type == ITEM_PARTY_EXP_SCROLL)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::UpToDEXPGainIncreaseDependingOnTheNumberOfMembersInYourParty, 170);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_HELPER + 69)
+    else if (ip->Type == ITEM_TALISMAN_OF_RESURRECTION)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::RememberTheLocationOfOneSDeath);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
@@ -3246,14 +2850,14 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
             TextNum++;
         }
     }
-    else if (ip->Type == ITEM_HELPER + 70)
+    else if (ip->Type == ITEM_TALISMAN_OF_MOBILITY)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::SaveTheApplicationLocation);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_HELPER + 81)
+    else if (ip->Type == ITEM_TALISMAN_OF_GUARDIAN)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::ExpAndItemWillBeSecuredWhenCharacterDies);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
@@ -3265,7 +2869,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
         TextBold[TextNum++] = false;
     }
-    else if (ip->Type == ITEM_HELPER + 82)
+    else if (ip->Type == ITEM_TALISMAN_OF_ITEM_PROTECTION)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::ItemDurabilityWillNotBeDecreaseForACertainPeriod);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
@@ -3277,7 +2881,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
         TextBold[TextNum++] = false;
     }
-    else if (ip->Type == ITEM_HELPER + 93)
+    else if (ip->Type == ITEM_MASTER_SEAL_OF_ASCENSION)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::IncreasesExperienceGained);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
@@ -3286,7 +2890,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
         TextBold[TextNum++] = false;
     }
-    else if (ip->Type == ITEM_HELPER + 94)
+    else if (ip->Type == ITEM_MASTER_SEAL_OF_WEALTH)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::IncreasesExperienceGainedAndItemDropRate);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
@@ -3295,7 +2899,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
         TextBold[TextNum++] = false;
     }
-    else if (ip->Type == ITEM_HELPER + 61)
+    else if (ip->Type == ITEM_ILLUSION_TEMPLE_TICKET)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::EnablesEntranceIntoS, I18N::Game::IllusionTemple);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
@@ -3310,14 +2914,14 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_POTION + 91)
+    else if (ip->Type == ITEM_SUMMONER_CHARACTER_CARD)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::Lookup(2551));
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_POTION + 92)
+    else if (ip->Type == ITEM_CHAOS_CARD_GOLD)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::YouCanAchieveSpecialItemsWithCombinations);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
@@ -3328,7 +2932,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_POTION + 93)
+    else if (ip->Type == ITEM_CHAOS_CARD_RARE)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::YouCanAchieveSpecialItemsWithCombinations);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
@@ -3339,7 +2943,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_POTION + 95)
+    else if (ip->Type == ITEM_CHAOS_CARD_MINI)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::YouCanAchieveSpecialItemsWithCombinations);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
@@ -3350,7 +2954,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_POTION + 94)
+    else if (ip->Type == ITEM_MEDIUM_ELITE_HEALING_POTION)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::NumberOfItemsD, ip->Durability);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
@@ -3413,7 +3017,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_POTION + 88)
+    else if (ip->Type == ITEM_WHITE_CHERRY_BLOSSOM_BRANCH)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::NumberOfItemsD, ip->Durability);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
@@ -3428,7 +3032,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_POTION + 89)
+    else if (ip->Type == ITEM_RED_CHERRY_BLOSSOM_BRANCH)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::NumberOfItemsD, ip->Durability);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
@@ -3479,14 +3083,14 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_POTION + 64)
+    else if (ip->Type == ITEM_CURSED_CASTLE_WATER)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::MobilitySpeedReducesUponAchievement);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type >= ITEM_FLAME_OF_DEATH_BEAM_KNIGHT && ip->Type <= ITEM_EYE_OF_ABYSSAL)
+    else if (GameLogic::Items::IsThirdClassQuestItem(ip))
     {
         mu_swprintf(TextList[TextNum], I18N::Game::QuestItem);
         TextListColor[TextNum] = TEXT_COLOR_WHITE;
@@ -3515,11 +3119,11 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if ((ip->Type >= ITEM_SEED_FIRE && ip->Type <= ITEM_SEED_EARTH) || (ip->Type >= ITEM_SPHERE_MONO && ip->Type <= ITEM_SPHERE_5) || (ip->Type >= ITEM_SEED_SPHERE_FIRE_1 && ip->Type <= ITEM_SEED_SPHERE_EARTH_5))
+    else if (GameLogic::Items::IsSocketSeedOrSphere(ip))
     {
         TextNum = g_SocketItemMgr.AttachToolTipForSeedSphereItem(ip, TextNum);
     }
-    else if (ip->Type == ITEM_HELPER + 71 || ip->Type == ITEM_HELPER + 72 || ip->Type == ITEM_HELPER + 73 || ip->Type == ITEM_HELPER + 74 || ip->Type == ITEM_HELPER + 75)
+    else if (GameLogic::Items::IsGambleItem(ip))
     {
         mu_swprintf(TextList[TextNum], I18N::Game::ItemSkillLuckOptionWillBeRandomlyAdded);
         TextListColor[TextNum] = TEXT_COLOR_WHITE;
@@ -3596,7 +3200,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         break;
         }
     }
-    else if (ip->Type >= ITEM_TYPE_CHARM_MIXWING + EWS_BEGIN && ip->Type <= ITEM_TYPE_CHARM_MIXWING + EWS_END)
+    else if (GameLogic::Items::IsWingMixCharm(ip))
     {
         const ITEM_ADD_OPTION& Item_data = g_pItemAddOptioninfo->GetItemAddOtioninfo(ip->Type);
         mu_swprintf(TextList[TextNum], I18N::Game::IncreasesYourLuckToCreateWingOfYourWish);
@@ -3689,7 +3293,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ITEM_SUSPICIOUS_SCRAP_OF_PAPER <= ip->Type && ip->Type <= ITEM_COMPLETE_SECROMICON)
+    else if (GameLogic::Items::IsSecromiconQuestItem(ip))
     {
         switch (ip->Type)
         {
@@ -3746,7 +3350,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         }break;
         }
     }
-    else if (ITEM_HELPER + 109 == ip->Type)
+    else if (ITEM_SAPPHIRE_RING == ip->Type)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::AutomaticHPRecoveryD, 3);
         TextListColor[TextNum] = TEXT_COLOR_WHITE;
@@ -3757,7 +3361,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ITEM_HELPER + 110 == ip->Type)
+    else if (ITEM_RUBY_RING == ip->Type)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::AutomaticHPRecoveryD, 3);
         TextListColor[TextNum] = TEXT_COLOR_WHITE;
@@ -3768,7 +3372,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ITEM_HELPER + 111 == ip->Type)
+    else if (ITEM_TOPAZ_RING == ip->Type)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::AutomaticHPRecoveryD, 3);
         TextListColor[TextNum] = TEXT_COLOR_WHITE;
@@ -3779,7 +3383,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ITEM_HELPER + 112 == ip->Type)
+    else if (ITEM_AMETHYST_RING == ip->Type)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::AutomaticHPRecoveryD, 3);
         TextListColor[TextNum] = TEXT_COLOR_WHITE;
@@ -3790,7 +3394,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ITEM_HELPER + 113 == ip->Type)
+    else if (ITEM_RUBY_NECKLACE == ip->Type)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::AutomaticHPRecoveryD, 3);
         TextListColor[TextNum] = TEXT_COLOR_WHITE;
@@ -3801,7 +3405,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ITEM_HELPER + 114 == ip->Type)
+    else if (ITEM_EMERALD_NECKLACE == ip->Type)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::AutomaticHPRecoveryD, 3);
         TextListColor[TextNum] = TEXT_COLOR_WHITE;
@@ -3812,7 +3416,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ITEM_HELPER + 115 == ip->Type)
+    else if (ITEM_SAPPHIRE_NECKLACE == ip->Type)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::AutomaticHPRecoveryD, 3);
         TextListColor[TextNum] = TEXT_COLOR_WHITE;
@@ -3823,56 +3427,56 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ITEM_POTION + 112 == ip->Type)
+    else if (ITEM_SILVER_KEY == ip->Type)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::YouCanDoAGoblinCombination2876);
         TextListColor[TextNum] = TEXT_COLOR_WHITE;
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ITEM_POTION + 113 == ip->Type)
+    else if (ITEM_GOLD_KEY == ip->Type)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::YouCanDoAGoblinCombination);
         TextListColor[TextNum] = TEXT_COLOR_WHITE;
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_POTION + 120)
+    else if (ip->Type == ITEM_GOBLIN_GOLD_COIN)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::YouCanAcquireGoblinPointsByUsingTheMUItemShopSStorage);
         TextListColor[TextNum] = TEXT_COLOR_WHITE;
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ITEM_POTION + 121 == ip->Type)
+    else if (ITEM_SEALED_GOLDEN_BOX == ip->Type)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::YouCanDoAGoblinCombinationWithAGoldKeyToCreateAGoldenBox);
         TextListColor[TextNum] = TEXT_COLOR_WHITE;
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ITEM_POTION + 122 == ip->Type)
+    else if (ITEM_SEALED_SILVER_BOX == ip->Type)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::YouCanDoAGoblinCombinationWithASilverKeyToCreateASilverBox);
         TextListColor[TextNum] = TEXT_COLOR_WHITE;
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ITEM_POTION + 123 == ip->Type)
+    else if (ITEM_GOLDEN_BOX == ip->Type)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::YouCanDropItWithAFixedProbabilityOfItTurningIntoARareItem);
         TextListColor[TextNum] = TEXT_COLOR_WHITE;
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ITEM_POTION + 124 == ip->Type)
+    else if (ITEM_SILVER_BOX == ip->Type)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::YouCanDropItWithAFixedProbabilityOfItTurningIntoARareItem);
         TextListColor[TextNum] = TEXT_COLOR_WHITE;
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ITEM_POTION + 134 <= ip->Type && ITEM_POTION + 139 >= ip->Type)
+    else if (ITEM_PACKAGE_BOX_A <= ip->Type && ITEM_PACKAGE_BOX_F >= ip->Type)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::ItSABoxContainingVariousItems);
         TextListColor[TextNum] = TEXT_COLOR_WHITE;
@@ -3887,7 +3491,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ITEM_HELPER + 121 == ip->Type)
+    else if (ITEM_OPEN_ACCESS_TICKET_TO_CHAOS_CASTLE == ip->Type)
     {
         int iMap = 57;
         mu_swprintf(TextList[TextNum], I18N::Game::EnablesEntranceIntoS, I18N::Game::Lookup(iMap));
@@ -3903,7 +3507,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_HELPER + 124)
+    else if (ip->Type == ITEM_PAID_CHANNEL_ACCESS_TICKET)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::YouCanEnterToGoldChannel);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
@@ -3921,7 +3525,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_POTION + 133)
+    else if (ip->Type == ITEM_ELITE_SD_POTION)
     {
         mu_swprintf(TextList[TextNum], I18N::Game::NumberOfItemsD, ip->Durability);
         TextListColor[TextNum] = TEXT_COLOR_BLUE;
@@ -4083,7 +3687,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    if (ip->Type >= ITEM_RED_RIBBON_BOX && ip->Type <= ITEM_BLUE_RIBBON_BOX)
+    if (GameLogic::Items::IsRibbonBox(ip))
     {
         mu_swprintf(TextList[TextNum], I18N::Game::ThrowItAndYouMayReceiveSomeZenOrItems);
         switch (ip->Type)
@@ -4139,7 +3743,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         }
         TextBold[TextNum] = false; TextNum++;
     }
-    if (ip->Type >= ITEM_PINK_CHOCOLATE_BOX && ip->Type <= ITEM_BLUE_CHOCOLATE_BOX)
+    if (GameLogic::Items::IsChocolateBox(ip))
     {
         mu_swprintf(TextList[TextNum], I18N::Game::DropItToReceiveTheGift);
         switch (ip->Type)
@@ -4313,7 +3917,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         mu_swprintf(TextList[TextNum], I18N::Game::JewelForItemReinforcement);
         TextListColor[TextNum] = TEXT_COLOR_WHITE; TextBold[TextNum] = false; TextNum++;
     }
-    else if ((ip->Type >= ITEM_WINGS_OF_SPIRITS && ip->Type <= ITEM_WINGS_OF_DARKNESS) || ip->Type == ITEM_WINGS_OF_DESPAIR) //날개
+    else if (GameLogic::Items::IsSecondTierWingExceptCape(ip)) //날개
     {
         mu_swprintf(TextList[TextNum], I18N::Game::IncreaseDOfDamage, 32 + Level);  //  데미지 몇%증가.
         TextListColor[TextNum] = TEXT_COLOR_WHITE; TextBold[TextNum] = false; TextNum++;
@@ -4322,8 +3926,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         mu_swprintf(TextList[TextNum], I18N::Game::IncreaseSpeed);             //  이동 속도 향상.
         TextListColor[TextNum] = TEXT_COLOR_WHITE; TextBold[TextNum] = false; TextNum++;
     }
-    else if ((ip->Type >= ITEM_WING_OF_STORM && ip->Type <= ITEM_CAPE_OF_EMPEROR) || ip->Type == ITEM_WING_OF_DIMENSION
-        || ip->Type == ITEM_CAPE_OF_OVERRULE)
+    else if (GameLogic::Items::IsThirdTierWing(ip))
     {
         mu_swprintf(TextList[TextNum], I18N::Game::IncreaseDOfDamage, 39 + Level * 2);
         TextListColor[TextNum] = TEXT_COLOR_WHITE; TextBold[TextNum] = false; TextNum++;
@@ -4339,22 +3942,22 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         mu_swprintf(TextList[TextNum], I18N::Game::IncreaseSpeed);
         TextListColor[TextNum] = TEXT_COLOR_WHITE; TextBold[TextNum] = false; TextNum++;
     }
-    else if (ITEM_WING + 130 <= ip->Type && ip->Type <= ITEM_WING + 135)
+    else if (GameLogic::Items::IsSmallWing(ip))
     {
         switch (ip->Type)
         {
-        case ITEM_WING + 130:
-        case ITEM_WING + 135:
+        case ITEM_SMALL_CAPE_OF_LORD:
+        case ITEM_LITTLE_WARRIORS_CLOAK:
         {
             mu_swprintf(TextList[TextNum], I18N::Game::IncreaseDOfDamage, 20 + Level * 2);
             TextListColor[TextNum] = TEXT_COLOR_WHITE; TextBold[TextNum] = false; TextNum++;
             mu_swprintf(TextList[TextNum], I18N::Game::AbsorbDOfDamage, 20 + Level * 2);
             TextListColor[TextNum] = TEXT_COLOR_WHITE; TextBold[TextNum] = false; TextNum++;
         }break;
-        case ITEM_WING + 131:
-        case ITEM_WING + 132:
-        case ITEM_WING + 133:
-        case ITEM_WING + 134:
+        case ITEM_SMALL_WING_OF_CURSE:
+        case ITEM_SMALL_WINGS_OF_ELF:
+        case ITEM_SMALL_WINGS_OF_HEAVEN:
+        case ITEM_SMALL_WINGS_OF_SATAN:
         {
             mu_swprintf(TextList[TextNum], I18N::Game::IncreaseDOfDamage, 12 + Level * 2);
             TextListColor[TextNum] = TEXT_COLOR_WHITE; TextBold[TextNum] = false; TextNum++;
@@ -4472,7 +4075,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         break;
         }
     }
-    else if (ip->Type == ITEM_HELPER + 7)
+    else if (ip->Type == ITEM_CONTRACT_SUMMON)
     {
         switch (Level)
         {
@@ -4543,7 +4146,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextListColor[TextNum] = TEXT_COLOR_DARKBLUE;
         TextNum++;
     }
-    else if (ip->Type == ITEM_POTION + 21)
+    else if (ip->Type == ITEM_RENA)
     {
         TextListColor[TextNum] = TEXT_COLOR_WHITE;
         switch (Level)
@@ -4583,18 +4186,16 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         && !(ip->Type == ITEM_WIZARDS_RING && Level == 1)
         && !(ip->Type == ITEM_WIZARDS_RING && Level == 2)
         && !(ip->Type == ITEM_ARMOR_OF_GUARDSMAN)
-        && ip->Type != ITEM_SIEGE_POTION && ip->Type != ITEM_HELPER + 7 && ip->Type != ITEM_LIFE_STONE_ITEM
+        && ip->Type != ITEM_SIEGE_POTION && ip->Type != ITEM_CONTRACT_SUMMON && ip->Type != ITEM_LIFE_STONE_ITEM
         && ip->Type != ITEM_FRAGMENT_OF_HORN
-        && !(ip->Type >= ITEM_POTION + 70 && ip->Type <= ITEM_POTION + 71)
-        && !(ip->Type >= ITEM_HELPER + 54 && ip->Type <= ITEM_HELPER + 58)
-        && !(ip->Type >= ITEM_POTION + 78 && ip->Type <= ITEM_POTION + 82)
-        && !(ip->Type == ITEM_HELPER + 66)
-        && !(ip->Type == ITEM_HELPER + 71 || ip->Type == ITEM_HELPER + 72 || ip->Type == ITEM_HELPER + 73 || ip->Type == ITEM_HELPER + 74 || ip->Type == ITEM_HELPER + 75)
-        && !(ip->Type == ITEM_HELPER + 97)
-        && !(ip->Type == ITEM_HELPER + 98)
-        && !(ip->Type == ITEM_POTION + 91)
+        && !GameLogic::Items::IsElitePotion(ip)
+        && !GameLogic::Items::IsResetFruit(ip)
+        && !GameLogic::Items::IsElixir(ip)
+        && !(ip->Type == ITEM_INVITATION_TO_SANTA_VILLAGE)
+        && !GameLogic::Items::IsGambleItem(ip)
+        && !GameLogic::Items::IsCharacterCard(ip)
         && !(ip->Type == ITEM_HELPER + 99)
-        && !(ip->Type == ITEM_POTION + 133)
+        && !(ip->Type == ITEM_ELITE_SD_POTION)
         )
     {
         int Success = false;
@@ -4604,12 +4205,12 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
             mu_swprintf(TextList[TextNum], I18N::Game::NumberOfItemsD, ip->Durability);
             Success = true;
         }
-        else if (ip->Type == ITEM_POTION + 21 && Level == 3)
+        else if (ip->Type == ITEM_RENA && Level == 3)
         {
             mu_swprintf(TextList[TextNum], I18N::Game::NumberOfItemsD, ip->Durability);
             Success = true;
         }
-        else if (ip->Type == ITEM_BOLT || ip->Type == ITEM_ARROWS)
+        else if (GameLogic::Items::IsAmmunition(ip))
         {
             mu_swprintf(TextList[TextNum], I18N::Game::NumberOfItemsD, ip->Durability);
             Success = true;
@@ -4620,7 +4221,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
             mu_swprintf(TextList[TextNum], I18N::Game::NumberOfItemsD, ip->Durability);
             Success = true;
         }
-        else if (ip->Type == ITEM_POTION + 133)
+        else if (ip->Type == ITEM_ELITE_SD_POTION)
         {
             mu_swprintf(TextList[TextNum], I18N::Game::NumberOfItemsD, ip->Durability);
             Success = true;
@@ -4630,7 +4231,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
             mu_swprintf(TextList[TextNum], I18N::Game::NumberOfItemsD, ip->Durability);
             Success = true;
         }
-        else if (ip->Type >= ITEM_POTION + 153 && ip->Type <= ITEM_POTION + 156)
+        else if (ip->Type >= ITEM_STARDUST && ip->Type <= ITEM_BURNT_MURDERERS_CLUB)
         {
             mu_swprintf(TextList[TextNum], I18N::Game::NumberOfItemsD, ip->Durability);
             Success = true;
@@ -4653,7 +4254,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
                 Success = true;
             }
         }
-        else if (ip->Type >= ITEM_HELPER && ip->Type <= ITEM_HELPER + 7)
+        else if (ip->Type >= ITEM_HELPER && ip->Type <= ITEM_CONTRACT_SUMMON)
         {
             if (ip->bPeriodItem == false)
             {
@@ -4666,7 +4267,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
             mu_swprintf(TextList[TextNum], I18N::Game::DurabilityD, ip->Durability);
             Success = true;
         }
-        else if (ip->Type == ITEM_DEMON || ip->Type == ITEM_SPIRIT_OF_GUARDIAN)
+        else if (GameLogic::Items::IsDemonOrSpiritOfGuardian(ip))
         {
             if (ip->bPeriodItem == false)
             {
@@ -4683,33 +4284,33 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
                 Success = true;
             }
         }
-        else if (ip->Type >= ITEM_HELPER + 46 && ip->Type <= ITEM_HELPER + 48)
+        else if (GameLogic::Items::IsEventTicket(ip))
         {
             mu_swprintf(TextList[TextNum], I18N::Game::UsableDtimes, ip->Durability);
             Success = true;
         }
-        else if (ip->Type >= ITEM_HELPER + 125 && ip->Type <= ITEM_HELPER + 127)
+        else if (GameLogic::Items::IsDoppelgangerOrVarkaTicket(ip))
         {
             mu_swprintf(TextList[TextNum], I18N::Game::UsableDtimes, ip->Durability);
 
-            if (ip->Type == ITEM_HELPER + 126)
+            if (ip->Type == ITEM_OPEN_ACCESS_TICKET_TO_VARKA)
             {
                 TextNum++;
                 mu_swprintf(TextList[TextNum], I18N::Game::CanEnterTheMondaySaturdayMap);
             }
-            else if (ip->Type == ITEM_HELPER + 127)
+            else if (ip->Type == ITEM_OPEN_ACCESS_TICKET_TO_VARKA_7)
             {
                 TextNum++;
                 mu_swprintf(TextList[TextNum], I18N::Game::CanEnterTheSundayMap);
             }
             Success = true;
         }
-        else if (ip->Type == ITEM_POTION + 53)
+        else if (ip->Type == ITEM_TALISMAN_OF_LUCK)
         {
             mu_swprintf(TextList[TextNum], I18N::Game::DCombinationSuccessRateIncrease, ip->Durability);
             Success = true;
         }
-        else if (ip->Type == ITEM_HELPER + 61)
+        else if (ip->Type == ITEM_ILLUSION_TEMPLE_TICKET)
         {
             mu_swprintf(TextList[TextNum], I18N::Game::UsableDtimes, ip->Durability);
             Success = true;
@@ -4719,7 +4320,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
             mu_swprintf(TextList[TextNum], I18N::Game::NumberOfItemsD, ip->Durability);
             Success = true;
         }
-        else if (ip->Type == ITEM_HELPER + 70)
+        else if (ip->Type == ITEM_TALISMAN_OF_MOBILITY)
         {
             if (ip->Durability == 2)
             {
@@ -4740,7 +4341,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
                 TextNum++;
             }
         }
-        else if (ip->Type >= ITEM_HELPER + 135 && ip->Type <= ITEM_HELPER + 145)
+        else if (GameLogic::Items::IsLuckyItemTicket(ip))
         {
             mu_swprintf(TextList[TextNum], I18N::Game::YouCanAchieveSpecialItemsWithCombinations);
             TextListColor[TextNum] = TEXT_COLOR_BLUE;
@@ -4756,13 +4357,13 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
             mu_swprintf(TextList[TextNum], I18N::Game::DurabilityDD, ip->Durability, maxDurability);
             Success = true;
         }
-        else if (ip->Type >= ITEM_TYPE_CHARM_MIXWING + EWS_BEGIN && ip->Type <= ITEM_TYPE_CHARM_MIXWING + EWS_END)
+        else if (GameLogic::Items::IsWingMixCharm(ip))
         {
             mu_swprintf(TextList[TextNum], L"%ls", I18N::Game::Lookup(2732 + (ip->Type - (ITEM_TYPE_CHARM_MIXWING + EWS_BEGIN))));
 
             Success = true;
         }
-        else if (ip->Type == ITEM_HELPER + 121)
+        else if (ip->Type == ITEM_OPEN_ACCESS_TICKET_TO_CHAOS_CASTLE)
         {
             mu_swprintf(TextList[TextNum], I18N::Game::UsableDtimes, ip->Durability);
             Success = true;
@@ -4787,7 +4388,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         }
     }
 
-    if (ip->Type == ITEM_BOLT || ip->Type == ITEM_ARROWS)
+    if (GameLogic::Items::IsAmmunition(ip))
     {
         if (Level >= 1)
         {
@@ -4839,7 +4440,8 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
     int si_iNeedStrength = 0, si_iNeedDex = 0;
     bool bRequireStat = true;
 
-    if (Check_LuckyItem(ip->Type)) bRequireStat = false;
+    if (GameLogic::Items::IsLuckyItemType(ip->Type))
+        bRequireStat = false;
 
     if (Level >= ip->Jewel_Of_Harmony_OptionLevel)
     {
@@ -5010,7 +4612,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         RequireClass(p);
     }
 
-    if (ip->Type >= MODEL_BOOTS - MODEL_ITEM && ip->Type < MODEL_BOOTS + MAX_ITEM_INDEX - MODEL_ITEM)
+    if (ip->Type >= ITEM_BOOTS && ip->Type < ITEM_BOOTS + MAX_ITEM_INDEX)
     {
         if (Level >= 5)
         {
@@ -5020,7 +4622,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         }
     }
 
-    if (ip->Type >= MODEL_GLOVES - MODEL_ITEM && ip->Type < MODEL_GLOVES + MAX_ITEM_INDEX - MODEL_ITEM)
+    if (ip->Type >= ITEM_GLOVES && ip->Type < ITEM_GLOVES + MAX_ITEM_INDEX)
     {
         if (Level >= 5)
         {
@@ -5030,13 +4632,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
             TextListColor[TextNum] = TEXT_COLOR_BLUE; TextBold[TextNum] = true; TextNum++;
         }
     }
-    if ((ip->Type >= MODEL_STAFF - MODEL_ITEM && ip->Type < MODEL_STAFF + MAX_ITEM_INDEX - MODEL_ITEM)
-        || (ip->Type == (static_cast<int>(MODEL_RUNE_BLADE) - MODEL_ITEM))
-        || (ip->Type == (static_cast<int>(MODEL_EXPLOSION_BLADE) - MODEL_ITEM))
-        || (ip->Type == (static_cast<int>(MODEL_SWORD_DANCER) - MODEL_ITEM))
-        || (ip->Type == (static_cast<int>(MODEL_DARK_REIGN_BLADE) - MODEL_ITEM))
-        || (ip->Type == (static_cast<int>(MODEL_IMPERIAL_SWORD) - MODEL_ITEM))
-        )
+    if (GameLogic::Items::IsStaffOrBookType(ip->Type) || GameLogic::Items::IsMagicSwordType(ip->Type))
     {
         mu_swprintf(TextList[TextNum], L"\n"); TextNum++; SkipNum++;
 
@@ -5048,7 +4644,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextNum++;
     }
 
-    if (IsCepterItem(ip->Type) == true)
+    if (GameLogic::Items::IsSceptreType(ip->Type))
     {
         mu_swprintf(TextList[TextNum], L"\n"); TextNum++; SkipNum++;
         mu_swprintf(TextList[TextNum], I18N::Game::IncreasePetAttackAsD, ip->MagicPower);
@@ -5058,10 +4654,10 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
     if (ip->SpecialNum > 0)
     {
         int iModelType = ip->Type;
-        int iStartModelType = ITEM_HELPER + 109;
-        int iEndModelType = ITEM_HELPER + 115;
+        int iStartModelType = ITEM_SAPPHIRE_RING;
+        int iEndModelType = ITEM_SAPPHIRE_NECKLACE;
 
-        if (!(ITEM_HELPER + 109 <= ip->Type && ITEM_HELPER + 115 >= ip->Type))
+        if (!(ITEM_SAPPHIRE_RING <= ip->Type && ITEM_SAPPHIRE_NECKLACE >= ip->Type))
         {
             mu_swprintf(TextList[TextNum], L"\n"); TextNum++; SkipNum++;
         }
@@ -5155,7 +4751,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
     int iMana;
     for (int i = 0; i < ip->SpecialNum; i++)
     {
-        if (ITEM_HELPER + 109 <= ip->Type && ITEM_HELPER + 115 >= ip->Type)
+        if (ITEM_SAPPHIRE_RING <= ip->Type && ITEM_SAPPHIRE_NECKLACE >= ip->Type)
         {
             break;
         }
@@ -5184,14 +4780,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
             mu_swprintf(TextList[TextNum], I18N::Game::DarkLordExclusiveSkill);
             TextListColor[TextNum] = TEXT_COLOR_DARKRED; TextBold[TextNum] = false; TextNum++;
         }
-        else if ((ip->Special[i] == AT_IMPROVE_DAMAGE) &&
-            ((ip->Type == ITEM_RUNE_BLADE)
-                || (ip->Type == ITEM_DARK_REIGN_BLADE)
-                || (ip->Type == ITEM_EXPLOSION_BLADE)
-                || (ip->Type == ITEM_SWORD_DANCER)
-                || (ip->Type == ITEM_IMPERIAL_SWORD)
-                )
-            )
+        else if (ip->Special[i] == AT_IMPROVE_DAMAGE && GameLogic::Items::IsMagicSwordType(ip->Type))
         {
             mu_swprintf(TextList[TextNum], I18N::Game::AdditionalWizardryDmgD, ip->SpecialValue[i]);
             TextListColor[TextNum] = TEXT_COLOR_BLUE;
@@ -5424,7 +5013,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextBold[TextNum] = false;
         TextNum++;
     }
-    else if (ip->Type == ITEM_HELPER + 66)
+    else if (ip->Type == ITEM_INVITATION_TO_SANTA_VILLAGE)
     {
         TextNum--;
         mu_swprintf(TextList[TextNum], I18N::Game::UsableDtimes, ip->Durability);
@@ -5610,7 +5199,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
     {
         bool bThisisEquippedItem = false;
 
-        SEASON3B::CNewUIInventoryCtrl* pNewInventoryCtrl = g_pMyInventory->GetInventoryCtrl();
+        mu::ui::window::CInventoryCtrl* pNewInventoryCtrl = g_pMyInventory->GetInventoryCtrl();
         ITEM* pFindItem = pNewInventoryCtrl->FindItemByKey(ip->Key);
         (pFindItem == NULL) ? bThisisEquippedItem = true : bThisisEquippedItem = false;
 
@@ -5619,7 +5208,6 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextNum = g_SocketItemMgr.AttachToolTipForSocketItem(ip, TextNum);
 
         SIZE TextSize = { 0, 0 };
-        float fRateY = g_fScreenRate_y;
         int	Height = 0;
         int	EmptyLine = 0;
         int TextLine = 0;
@@ -5630,12 +5218,10 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
             else if (TextList[i][0] == '\n')	++EmptyLine;
             else							++TextLine;
         }
-        fRateY = fRateY / 1.1f;
         g_pRenderText->SetFont(g_hFont);
+        TextSize = g_pRenderText->MeasureText(L"Q", 1);
 
-        GetTextExtentPoint32(g_pRenderText->GetFontDC(), TextList[0], 1, &TextSize);
-
-        Height = (TextLine * TextSize.cy + EmptyLine * TextSize.cy / 2.0f) / fRateY;
+        Height = static_cast<int>((TextLine * TextSize.cy + EmptyLine * TextSize.cy / 2.0f) * 1.1f);
 
         int iScreenHeight = 420;
 
@@ -5655,122 +5241,26 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
 
     if (isrendertooltip)
     {
-        if (bItemTextListBoxUse)
-            RenderTipTextList(sx, sy, TextNum, 0, RT3_SORT_CENTER, STRP_BOTTOMCENTER);
-        else
-            RenderTipTextList(sx, sy, TextNum, 0);
+        UI::Tooltip::ShowLegacyTextList(
+            TextNum,
+            UI::Scaling::PositionX(screen, static_cast<float>(sx)),
+            UI::Scaling::PositionY(screen, static_cast<float>(sy)),
+            bItemTextListBoxUse ? UI::Tooltip::Placement::Above : UI::Tooltip::Placement::Below);
     }
 }
 
-void RenderRepairInfo(int sx, int sy, ITEM* ip, bool Sell)
+// (sx, sy) in the screen's 640x480 stretch, `screen`.
+static void RenderRepairInfo(const UI::Scaling::Transform& screen, int sx, int sy, ITEM* ip, bool Sell)
 {
-    if (IsRepairBan(ip) == true)
-    {
-        return;
-    }
-    if (ip->Type >= ITEM_TYPE_CHARM_MIXWING + EWS_BEGIN && ip->Type <= ITEM_TYPE_CHARM_MIXWING + EWS_END)
-    {
-        return;
-    }
-    if (ip->Type == ITEM_HELPER + 107)
-    {
-        return;
-    }
-    if (ip->Type == ITEM_HELPER + 104)
-    {
-        return;
-    }
-    if (ip->Type == ITEM_HELPER + 105)
-    {
-        return;
-    }
-    if (ip->Type == ITEM_HELPER + 103)
-    {
-        return;
-    }
-    if (ip->Type == ITEM_POTION + 133)
-    {
-        return;
-    }
-    if (ip->Type == MODEL_HELPER + 109)
-    {
-        return;
-    }
-    if (ip->Type == MODEL_HELPER + 110)
-    {
-        return;
-    }
-    if (ip->Type == MODEL_HELPER + 111)
-    {
-        return;
-    }
-    if (ip->Type == MODEL_HELPER + 112)
-    {
-        return;
-    }
-    if (ip->Type == MODEL_HELPER + 113)
-    {
-        return;
-    }
-    if (ip->Type == MODEL_HELPER + 114)
-    {
-        return;
-    }
-    if (ip->Type == MODEL_HELPER + 115)
-    {
-        return;
-    }
-    if (ip->Type == MODEL_POTION + 112)
-    {
-        return;
-    }
-    if (ip->Type == MODEL_POTION + 113)
-    {
-        return;
-    }
-    if (ip->Type == ITEM_POTION + 120)
-    {
-        return;
-    }
-    if (ip->Type == ITEM_POTION + 121)
-    {
-        return;
-    }
-    if (ip->Type == ITEM_POTION + 122)
-    {
-        return;
-    }
-    if (ITEM_POTION + 123 == ip->Type)
-    {
-        return;
-    }
-    if (ITEM_POTION + 124 == ip->Type)
-    {
-        return;
-    }
-    if (ITEM_POTION + 134 <= ip->Type && ip->Type <= ITEM_POTION + 139)
-    {
-        return;
-    }
+    // Unconditional: the many early returns below used to mean "this frame draws nothing" under
+    // the old per-frame native draw, which was already equivalent to "hidden" for that item type.
+    // The shared tooltip document is persistent, so an explicit Hide() here replicates that -- Show()
+    // at the very end of this function (reached only when none of the guards below fire) makes it
+    // visible again for an allowed item, same net effect as before, one frame earlier than a stale
+    // previous item's tooltip would otherwise have lingered.
+    UI::Tooltip::HideLegacyTextList();
 
-    if (ITEM_WING + 130 <= ip->Type && ip->Type <= ITEM_WING + 135)
-    {
-        return;
-    }
-
-    if (ITEM_POTION + 114 <= ip->Type && ip->Type <= ITEM_POTION + 119)
-    {
-        return;
-    }
-    if (ITEM_POTION + 126 <= ip->Type && ip->Type <= ITEM_POTION + 129)
-    {
-        return;
-    }
-    if (ITEM_POTION + 130 <= ip->Type && ip->Type <= ITEM_POTION + 132)
-    {
-        return;
-    }
-    if (ITEM_HELPER + 121 == ip->Type)
+    if (GameLogic::Items::IsRepairBan(ip) == true)
     {
         return;
     }
@@ -5794,11 +5284,11 @@ void RenderRepairInfo(int sx, int sy, ITEM* ip, bool Sell)
     {
         Color = TEXT_COLOR_YELLOW;
     }
-    else if (IsDivineArchangelWeaponItem(ip->Type))
+    else if (GameLogic::Items::IsDivineArchangelWeapon(ip))
     {
         Color = TEXT_COLOR_PURPLE;
     }
-    else if (ip->Type == ITEM_DEVILS_EYE || ip->Type == ITEM_DEVILS_KEY || ip->Type == ITEM_DEVILS_INVITATION)
+    else if (GameLogic::Items::IsDevilSquareItem(ip))
     {
         Color = TEXT_COLOR_YELLOW;
     }
@@ -5894,7 +5384,7 @@ void RenderRepairInfo(int sx, int sy, ITEM* ip, bool Sell)
             }
         }
     }
-    else if ((ip->Type == ITEM_DARK_HORSE_ITEM) || (ip->Type == ITEM_DARK_RAVEN_ITEM))
+    else if (GameLogic::Items::IsDarkLordPet(ip))
     {
         mu_swprintf(TextList[TextNum], L"%ls", p->Name);
     }
@@ -5945,17 +5435,44 @@ void RenderRepairInfo(int sx, int sy, ITEM* ip, bool Sell)
 
     mu_swprintf(TextList[TextNum], L"\n"); TextNum++; SkipNum++;
 
-    SIZE TextSize = { 0, 0 };
-
-    GetTextExtentPoint32(g_pRenderText->GetFontDC(), TextList[0], 1, &TextSize);
-
-    int Height = ((TextNum - SkipNum) * TextSize.cy + SkipNum * TextSize.cy / 2) * REFERENCE_HEIGHT / WindowHeight;
+    g_pRenderText->SetFont(TextBold[0] ? g_hFontBold : g_hFont);
+    const SIZE TextSize = g_pRenderText->MeasureText(L"Q", 1);
+    int Height = (TextNum - SkipNum) * TextSize.cy + SkipNum * TextSize.cy / 2;
     if (sy - Height >= 0)
         sy -= Height;
     else
         sy += p->Height * INVENTORY_SCALE;
 
-    RenderTipTextList(sx, sy, TextNum, 0);
+    UI::Tooltip::ShowLegacyTextList(
+        TextNum,
+        UI::Scaling::PositionX(screen, static_cast<float>(sx)),
+        UI::Scaling::PositionY(screen, static_cast<float>(sy)));
+}
+
+namespace
+{
+// Runs `render` with the anchor (x, y) in window pixels converted into the screen's 640x480
+// stretch, which it then runs under (its text is measured there).
+template <typename Render> void InScreenSpace(float x, float y, Render render)
+{
+    const UI::Scaling::Transform screen =
+        UI::Scaling::ScreenOverlayTransform(static_cast<int>(WindowWidth), static_cast<int>(WindowHeight));
+    const UI::Scaling::ScopedActiveTransform scope(screen);
+    render(screen, static_cast<int>(std::lround(UI::Scaling::LogicalX(screen, x))),
+           static_cast<int>(std::lround(UI::Scaling::LogicalY(screen, y))));
+}
+} // namespace
+
+void RenderItemInfoAtPx(float x, float y, ITEM* ip, bool Sell, int Inventype, bool bItemTextListBoxUse)
+{
+    InScreenSpace(x, y, [&](const UI::Scaling::Transform& screen, int sx, int sy)
+                  { RenderItemInfo(screen, sx, sy, ip, Sell, Inventype, bItemTextListBoxUse); });
+}
+
+void RenderRepairInfoAtPx(float x, float y, ITEM* ip, bool Sell)
+{
+    InScreenSpace(x, y, [&](const UI::Scaling::Transform& screen, int sx, int sy)
+                  { RenderRepairInfo(screen, sx, sy, ip, Sell); });
 }
 
 bool GetAttackDamage(int* iMinDamage, int* iMaxDamage)
@@ -5992,7 +5509,7 @@ bool GetAttackDamage(int* iMinDamage, int* iMaxDamage)
         AttackDamageMin = CharacterAttribute->AttackDamageMinLeft;
         AttackDamageMax = CharacterAttribute->AttackDamageMaxLeft;
     }
-    else if (r->Type >= ITEM_STAFF && r->Type < ITEM_SHIELD)
+    else if (GameLogic::Items::IsStaffOrBookType(r->Type))
     {
         AttackDamageMin = CharacterAttribute->AttackDamageMinLeft;
         AttackDamageMax = CharacterAttribute->AttackDamageMaxLeft;
@@ -6006,7 +5523,7 @@ bool GetAttackDamage(int* iMinDamage, int* iMaxDamage)
     bool Alpha = false;
     if (gCharacterManager.GetBaseClass(Hero->Class) == CLASS_KNIGHT || gCharacterManager.GetBaseClass(Hero->Class) == CLASS_DARK)
     {
-        if (l->Type >= ITEM_SWORD && l->Type < ITEM_STAFF + MAX_ITEM_INDEX && r->Type >= ITEM_SWORD && r->Type < ITEM_STAFF + MAX_ITEM_INDEX)
+        if (GameLogic::Items::IsWeaponOrAmmunition(l) && GameLogic::Items::IsWeaponOrAmmunition(r))
         {
             Alpha = true;
             AttackDamageMin = ((CharacterAttribute->AttackDamageMinRight * 55) / 100 + (CharacterAttribute->AttackDamageMinLeft * 55) / 100);
@@ -6015,8 +5532,7 @@ bool GetAttackDamage(int* iMinDamage, int* iMaxDamage)
     }
     else if (gCharacterManager.GetBaseClass(Hero->Class) == CLASS_ELF)
     {
-        if ((r->Type >= ITEM_BOW && r->Type < ITEM_BOW + MAX_ITEM_INDEX) &&
-            (l->Type >= ITEM_BOW && l->Type < ITEM_BOW + MAX_ITEM_INDEX))
+        if (GameLogic::Items::IsBowCrossbowOrAmmunition(r) && GameLogic::Items::IsBowCrossbowOrAmmunition(l))
         {
             if ((l->Type == ITEM_BOLT && l->Level >= 1) || (r->Type == ITEM_ARROWS && r->Level >= 1))
             {
@@ -6026,7 +5542,8 @@ bool GetAttackDamage(int* iMinDamage, int* iMaxDamage)
     }
     else if (gCharacterManager.GetBaseClass(Hero->Class) == CLASS_RAGEFIGHTER)
     {
-        if (l->Type >= ITEM_SWORD && l->Type < ITEM_MACE + MAX_ITEM_INDEX && r->Type >= ITEM_SWORD && r->Type < ITEM_MACE + MAX_ITEM_INDEX)
+        if (GameLogic::Items::IsSwordAxeMaceOrGloveType(l->Type) &&
+            GameLogic::Items::IsSwordAxeMaceOrGloveType(r->Type))
         {
             Alpha = true;
             AttackDamageMin = ((CharacterAttribute->AttackDamageMinRight + CharacterAttribute->AttackDamageMinLeft) * 60 / 100);
@@ -6049,7 +5566,6 @@ bool GetAttackDamage(int* iMinDamage, int* iMaxDamage)
 
 void SetTextColor(float r, float g, float b)
 {
-    glColor3f(r, g, b);
     g_pRenderText->SetTextColor(r * 255, g * 255, b * 255, 255);
 }
 
@@ -6125,7 +5641,7 @@ std::unordered_set<int> yellowTextItems = {
     MODEL_OLD_SCROLL,
     MODEL_ILLUSION_SORCERER_COVENANT,
     MODEL_SCROLL_OF_BLOOD,
-    MODEL_POTION + 64,
+    MODEL_CURSED_CASTLE_WATER,
     MODEL_EVENT + 11,
     MODEL_EVENT + 12,
     MODEL_EVENT + 13,
@@ -6142,44 +5658,44 @@ std::unordered_set<int> yellowTextItems = {
     MODEL_COMPLETE_SECROMICON,
     MODEL_POTION + 100,
     MODEL_POTION + 111,
-    MODEL_POTION + 112,
-    MODEL_POTION + 113,
-    MODEL_POTION + 120,
-    MODEL_POTION + 121,
-    MODEL_POTION + 122,
-    MODEL_POTION + 123,
-    MODEL_POTION + 124,
-    MODEL_POTION + 134,
-    MODEL_POTION + 135,
-    MODEL_POTION + 136,
-    MODEL_POTION + 137,
-    MODEL_POTION + 138,
-    MODEL_POTION + 139,
-    MODEL_POTION + 114,
-    MODEL_POTION + 115,
-    MODEL_POTION + 116,
-    MODEL_POTION + 117,
-    MODEL_POTION + 118,
-    MODEL_POTION + 119,
-    MODEL_POTION + 126,
-    MODEL_POTION + 127,
-    MODEL_POTION + 128,
-    MODEL_POTION + 129,
-    MODEL_POTION + 130,
-    MODEL_POTION + 131,
-    MODEL_POTION + 132,
+    MODEL_SILVER_KEY,
+    MODEL_GOLD_KEY,
+    MODEL_GOBLIN_GOLD_COIN,
+    MODEL_SEALED_GOLDEN_BOX,
+    MODEL_SEALED_SILVER_BOX,
+    MODEL_GOLDEN_BOX,
+    MODEL_SILVER_BOX,
+    MODEL_PACKAGE_BOX_A,
+    MODEL_PACKAGE_BOX_B,
+    MODEL_PACKAGE_BOX_C,
+    MODEL_PACKAGE_BOX_D,
+    MODEL_PACKAGE_BOX_E,
+    MODEL_PACKAGE_BOX_F,
+    MODEL_MASTER_SKILL_RESET,
+    MODEL_STAT_ADJUSTMENT,
+    MODEL_CHARACTER_RELOCATION_SERVICE,
+    MODEL_CHARACTER_RENAME_SERVICE,
+    MODEL_SERVER_RELOCATION_SERVICE,
+    MODEL_PREMIUM_PACKAGE,
+    MODEL_30_DAY_PASS,
+    MODEL_90_DAY_PASS,
+    MODEL_30_DAY_PASS_POINTS,
+    MODEL_90_DAY_PASS_POINTS,
+    MODEL_3_HOUR_PASS,
+    MODEL_5_HOUR_PASS,
+    MODEL_10_HOUR_PASS,
     MODEL_HELPER + 91,
-    MODEL_HELPER + 97,
-    MODEL_HELPER + 98,
+    MODEL_MAGIC_GLADIATOR_CHARACTER_CARD,
+    MODEL_DARK_LORD_CHARACTER_CARD,
     MODEL_HELPER + 99,
-    MODEL_HELPER + 109,
-    MODEL_HELPER + 110,
-    MODEL_HELPER + 111,
-    MODEL_HELPER + 112,
-    MODEL_HELPER + 113,
-    MODEL_HELPER + 114,
-    MODEL_HELPER + 115,
-    MODEL_HELPER + 121,
+    MODEL_SAPPHIRE_RING,
+    MODEL_RUBY_RING,
+    MODEL_TOPAZ_RING,
+    MODEL_AMETHYST_RING,
+    MODEL_RUBY_NECKLACE,
+    MODEL_EMERALD_NECKLACE,
+    MODEL_SAPPHIRE_NECKLACE,
+    MODEL_OPEN_ACCESS_TICKET_TO_CHAOS_CASTLE,
     MODEL_WING + 25,
     MODEL_LOST_MAP,
     MODEL_SYMBOL_OF_KUNDUN,
@@ -6206,26 +5722,26 @@ std::unordered_set<int> orangeTextItems = {
     MODEL_JACK_OLANTERN_CRY,
     MODEL_JACK_OLANTERN_FOOD,
     MODEL_JACK_OLANTERN_DRINK,
-    MODEL_HELPER + 43,
-    MODEL_HELPER + 44,
-    MODEL_HELPER + 45,
-    MODEL_HELPER + 46,
-    MODEL_HELPER + 47,
-    MODEL_HELPER + 48,
-    MODEL_HELPER + 54,
-    MODEL_HELPER + 55,
-    MODEL_HELPER + 56,
-    MODEL_HELPER + 57,
-    MODEL_HELPER + 58,
-    MODEL_HELPER + 59,
-    MODEL_HELPER + 60,
-    MODEL_HELPER + 61,
-    MODEL_HELPER + 62,
-    MODEL_HELPER + 63,
+    MODEL_SEAL_OF_ASCENSION,
+    MODEL_SEAL_OF_WEALTH,
+    MODEL_SEAL_OF_SUSTENANCE,
+    MODEL_DEVIL_SQUARE_TICKET,
+    MODEL_BLOOD_CASTLE_TICKET,
+    MODEL_KALIMA_TICKET,
+    MODEL_RESET_FRUIT_STRENGTH,
+    MODEL_RESET_FRUIT_QUICKNESS,
+    MODEL_RESET_FRUIT_HEALTH,
+    MODEL_RESET_FRUIT_ENERGY,
+    MODEL_RESET_FRUIT_CONTROL,
+    MODEL_SEAL_OF_MOBILITY,
+    MODEL_INDULGENCE,
+    MODEL_ILLUSION_TEMPLE_TICKET,
+    MODEL_SEAL_OF_HEALING,
+    MODEL_SEAL_OF_DIVINITY,
     MODEL_HELPER + 116,
-    MODEL_HELPER + 125,
-    MODEL_HELPER + 126,
-    MODEL_HELPER + 127,
+    MODEL_OPEN_ACCESS_TICKET_TO_DOPPELGANGER,
+    MODEL_OPEN_ACCESS_TICKET_TO_VARKA,
+    MODEL_OPEN_ACCESS_TICKET_TO_VARKA_7,
     MODEL_HELPER + 128,
     MODEL_HELPER + 129,
     MODEL_HELPER + 130,
@@ -6233,62 +5749,57 @@ std::unordered_set<int> orangeTextItems = {
     MODEL_HELPER + 132,
     MODEL_HELPER + 133,
     MODEL_HELPER + 134,
-    MODEL_POTION + 53,
-    MODEL_POTION + 54,
-    MODEL_POTION + 58,
-    MODEL_POTION + 59,
-    MODEL_POTION + 60,
-    MODEL_POTION + 61,
-    MODEL_POTION + 62,
-    MODEL_POTION + 70,
-    MODEL_POTION + 71,
-    MODEL_POTION + 72,
-    MODEL_POTION + 73,
-    MODEL_POTION + 74,
-    MODEL_POTION + 75,
-    MODEL_POTION + 76,
-    MODEL_POTION + 77,
-    MODEL_POTION + 78,
-    MODEL_POTION + 79,
-    MODEL_POTION + 80,
-    MODEL_POTION + 81,
-    MODEL_POTION + 82,
+    MODEL_TALISMAN_OF_LUCK,
+    MODEL_CHAOS_CARD,
+    MODEL_RARE_ITEM_TICKET_1,
+    MODEL_RARE_ITEM_TICKET_2,
+    MODEL_RARE_ITEM_TICKET_3,
+    MODEL_RARE_ITEM_TICKET_4,
+    MODEL_RARE_ITEM_TICKET_5,
+    MODEL_ELITE_HEALING_POTION,
+    MODEL_ELITE_MANA_POTION,
+    MODEL_SCROLL_OF_QUICKNESS,
+    MODEL_SCROLL_OF_DEFENSE,
+    MODEL_SCROLL_OF_WRATH,
+    MODEL_SCROLL_OF_WIZARDRY,
+    MODEL_SCROLL_OF_HEALTH,
+    MODEL_SCROLL_OF_MANA,
+    MODEL_ELIXIR_OF_STRENGTH,
+    MODEL_ELIXIR_OF_AGILITY,
+    MODEL_ELIXIR_OF_HEALTH,
+    MODEL_ELIXIR_OF_ENERGY,
+    MODEL_ELIXIR_OF_CONTROL,
     MODEL_POTION + 83,
-    MODEL_POTION + 88,
-    MODEL_POTION + 89,
-    MODEL_POTION + 91,
-    MODEL_POTION + 92,
-    MODEL_POTION + 93,
-    MODEL_POTION + 94,
-    MODEL_POTION + 95,
-    MODEL_POTION + 96,
-    MODEL_POTION + 97,
-    MODEL_POTION + 98,
+    MODEL_WHITE_CHERRY_BLOSSOM_BRANCH,
+    MODEL_RED_CHERRY_BLOSSOM_BRANCH,
+    MODEL_SUMMONER_CHARACTER_CARD,
+    MODEL_CHAOS_CARD_GOLD,
+    MODEL_CHAOS_CARD_RARE,
+    MODEL_MEDIUM_ELITE_HEALING_POTION,
+    MODEL_CHAOS_CARD_MINI,
+    MODEL_TALISMAN_OF_CHAOS_ASSEMBLY,
+    MODEL_SCROLL_OF_BATTLE,
+    MODEL_SCROLL_OF_STRENGTH,
     MODEL_POTION + 141,
     MODEL_POTION + 142,
     MODEL_POTION + 143,
     MODEL_POTION + 144,
-    MODEL_POTION + 145,
-    MODEL_POTION + 146,
-    MODEL_POTION + 147,
-    MODEL_POTION + 148,
-    MODEL_POTION + 149,
-    MODEL_POTION + 150,
-    MODEL_WING + 130,
-    MODEL_WING + 131,
-    MODEL_WING + 132,
-    MODEL_WING + 133,
-    MODEL_WING + 134,
-    MODEL_WING + 135,
+    MODEL_RARE_ITEM_TICKET_7,
+    MODEL_RARE_ITEM_TICKET_8,
+    MODEL_RARE_ITEM_TICKET_9,
+    MODEL_RARE_ITEM_TICKET_10,
+    MODEL_RARE_ITEM_TICKET_11,
+    MODEL_RARE_ITEM_TICKET_12,
+    MODEL_SMALL_CAPE_OF_LORD,
+    MODEL_SMALL_WING_OF_CURSE,
+    MODEL_SMALL_WINGS_OF_ELF,
+    MODEL_SMALL_WINGS_OF_HEAVEN,
+    MODEL_SMALL_WINGS_OF_SATAN,
+    MODEL_LITTLE_WARRIORS_CLOAK,
 };
 
 namespace
 {
-constexpr size_t GROUND_ITEM_LABEL_CACHE_MAX_ENTRIES = 1500;
-constexpr DWORD GROUND_ITEM_LABEL_CACHE_MAX_IDLE_MS = 10 * 1000;
-
-int g_groundItemLabelBuildBudgetRemaining = 0;
-
 struct GroundItemLabelDescriptor
 {
     wchar_t Name[80]{};
@@ -6296,50 +5807,6 @@ struct GroundItemLabelDescriptor
     DWORD TextColor = 0xFFFFFFFF;
     DWORD BgColor = 0xFF000000;
 };
-
-struct GroundItemLabelCacheKey
-{
-    int Type = -1;
-    int Level = 0;
-    BYTE ExcellentFlags = 0;
-    BYTE AncientDiscriminator = 0;
-    BYTE FeatureFlags = 0;
-
-    bool operator==(const GroundItemLabelCacheKey& other) const
-    {
-        return this->Type == other.Type
-            && this->Level == other.Level
-            && this->ExcellentFlags == other.ExcellentFlags
-            && this->AncientDiscriminator == other.AncientDiscriminator
-            && this->FeatureFlags == other.FeatureFlags;
-    }
-};
-
-struct GroundItemLabelCacheKeyHasher
-{
-    size_t operator()(const GroundItemLabelCacheKey& key) const
-    {
-        size_t seed = std::hash<int>{}(key.Type);
-        seed ^= std::hash<int>{}(key.Level) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-        seed ^= std::hash<unsigned int>{}(static_cast<unsigned int>(key.ExcellentFlags)) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-        seed ^= std::hash<unsigned int>{}(static_cast<unsigned int>(key.AncientDiscriminator)) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-        seed ^= std::hash<unsigned int>{}(static_cast<unsigned int>(key.FeatureFlags)) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-        return seed;
-    }
-};
-
-struct GroundItemLabelCacheEntry
-{
-    GLuint TextureId = 0;
-    int TextWidth = 0;
-    int TextHeight = 0;
-    int TextureWidth = 0;
-    int TextureHeight = 0;
-    DWORD BgColor = 0;
-    DWORD LastUsedTick = 0;
-};
-
-std::unordered_map<GroundItemLabelCacheKey, GroundItemLabelCacheEntry, GroundItemLabelCacheKeyHasher> g_groundItemLabelCache;
 
 DWORD MakeRgba(BYTE red, BYTE green, BYTE blue, BYTE alpha = 255)
 {
@@ -6394,92 +5861,6 @@ void AppendGroundItemLabelText(wchar_t(&buffer)[BufferSize], const wchar_t* form
     _snwprintf_s(buffer + currentLength, BufferSize - currentLength, _TRUNCATE, format, args...);
 }
 
-GroundItemLabelCacheKey BuildGroundItemLabelCacheKey(OBJECT* o, ITEM* ip)
-{
-    GroundItemLabelCacheKey key;
-    key.Type = o->Type;
-    key.Level = ip->Level;
-    key.ExcellentFlags = static_cast<BYTE>(ip->ExcellentFlags);
-    key.AncientDiscriminator = static_cast<BYTE>(ip->AncientDiscriminator);
-    key.FeatureFlags = 0;
-    if (ip->HasSkill)
-    {
-        key.FeatureFlags |= 1;
-    }
-    if (ip->HasLuck)
-    {
-        key.FeatureFlags |= 2;
-    }
-    if (ip->OptionLevel > 0)
-    {
-        key.FeatureFlags |= 4;
-    }
-    return key;
-}
-
-int GetNextPowerOfTwo(int value)
-{
-    int result = 1;
-    while (result < value)
-    {
-        result <<= 1;
-    }
-
-    return result;
-}
-
-void DeleteGroundItemLabelTexture(GLuint textureId)
-{
-    if (textureId != 0)
-    {
-        // DXP-12: RHI::DestroyTexture invalidates BindState's texture cache internally.
-        RHI::DestroyTexture(RHI::TextureHandle{ textureId });
-    }
-}
-
-void PruneGroundItemLabelCache(DWORD currentTick)
-{
-    for (auto cacheEntryIterator = g_groundItemLabelCache.begin(); cacheEntryIterator != g_groundItemLabelCache.end();)
-    {
-        if (currentTick - cacheEntryIterator->second.LastUsedTick > GROUND_ITEM_LABEL_CACHE_MAX_IDLE_MS)
-        {
-            DeleteGroundItemLabelTexture(cacheEntryIterator->second.TextureId);
-            cacheEntryIterator = g_groundItemLabelCache.erase(cacheEntryIterator);
-        }
-        else
-        {
-            ++cacheEntryIterator;
-        }
-    }
-
-    if (g_groundItemLabelCache.size() > GROUND_ITEM_LABEL_CACHE_MAX_ENTRIES)
-    {
-        const size_t entryCountToEvict = g_groundItemLabelCache.size() - GROUND_ITEM_LABEL_CACHE_MAX_ENTRIES;
-        std::vector<decltype(g_groundItemLabelCache.begin())> cacheEntryIterators;
-        cacheEntryIterators.reserve(g_groundItemLabelCache.size());
-
-        for (auto cacheEntryIterator = g_groundItemLabelCache.begin(); cacheEntryIterator != g_groundItemLabelCache.end(); ++cacheEntryIterator)
-        {
-            cacheEntryIterators.push_back(cacheEntryIterator);
-        }
-
-        std::nth_element(
-            cacheEntryIterators.begin(),
-            cacheEntryIterators.begin() + entryCountToEvict,
-            cacheEntryIterators.end(),
-            [](const auto& left, const auto& right)
-            {
-                return left->second.LastUsedTick < right->second.LastUsedTick;
-            });
-
-        for (size_t i = 0; i < entryCountToEvict; ++i)
-        {
-            DeleteGroundItemLabelTexture(cacheEntryIterators[i]->second.TextureId);
-            g_groundItemLabelCache.erase(cacheEntryIterators[i]);
-        }
-    }
-}
-
 void BuildGroundItemLabelDescriptor(OBJECT* o, ITEM* ip, GroundItemLabelDescriptor& descriptor)
 {
     auto ItemLevel = ip->Level;
@@ -6489,21 +5870,23 @@ void BuildGroundItemLabelDescriptor(OBJECT* o, ITEM* ip, GroundItemLabelDescript
     descriptor.TextColor = MakeRgba(255, 255, 255, 255);
     descriptor.BgColor = MakeRgba(0, 0, 0, 255);
 
-    // Use the item name by default, only when o->Type is in MODEL_ITEM range
+    // Use the item name by default, only when o->Type is an item's model slot
     // Items with special types (e.g. MODEL_EVENT + N) are handled by overrides below
-    if (o->Type >= MODEL_ITEM && o->Type < MODEL_ITEM + MAX_ITEM)
+    const wchar_t* itemName = nullptr;
+    if (Data::Items::IsItemModelSlot(o->Type))
     {
+        itemName = ItemAttribute[Data::Items::ToItemType(o->Type)].Name;
         if (o->Type == MODEL_ZEN) // Zen
         {
-            FormatGroundItemLabelText(descriptor.Name, L"%ls %d", ItemAttribute[o->Type - MODEL_ITEM].Name, ItemLevel);
+            FormatGroundItemLabelText(descriptor.Name, L"%ls %d", itemName, ItemLevel);
         }
         else if (ItemLevel == 0)
         {
-            CopyGroundItemLabelText(descriptor.Name, ItemAttribute[o->Type - MODEL_ITEM].Name);
+            CopyGroundItemLabelText(descriptor.Name, itemName);
         }
         else
         {
-            FormatGroundItemLabelText(descriptor.Name, L"%ls +%d", ItemAttribute[o->Type - MODEL_ITEM].Name, ItemLevel);
+            FormatGroundItemLabelText(descriptor.Name, L"%ls +%d", itemName, ItemLevel);
         }
     }
 
@@ -6538,11 +5921,11 @@ void BuildGroundItemLabelDescriptor(OBJECT* o, ITEM* ip, GroundItemLabelDescript
     }
     else if (o->Type == MODEL_COMPILED_CELE)
     {
-        CopyGroundItemLabelText(descriptor.Name, ItemAttribute[static_cast<int>(MODEL_JEWEL_OF_BLESS) - MODEL_ITEM].Name);
+        CopyGroundItemLabelText(descriptor.Name, ItemAttribute[ITEM_JEWEL_OF_BLESS].Name);
     }
     else if (o->Type == MODEL_COMPILED_SOUL)
     {
-        CopyGroundItemLabelText(descriptor.Name, ItemAttribute[static_cast<int>(MODEL_JEWEL_OF_SOUL) - MODEL_ITEM].Name);
+        CopyGroundItemLabelText(descriptor.Name, ItemAttribute[ITEM_JEWEL_OF_SOUL].Name);
     }
     else if (o->Type == MODEL_BOX_OF_LUCK && ItemLevel == 7)
     {
@@ -6561,19 +5944,33 @@ void BuildGroundItemLabelDescriptor(OBJECT* o, ITEM* ip, GroundItemLabelDescript
     {
         switch (ItemLevel)
         {
-        case 0: FormatGroundItemLabelText(descriptor.Name, L"%ls %ls", I18N::Game::ENG, ItemAttribute[o->Type - MODEL_ITEM].Name); break;
-        case 1: FormatGroundItemLabelText(descriptor.Name, L"%ls %ls", I18N::Game::STA, ItemAttribute[o->Type - MODEL_ITEM].Name); break;
-        case 2: FormatGroundItemLabelText(descriptor.Name, L"%ls %ls", I18N::Game::AGI, ItemAttribute[o->Type - MODEL_ITEM].Name); break;
-        case 3: FormatGroundItemLabelText(descriptor.Name, L"%ls %ls", I18N::Game::STR, ItemAttribute[o->Type - MODEL_ITEM].Name); break;
-        case 4: FormatGroundItemLabelText(descriptor.Name, L"%ls %ls", I18N::Game::Command, ItemAttribute[o->Type - MODEL_ITEM].Name); break;
+        case 0:
+            FormatGroundItemLabelText(descriptor.Name, L"%ls %ls", I18N::Game::ENG, itemName);
+            break;
+        case 1:
+            FormatGroundItemLabelText(descriptor.Name, L"%ls %ls", I18N::Game::STA, itemName);
+            break;
+        case 2:
+            FormatGroundItemLabelText(descriptor.Name, L"%ls %ls", I18N::Game::AGI, itemName);
+            break;
+        case 3:
+            FormatGroundItemLabelText(descriptor.Name, L"%ls %ls", I18N::Game::STR, itemName);
+            break;
+        case 4:
+            FormatGroundItemLabelText(descriptor.Name, L"%ls %ls", I18N::Game::Command, itemName);
+            break;
         }
     }
     else if (o->Type == MODEL_SPIRIT)
     {
         switch (ItemLevel)
         {
-        case 0: FormatGroundItemLabelText(descriptor.Name, L"%ls of %ls", ItemAttribute[o->Type - MODEL_ITEM].Name, I18N::Game::DarkHorse); break;
-        case 1: FormatGroundItemLabelText(descriptor.Name, L"%ls of %ls", ItemAttribute[o->Type - MODEL_ITEM].Name, I18N::Game::DarkRaven); break;
+        case 0:
+            FormatGroundItemLabelText(descriptor.Name, L"%ls of %ls", itemName, I18N::Game::DarkHorse);
+            break;
+        case 1:
+            FormatGroundItemLabelText(descriptor.Name, L"%ls of %ls", itemName, I18N::Game::DarkRaven);
+            break;
         }
     }
     else if (o->Type == MODEL_EVENT + 16)
@@ -6734,7 +6131,7 @@ void BuildGroundItemLabelDescriptor(OBJECT* o, ITEM* ip, GroundItemLabelDescript
             }
         }
     }
-    else if (o->Type == MODEL_POTION + 21 && ItemLevel == 3)
+    else if (o->Type == MODEL_RENA && ItemLevel == 3)
     {
         SetDescriptorYellowTextColor(descriptor);
         CopyGroundItemLabelText(descriptor.Name, I18N::Game::SignOfLord);
@@ -6747,7 +6144,7 @@ void BuildGroundItemLabelDescriptor(OBJECT* o, ITEM* ip, GroundItemLabelDescript
         case 1: CopyGroundItemLabelText(descriptor.Name, I18N::Game::PotionOfSoul); break;
         }
     }
-    else if (o->Type == MODEL_HELPER + 7)
+    else if (o->Type == MODEL_CONTRACT_SUMMON)
     {
         switch (ItemLevel)
         {
@@ -6767,32 +6164,28 @@ void BuildGroundItemLabelDescriptor(OBJECT* o, ITEM* ip, GroundItemLabelDescript
     {
         CopyGroundItemLabelText(descriptor.Name, I18N::Game::PlaceLifeStone);
     }
-    else if ((o->Type >= MODEL_SEED_FIRE && o->Type <= MODEL_SEED_EARTH)
-        || (o->Type >= MODEL_SPHERE_MONO && o->Type <= MODEL_SPHERE_5)
-        || (o->Type >= MODEL_SEED_SPHERE_FIRE_1 && o->Type <= MODEL_SEED_SPHERE_EARTH_5))
+    else if (GameLogic::Items::IsSocketSeedOrSphereModel(o->Type))
     {
         SetDescriptorTextColor(descriptor, 0.7f, 0.4f, 1.0f);
-        CopyGroundItemLabelText(descriptor.Name, ItemAttribute[o->Type - MODEL_ITEM].Name);
+        CopyGroundItemLabelText(descriptor.Name, itemName);
     }
-    else if (o->Type == MODEL_HELPER + 66)
+    else if (o->Type == MODEL_INVITATION_TO_SANTA_VILLAGE)
     {
         SetDescriptorTextColor(descriptor, 0.6f, 0.4f, 1.0f);
     }
-    else if (o->Type >= static_cast<int>(MODEL_TYPE_CHARM_MIXWING) + EWS_BEGIN
-        && o->Type <= static_cast<int>(MODEL_TYPE_CHARM_MIXWING) + EWS_END)
+    else if (GameLogic::Items::IsWingMixCharmModel(o->Type))
     {
         SetDescriptorOrangeTextColor(descriptor);
     }
-    else if (o->Type >= MODEL_ITEM && o->Type < MODEL_ITEM + MAX_ITEM
-        && (whiteTextItems.count(o->Type) > 0
-            || yellowTextItems.count(o->Type) > 0
-            || orangeTextItems.count(o->Type) > 0))
+    else if (Data::Items::IsItemModelSlot(o->Type) &&
+             (whiteTextItems.count(o->Type) > 0 || yellowTextItems.count(o->Type) > 0 ||
+              orangeTextItems.count(o->Type) > 0))
     {
         // Color was already set by Block 1 (white/yellow/orange). No override needed.
     }
     else
     {
-        if (IsDivineArchangelWeaponModel(o->Type))
+        if (GameLogic::Items::IsDivineArchangelWeaponModel(o->Type))
         {
             SetDescriptorTextColor(descriptor, 1.f, 0.1f, 1.f);
         }
@@ -6833,7 +6226,7 @@ void BuildGroundItemLabelDescriptor(OBJECT* o, ITEM* ip, GroundItemLabelDescript
         }
 
         wchar_t SetName[64]{};
-        if (g_csItemOption.GetSetItemName(SetName, o->Type - MODEL_ITEM, ip->AncientDiscriminator))
+        if (g_csItemOption.GetSetItemName(SetName, Data::Items::ToItemType(o->Type), ip->AncientDiscriminator))
         {
             SetDescriptorTextColor(descriptor, 0.f, 1.f, 0.f);
             descriptor.Font = g_hFontBold;
@@ -6875,187 +6268,6 @@ void ApplyGroundItemLabelDescriptor(const GroundItemLabelDescriptor& descriptor)
     g_pRenderText->SetBgColor(descriptor.BgColor);
 }
 
-bool CreateGroundItemLabelTexture(const GroundItemLabelDescriptor& descriptor, GroundItemLabelCacheEntry& cacheEntry)
-{
-    HDC fontDc = g_pRenderText->GetFontDC();
-    BYTE* fontBuffer = g_pRenderText->GetFontBuffer();
-    if (fontDc == nullptr || fontBuffer == nullptr || descriptor.Name[0] == L'\0')
-    {
-        return false;
-    }
-
-    g_pRenderText->SetFont(descriptor.Font);
-
-    SIZE textSize{};
-    GetTextExtentPoint32(fontDc, descriptor.Name, lstrlen(descriptor.Name), &textSize);
-    if (textSize.cx <= 0 || textSize.cy <= 0)
-    {
-        return false;
-    }
-
-    RECT clearRect = {0, 0, textSize.cx, textSize.cy};
-    FillRect(fontDc, &clearRect, reinterpret_cast<HBRUSH>(GetStockObject(BLACK_BRUSH)));
-
-    ::SetBkColor(fontDc, RGB(0, 0, 0));
-    ::SetTextColor(fontDc, RGB(255, 255, 255));
-    TextOut(fontDc, 0, 0, descriptor.Name, lstrlen(descriptor.Name));
-
-    SIZE fontDcSize = { static_cast<int>(640 * g_fScreenRate_x), static_cast<int>(480 * g_fScreenRate_y) };
-    int sourcePitch = ((fontDcSize.cx * 24 + 31) & ~31) >> 3;
-    int sourceBufferLength = sourcePitch * fontDcSize.cy;
-
-    int textureWidth = GetNextPowerOfTwo(textSize.cx);
-    int textureHeight = GetNextPowerOfTwo(textSize.cy);
-
-    std::vector<DWORD> textureBuffer(static_cast<size_t>(textureWidth) * textureHeight, 0);
-    for (int y = 0; y < textSize.cy; ++y)
-    {
-        int sourceIndex = y * sourcePitch;
-        int destinationIndex = y * textureWidth;
-        for (int x = 0; x < textSize.cx; ++x)
-        {
-            if (sourceIndex + 2 >= sourceBufferLength)
-            {
-                return false;
-            }
-
-            DWORD pixelColor = 0;
-            if (*(fontBuffer + sourceIndex) == 255)
-            {
-                pixelColor = descriptor.TextColor;
-            }
-            else if (*(fontBuffer + sourceIndex) != 0)
-            {
-                DWORD alpha = *(fontBuffer + sourceIndex);
-                alpha += *(fontBuffer + sourceIndex + 1);
-                alpha += *(fontBuffer + sourceIndex + 2);
-                alpha /= 3;
-                alpha <<= 24;
-                alpha |= 0x00FFFFFF;
-                pixelColor = descriptor.TextColor & alpha;
-            }
-
-            textureBuffer[destinationIndex] = pixelColor;
-            sourceIndex += 3;
-            destinationIndex += 1;
-        }
-    }
-
-    // DXP-12: textureBuffer is already RGBA8 (DWORD-packed pixelColor, alpha from font AA) --
-    // no format conversion needed here, unlike GlobalBitmap.cpp's JPEG path.
-    RHI::TextureDesc desc;
-    desc.width = textureWidth;
-    desc.height = textureHeight;
-    desc.filter = RHI::TexFilter::Nearest;
-    desc.wrap = RHI::TexWrap::Clamp;
-    GLuint textureId = RHI::CreateTexture(desc, textureBuffer.data()).id;
-    if (textureId == 0)
-    {
-        return false;
-    }
-
-    cacheEntry.TextureId = textureId;
-    cacheEntry.TextWidth = textSize.cx;
-    cacheEntry.TextHeight = textSize.cy;
-    cacheEntry.TextureWidth = textureWidth;
-    cacheEntry.TextureHeight = textureHeight;
-    cacheEntry.BgColor = descriptor.BgColor;
-    return true;
-}
-
-void RenderGroundItemLabelTexture(OBJECT* o, const GroundItemLabelCacheEntry& cacheEntry)
-{
-    if (cacheEntry.TextureId == 0)
-    {
-        return;
-    }
-
-    // Match RenderText center behavior: subtract integer half-width to avoid half-pixel blur on odd widths.
-    float renderX = static_cast<float>(o->ScreenX) * g_fScreenRate_x - static_cast<float>(cacheEntry.TextWidth / 2);
-    float renderY = static_cast<float>(o->ScreenY - 15) * g_fScreenRate_y;
-
-    if (cacheEntry.BgColor != 0)
-    {
-        EnableAlphaTest();
-        glColor4ub(GetRed(cacheEntry.BgColor), GetGreen(cacheEntry.BgColor), GetBlue(cacheEntry.BgColor), GetAlpha(cacheEntry.BgColor));
-        RenderColor(renderX / g_fScreenRate_x, renderY / g_fScreenRate_y,
-            static_cast<float>(cacheEntry.TextWidth) / g_fScreenRate_x, static_cast<float>(cacheEntry.TextHeight) / g_fScreenRate_y);
-        EndRenderColor();
-    }
-
-    glColor4f(1.f, 1.f, 1.f, 1.f);
-    float textureUWidth = (cacheEntry.TextWidth + 0.01f) / static_cast<float>(cacheEntry.TextureWidth);
-    float textureVHeight = (cacheEntry.TextHeight + 0.01f) / static_cast<float>(cacheEntry.TextureHeight);
-    RenderBitmap(-static_cast<int>(cacheEntry.TextureId), renderX, renderY, static_cast<float>(cacheEntry.TextWidth),
-        static_cast<float>(cacheEntry.TextHeight), 0.f, 0.f, textureUWidth, textureVHeight, false, false);
-}
-
-bool RenderGroundItemLabelCached(OBJECT* o, ITEM* ip)
-{
-    GroundItemLabelCacheKey cacheKey = BuildGroundItemLabelCacheKey(o, ip);
-    DWORD currentTick = timeGetTime();
-
-    auto cacheIterator = g_groundItemLabelCache.find(cacheKey);
-    if (cacheIterator != g_groundItemLabelCache.end())
-    {
-        cacheIterator->second.LastUsedTick = currentTick;
-        RenderGroundItemLabelTexture(o, cacheIterator->second);
-        return true;
-    }
-
-    if (g_groundItemLabelBuildBudgetRemaining <= 0)
-    {
-        return false;
-    }
-
-    --g_groundItemLabelBuildBudgetRemaining;
-
-    GroundItemLabelDescriptor descriptor;
-    BuildGroundItemLabelDescriptor(o, ip, descriptor);
-
-    GroundItemLabelCacheEntry cacheEntry;
-    if (!CreateGroundItemLabelTexture(descriptor, cacheEntry))
-    {
-        return false;
-    }
-
-    cacheEntry.LastUsedTick = currentTick;
-
-    auto insertResult = g_groundItemLabelCache.emplace(cacheKey, cacheEntry);
-    if (!insertResult.second)
-    {
-        DeleteGroundItemLabelTexture(cacheEntry.TextureId);
-    }
-
-    PruneGroundItemLabelCache(currentTick);
-
-    auto insertedIterator = g_groundItemLabelCache.find(cacheKey);
-    if (insertedIterator != g_groundItemLabelCache.end())
-    {
-        RenderGroundItemLabelTexture(o, insertedIterator->second);
-        return true;
-    }
-
-    return false;
-}
-}
-
-void SetGroundItemLabelBuildBudget(int buildBudget)
-{
-    g_groundItemLabelBuildBudgetRemaining = buildBudget > 0 ? buildBudget : 0;
-
-    constexpr DWORD pruneIntervalMs = 250;
-    static DWORD lastPruneTick = 0;
-    DWORD currentTick = timeGetTime();
-
-    if (!g_groundItemLabelCache.empty()
-        && (g_groundItemLabelCache.size() > GROUND_ITEM_LABEL_CACHE_MAX_ENTRIES
-            || lastPruneTick == 0
-            || currentTick - lastPruneTick >= pruneIntervalMs))
-    {
-        PruneGroundItemLabelCache(currentTick);
-        lastPruneTick = currentTick;
-    }
 }
 
 void RenderItemName(int i, OBJECT* o, ITEM* ip, bool Sort)
@@ -7071,7 +6283,10 @@ void RenderItemName(int i, OBJECT* o, ITEM* ip, bool Sort)
     }
     else
     {
-        RenderGroundItemLabelCached(o, ip);
+        GroundItemLabelDescriptor descriptor;
+        BuildGroundItemLabelDescriptor(o, ip, descriptor);
+        ApplyGroundItemLabelDescriptor(descriptor);
+        g_pRenderText->RenderText(o->ScreenX, o->ScreenY - 15, descriptor.Name, 0, 0, RT3_WRITE_CENTER);
     }
 
     g_pRenderText->SetTextColor(255, 230, 200, 255);
@@ -7080,86 +6295,22 @@ void RenderItemName(int i, OBJECT* o, ITEM* ip, bool Sort)
 
 int GetScreenWidth()
 {
-    int iWidth = 0;
+    if (WindowWidth == 0)
+        return REFERENCE_WIDTH;
 
-    // TODO: Refactor this. Wouldn't it be easier to just count how many windows are open? ;)
+    // Right edge of the world the open docked windows leave uncovered, in the 640-wide HUD space.
+    return static_cast<int>(
+        std::lround(UI::Placement::UncoveredWorldRight() * REFERENCE_WIDTH / static_cast<float>(WindowWidth)));
+}
 
-    if (g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_INVENTORY)
-        && g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_INVENTORY_EXT)
-        && g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_MYSHOP_INVENTORY))
-    {
-        iWidth = REFERENCE_WIDTH - (190 * 3);
-    }
-    else if (g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_INVENTORY)
-        && (g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_CHARACTER)
-            || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_NPCSHOP)
-            || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_STORAGE)
-            || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_STORAGE_EXT)
-            || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_MIXINVENTORY)
-            || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_TRADE)
-            || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_MYSHOP_INVENTORY)
-            || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_INVENTORY_EXT)
-            || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_PURCHASESHOP_INVENTORY)
-            || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_LUCKYCOIN_REGISTRATION)
-            || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_LUCKYITEMWND)
-            ))
-    {
-        iWidth = REFERENCE_WIDTH - (190 * 2);
-    }
-    else if (g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_CHARACTER)
-        && (g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_MYQUEST)
-            || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_QUEST_PROGRESS_ETC))
-        )
-    {
-        iWidth = REFERENCE_WIDTH - (190 * 2);
-    }
-    else if (g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_CHARACTER)
-        && g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_PET)
-        )
-    {
-        iWidth = REFERENCE_WIDTH - (190 * 2);
-    }
-    else if (g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_REFINERY))
-    {
-        iWidth = REFERENCE_WIDTH - (190 * 2);
-    }
-    else if (g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_INVENTORY)
-        || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_CHARACTER)
-        || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_PARTY)
-        || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_NPCGUILDMASTER)
-        || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_GUILDINFO)
-        || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_GUARDSMAN)
-        || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_SENATUS)
-        || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_GATEKEEPER)
-        || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_MYQUEST)
-        || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_SERVERDIVISION)
-        || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_COMMAND)
-        || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_NPCQUEST)
-        || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_GATESWITCH)
-        || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_CATAPULT)
-        || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_DEVILSQUARE)
-        || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_BLOODCASTLE)
-        || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_GOLD_BOWMAN)
-        || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_GOLD_BOWMAN_LENA)
-        || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_DUELWATCH)
-        || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_NPC_DIALOGUE)
-        || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_QUEST_PROGRESS)
-        || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_QUEST_PROGRESS_ETC)
-        || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_EMPIREGUARDIAN_NPC)
-        || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_DOPPELGANGER_NPC)
-        || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_UNITEDMARKETPLACE_NPC_JULIA)
-        || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_GENSRANKING)
-        || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_MUHELPER)
-        )
-    {
-        iWidth = REFERENCE_WIDTH - 190;
-    }
-    else
-    {
-        iWidth = REFERENCE_WIDTH;
-    }
+int GetScreenLeft()
+{
+    if (WindowWidth == 0)
+        return 0;
 
-    return iWidth;
+    // Left edge of the world the open docked windows leave uncovered, in the 640-wide HUD space.
+    return static_cast<int>(
+        std::lround(UI::Placement::UncoveredWorldLeft() * REFERENCE_WIDTH / static_cast<float>(WindowWidth)));
 }
 
 void ClearInventory()
@@ -7319,670 +6470,6 @@ int CompareItem(ITEM item1, ITEM item2)
 bool EquipmentItem = false;
 extern int BuyCost;
 
-bool IsPartChargeItem(ITEM* pItem)
-{
-    if ((pItem->Type >= ITEM_HELPER + 46 && pItem->Type <= ITEM_HELPER + 48)
-        || (pItem->Type == ITEM_POTION + 54)
-        || (pItem->Type >= ITEM_POTION + 58 && pItem->Type <= ITEM_POTION + 62)
-        || (pItem->Type >= ITEM_POTION + 145 && pItem->Type <= ITEM_POTION + 150)
-        || (pItem->Type >= ITEM_HELPER + 125 && pItem->Type <= ITEM_HELPER + 127)
-        || pItem->Type == ITEM_POTION + 53
-        || (pItem->Type >= ITEM_HELPER + 43 && pItem->Type <= ITEM_HELPER + 45)
-        || (pItem->Type >= ITEM_POTION + 70 && pItem->Type <= ITEM_POTION + 71)
-        || (pItem->Type >= ITEM_POTION + 72 && pItem->Type <= ITEM_POTION + 77)
-        || (pItem->Type == ITEM_HELPER + 59)
-        || (pItem->Type >= ITEM_HELPER + 54 && pItem->Type <= ITEM_HELPER + 58)
-        || (pItem->Type >= ITEM_POTION + 78 && pItem->Type <= ITEM_POTION + 82)
-        || (pItem->Type == ITEM_HELPER + 60)
-        || (pItem->Type == ITEM_HELPER + 61)
-        || (pItem->Type == ITEM_POTION + 91)
-        || (pItem->Type >= ITEM_POTION + 92 && pItem->Type <= ITEM_POTION + 93)
-        || (pItem->Type == ITEM_POTION + 95)
-        || (pItem->Type == ITEM_POTION + 94)
-        || (pItem->Type >= ITEM_HELPER + 62 && pItem->Type <= ITEM_HELPER + 63)
-        || (pItem->Type >= ITEM_POTION + 97 && pItem->Type <= ITEM_POTION + 98)
-        || (pItem->Type == ITEM_POTION + 96)
-        || (pItem->Type == ITEM_DEMON || pItem->Type == ITEM_SPIRIT_OF_GUARDIAN)
-        || (pItem->Type == ITEM_HELPER + 69)
-        || (pItem->Type == ITEM_HELPER + 70)
-        || pItem->Type == ITEM_HELPER + 81
-        || pItem->Type == ITEM_HELPER + 82
-        || pItem->Type == ITEM_HELPER + 93
-        || pItem->Type == ITEM_HELPER + 94
-        || pItem->Type == ITEM_HELPER + 107
-        || pItem->Type == ITEM_HELPER + 104
-        || pItem->Type == ITEM_HELPER + 105
-        || pItem->Type == ITEM_HELPER + 103
-        || pItem->Type == ITEM_POTION + 133
-        || pItem->Type == ITEM_HELPER + 109
-        || pItem->Type == ITEM_HELPER + 110
-        || pItem->Type == ITEM_HELPER + 111
-        || pItem->Type == ITEM_HELPER + 112
-        || pItem->Type == ITEM_HELPER + 113
-        || pItem->Type == ITEM_HELPER + 114
-        || pItem->Type == ITEM_HELPER + 115
-        || pItem->Type == ITEM_POTION + 112
-        || pItem->Type == ITEM_POTION + 113
-        || pItem->Type == ITEM_POTION + 120
-        || pItem->Type == ITEM_POTION + 123
-        || pItem->Type == ITEM_POTION + 124
-        || pItem->Type == ITEM_POTION + 134
-        || pItem->Type == ITEM_POTION + 135
-        || pItem->Type == ITEM_POTION + 136
-        || pItem->Type == ITEM_POTION + 137
-        || pItem->Type == ITEM_POTION + 138
-        || pItem->Type == ITEM_POTION + 139
-        || pItem->Type == ITEM_WING + 130
-        || pItem->Type == ITEM_WING + 131
-        || pItem->Type == ITEM_WING + 132
-        || pItem->Type == ITEM_WING + 133
-        || pItem->Type == ITEM_WING + 134
-        || pItem->Type == ITEM_WING + 135
-        || pItem->Type == ITEM_HELPER + 116
-        || pItem->Type == ITEM_PET_UNICORN
-        || pItem->Type == ITEM_HELPER + 124
-        || pItem->Type == ITEM_POTION + 114
-        || pItem->Type == ITEM_POTION + 115
-        || pItem->Type == ITEM_POTION + 116
-        || pItem->Type == ITEM_POTION + 117
-        || pItem->Type == ITEM_POTION + 118
-        || pItem->Type == ITEM_POTION + 119
-        || pItem->Type == ITEM_POTION + 126
-        || pItem->Type == ITEM_POTION + 127
-        || pItem->Type == ITEM_POTION + 128
-        || pItem->Type == ITEM_POTION + 129
-        || pItem->Type == ITEM_POTION + 130
-        || pItem->Type == ITEM_POTION + 131
-        || pItem->Type == ITEM_POTION + 132
-        || pItem->Type == ITEM_HELPER + 121
-        || pItem->Type == ITEM_POTION + 140
-        )
-    {
-        return true;
-    }
-
-    return false;
-}
-
-bool IsHighValueItem(ITEM* pItem)
-{
-    int iLevel = pItem->Level;
-
-    if (
-        pItem->Type == ITEM_HORN_OF_DINORANT ||
-        pItem->Type == ITEM_JEWEL_OF_BLESS ||
-        pItem->Type == ITEM_JEWEL_OF_SOUL ||
-        pItem->Type == ITEM_JEWEL_OF_LIFE ||
-        pItem->Type == ITEM_JEWEL_OF_CREATION ||
-        pItem->Type == ITEM_JEWEL_OF_CHAOS ||
-        pItem->Type == ITEM_JEWEL_OF_GUARDIAN ||
-        pItem->Type == ITEM_PACKED_JEWEL_OF_BLESS ||
-        pItem->Type == ITEM_PACKED_JEWEL_OF_SOUL ||
-        (pItem->Type >= ITEM_WING && pItem->Type <= ITEM_WINGS_OF_DARKNESS) ||
-        pItem->Type == ITEM_DARK_HORSE_ITEM ||
-        pItem->Type == ITEM_DARK_RAVEN_ITEM ||
-        pItem->Type == ITEM_CAPE_OF_LORD ||
-        (pItem->Type >= ITEM_WING_OF_STORM && pItem->Type <= ITEM_WING_OF_DIMENSION) ||
-        pItem->AncientDiscriminator > 0 ||
-        IsDivineArchangelWeaponItem(pItem->Type) ||
-        pItem->Type == ITEM_LOCHS_FEATHER ||
-        pItem->Type == ITEM_FRUITS ||
-        pItem->Type == ITEM_WEAPON_OF_ARCHANGEL ||
-        pItem->Type == ITEM_SPIRIT ||
-        (pItem->Type >= ITEM_GEMSTONE && pItem->Type <= ITEM_HIGHER_REFINE_STONE) ||
-        (iLevel > 6 && pItem->Type < ITEM_WING) ||
-        pItem->ExcellentFlags > 0 ||
-        (pItem->Type >= ITEM_CLAW_OF_BEAST && pItem->Type <= ITEM_HORN_OF_FENRIR)
-        || pItem->Type == ITEM_FLAME_OF_CONDOR
-        || pItem->Type == ITEM_FEATHER_OF_CONDOR
-        || pItem->Type == ITEM_POTION + 121
-        || pItem->Type == ITEM_POTION + 122
-        || pItem->Type == ITEM_WING + 130
-        || pItem->Type == ITEM_WING + 131
-        || pItem->Type == ITEM_WING + 132
-        || pItem->Type == ITEM_WING + 133
-        || pItem->Type == ITEM_WING + 134
-        || pItem->Type == ITEM_WING + 135
-        || pItem->Type == ITEM_PET_PANDA
-        || pItem->Type == ITEM_PANDA_TRANSFORMATION_RING
-        || pItem->Type == ITEM_SKELETON_TRANSFORMATION_RING
-        || pItem->Type == ITEM_PET_SKELETON
-        || pItem->Type == ITEM_DEMON
-        || pItem->Type == ITEM_SPIRIT_OF_GUARDIAN
-        || pItem->Type == ITEM_HELPER + 109
-        || pItem->Type == ITEM_HELPER + 110
-        || pItem->Type == ITEM_HELPER + 111
-        || pItem->Type == ITEM_HELPER + 112
-        || pItem->Type == ITEM_HELPER + 113
-        || pItem->Type == ITEM_HELPER + 114
-        || pItem->Type == ITEM_HELPER + 115
-        || pItem->Type == ITEM_POTION + 112
-        || pItem->Type == ITEM_POTION + 113
-        || (pItem->Type == ITEM_WIZARDS_RING && iLevel == 0)
-#ifdef LJH_ADD_SYSTEM_OF_EQUIPPING_ITEM_FROM_INVENTORY
-        || (g_pMyInventory->IsInvenItem(pItem->Type) && pItem->Durability == 255)
-#endif //LJH_ADD_SYSTEM_OF_EQUIPPING_ITEM_FROM_INVENTORY
-        || (pItem->Type >= ITEM_CAPE_OF_FIGHTER && pItem->Type <= ITEM_CAPE_OF_OVERRULE)
-#ifdef KJH_FIX_SELL_LUCKYITEM
-        || (Check_ItemAction(pItem, eITEM_SELL) && pItem->Durability > 0)
-#endif // KJH_FIX_SELL_LUCKYITEM
-        || (COMGEM::isCompiledGem(pItem))
-        )
-    {
-        if (true == pItem->bPeriodItem && false == pItem->bExpiredPeriod)
-        {
-            return false;
-        }
-        else if (pItem->Type == ITEM_PET_PANDA
-            || pItem->Type == ITEM_PANDA_TRANSFORMATION_RING
-            || pItem->Type == ITEM_DEMON
-            || pItem->Type == ITEM_SPIRIT_OF_GUARDIAN
-            || pItem->Type == ITEM_SKELETON_TRANSFORMATION_RING
-            || pItem->Type == ITEM_PET_SKELETON
-            )
-        {
-            if (true == pItem->bPeriodItem && true == pItem->bExpiredPeriod)
-            {
-                return true;
-            }
-            else
-                return false;
-        }
-        return true;
-    }
-
-    return false;
-}
-
-bool IsPersonalShopBan(ITEM* pItem)
-{
-    if (pItem == NULL)
-    {
-        return false;
-    }
-
-#ifdef KJH_FIX_PERSONALSHOP_BAN_CASHITEM
-    if (pItem->bPeriodItem)
-    {
-        return true;
-    }
-#endif // KJH_FIX_PERSONALSHOP_BAN_CASHITEM
-
-    if ((!pItem->bPeriodItem) &&
-        pItem->Type == ITEM_DEMON
-        || pItem->Type == ITEM_SPIRIT_OF_GUARDIAN
-        || pItem->Type == ITEM_PET_PANDA
-        || pItem->Type == ITEM_PANDA_TRANSFORMATION_RING
-        || pItem->Type == ITEM_SKELETON_TRANSFORMATION_RING
-        || pItem->Type == ITEM_PET_SKELETON
-#ifdef LJH_ADD_SYSTEM_OF_EQUIPPING_ITEM_FROM_INVENTORY
-        || (g_pMyInventory->IsInvenItem(pItem->Type) && pItem->Durability == 255)
-#endif //LJH_ADD_SYSTEM_OF_EQUIPPING_ITEM_FROM_INVENTORY
-        || (pItem->Type == ITEM_WIZARDS_RING && pItem->Level == 0)
-        )
-    {
-        return false;
-    }
-
-    if (pItem->Type == ITEM_MOONSTONE_PENDANT
-        || pItem->Type == ITEM_ELITE_TRANSFER_SKELETON_RING
-        || (pItem->Type == ITEM_POTION + 21 && pItem->Level != 3)
-        || (pItem->Type >= ITEM_SCROLL_OF_EMPEROR_RING_OF_HONOR && pItem->Type <= ITEM_SOUL_SHARD_OF_WIZARD)
-        || pItem->Type == ITEM_WEAPON_OF_ARCHANGEL
-        || (pItem->Type == ITEM_BOX_OF_LUCK && pItem->Level == 13)
-        || (pItem->Type >= ITEM_HELPER + 43 && pItem->Type <= ITEM_HELPER + 45)
-        || (pItem->Type == ITEM_WIZARDS_RING && pItem->Level != 0)
-        || pItem->Type == ITEM_FLAME_OF_DEATH_BEAM_KNIGHT
-        || pItem->Type == ITEM_HORN_OF_HELL_MAINE
-        || pItem->Type == ITEM_FEATHER_OF_DARK_PHOENIX
-        || pItem->Type == ITEM_EYE_OF_ABYSSAL
-        || IsPartChargeItem(pItem)
-        || pItem->Type == ITEM_HELPER + 97
-        || pItem->Type == ITEM_HELPER + 98
-        || pItem->Type == ITEM_POTION + 91
-        || pItem->Type == ITEM_HELPER + 99
-        || pItem->Type == ITEM_PET_PANDA
-        || pItem->Type == ITEM_PANDA_TRANSFORMATION_RING
-        || pItem->Type == ITEM_SKELETON_TRANSFORMATION_RING
-        || pItem->Type == ITEM_PET_SKELETON
-        || (pItem->Type == ITEM_POTION + 96)
-        || pItem->Type == ITEM_HELPER + 109
-        || pItem->Type == ITEM_HELPER + 110
-        || pItem->Type == ITEM_HELPER + 111
-        || pItem->Type == ITEM_HELPER + 112
-        || pItem->Type == ITEM_HELPER + 113
-        || pItem->Type == ITEM_HELPER + 114
-        || pItem->Type == ITEM_HELPER + 115
-#ifdef LDK_MOD_INGAMESHOP_WIZARD_RING_PERSONALSHOPBAN
-        || (pItem->Type == ITEM_WIZARDS_RING && (pItem->Level == 0)
-#endif //LDK_MOD_INGAMESHOP_WIZARD_RING_PERSONALSHOPBAN
-#ifdef ASG_ADD_TIME_LIMIT_QUEST_ITEM
-        || (pItem->Type >= ITEM_POTION + 151 && pItem->Type <= ITEM_POTION + 156)
-#endif	// ASG_ADD_TIME_LIMIT_QUEST_ITEM
-#ifdef LJH_ADD_SYSTEM_OF_EQUIPPING_ITEM_FROM_INVENTORY
-        || g_pMyInventory->IsInvenItem(pItem->Type)
-#endif //LJH_ADD_SYSTEM_OF_EQUIPPING_ITEM_FROM_INVENTORY
-        )
-    {
-        return true;
-    }
-    if (Check_ItemAction(pItem, eITEM_PERSONALSHOP))	return true;
-
-    return false;
-}
-
-bool IsTradeBan(ITEM* pItem)
-{
-    if (pItem->Type == ITEM_MOONSTONE_PENDANT
-        || pItem->Type == ITEM_ELITE_TRANSFER_SKELETON_RING
-        || (pItem->Type == ITEM_POTION + 21 && pItem->Level != 3)
-        || (pItem->Type >= ITEM_SCROLL_OF_EMPEROR_RING_OF_HONOR && pItem->Type <= ITEM_SOUL_SHARD_OF_WIZARD)
-        || pItem->Type == ITEM_WEAPON_OF_ARCHANGEL
-        || (pItem->Type == ITEM_BOX_OF_LUCK && pItem->Level == 13)
-        || (pItem->Type >= ITEM_HELPER + 43 && pItem->Type <= ITEM_HELPER + 45)
-        || (pItem->Type == ITEM_WIZARDS_RING && pItem->Level != 0)
-        || pItem->Type == ITEM_POTION + 64
-        || pItem->Type == ITEM_FLAME_OF_DEATH_BEAM_KNIGHT
-        || pItem->Type == ITEM_HORN_OF_HELL_MAINE
-        || pItem->Type == ITEM_FEATHER_OF_DARK_PHOENIX
-        || pItem->Type == ITEM_EYE_OF_ABYSSAL
-        || IsPartChargeItem(pItem)
-        || pItem->Type == ITEM_HELPER + 97
-        || pItem->Type == ITEM_HELPER + 98
-        || pItem->Type == ITEM_POTION + 91
-        || pItem->Type == ITEM_HELPER + 99
-        || pItem->Type == ITEM_PET_PANDA
-        || pItem->Type == ITEM_PANDA_TRANSFORMATION_RING
-        || pItem->Type == ITEM_SKELETON_TRANSFORMATION_RING
-        || pItem->Type == ITEM_PET_SKELETON
-#ifdef ASG_ADD_TIME_LIMIT_QUEST_ITEM
-        || (pItem->Type >= ITEM_POTION + 151 && pItem->Type <= ITEM_POTION + 156)
-#endif	// ASG_ADD_TIME_LIMIT_QUEST_ITEM
-#ifdef LJH_ADD_SYSTEM_OF_EQUIPPING_ITEM_FROM_INVENTORY
-        || g_pMyInventory->IsInvenItem(pItem->Type)
-#endif //LJH_ADD_SYSTEM_OF_EQUIPPING_ITEM_FROM_INVENTORY
-        )
-    {
-        return true;
-    }
-
-    if (pItem->Type == ITEM_GM_GIFT)
-    {
-        if (g_isCharacterBuff((&Hero->Object), eBuff_GMEffect) ||
-            (Hero->CtlCode == CTLCODE_20OPERATOR) || (Hero->CtlCode == CTLCODE_08OPERATOR))
-            return false;
-        else
-            return true;
-    }
-    if (Check_ItemAction(pItem, eITEM_TRADE))	return true;
-
-    return false;
-}
-
-bool IsStoreBan(ITEM* pItem)
-{
-    if ((pItem->Type >= ITEM_SCROLL_OF_EMPEROR_RING_OF_HONOR && pItem->Type <= ITEM_SOUL_SHARD_OF_WIZARD)
-        || (pItem->Type == ITEM_POTION + 21 && pItem->Level != 3)
-        || pItem->Type == ITEM_WEAPON_OF_ARCHANGEL
-        || (pItem->Type == ITEM_BOX_OF_LUCK && pItem->Level == 13)
-        || (pItem->Type >= ITEM_HELPER + 43 && pItem->Type <= ITEM_HELPER + 45)
-        || pItem->Type == ITEM_HELPER + 93
-        || pItem->Type == ITEM_HELPER + 94
-        || (pItem->Type == ITEM_WIZARDS_RING && pItem->Level != 0)
-        || pItem->Type == ITEM_FLAME_OF_DEATH_BEAM_KNIGHT
-        || pItem->Type == ITEM_HORN_OF_HELL_MAINE
-        || pItem->Type == ITEM_FEATHER_OF_DARK_PHOENIX
-        || pItem->Type == ITEM_EYE_OF_ABYSSAL
-        || (pItem->Type == ITEM_HELPER + 70 && pItem->Durability == 1)
-#ifdef ASG_ADD_TIME_LIMIT_QUEST_ITEM
-        || (pItem->Type >= ITEM_POTION + 151 && pItem->Type <= ITEM_POTION + 156)
-#endif	// ASG_ADD_TIME_LIMIT_QUEST_ITEM
-#ifdef KJH_ADD_PERIOD_ITEM_SYSTEM
-        || (pItem->bPeriodItem == true)
-#endif // KJH_ADD_PERIOD_ITEM_SYSTEM
-#ifdef LJH_ADD_SYSTEM_OF_EQUIPPING_ITEM_FROM_INVENTORY
-        || (g_pMyInventory->IsInvenItem(pItem->Type) && pItem->Durability == 254)
-#endif //LJH_ADD_SYSTEM_OF_EQUIPPING_ITEM_FROM_INVENTORY
-        )
-    {
-        return true;
-    }
-
-    if (Check_ItemAction(pItem, eITEM_STORE))	return true;
-
-    return false;
-}
-
-sItemAct Set_ItemActOption(int _nIndex, int _nOption)
-{
-    sItemAct	sItem;
-    // eITEM_PERSONALSHOP = 개인상점, eITEM_STORE = 창고, eITEM_TRADE = 거래, eITEM_DROP = 버리기, eITEM_SELL = 판매, eITEM_REPAIR = 수리
-    int	nItemOption[][eITEM_END] = { 0, 1, 1, 0, 0, 0,
-                                        0, 0, 0, 0, 1, 0,
-        -1 };
-
-    sItem.s_nItemIndex = _nIndex;
-
-    for (int i = 0; i < eITEM_END; i++)
-    {
-        sItem.s_bType[i] = nItemOption[_nOption][i];
-    }
-    return sItem;
-}
-
-bool Check_ItemAction(ITEM* _pItem, ITEMSETOPTION _eAction, bool _bType)
-{
-    std::vector<sItemAct>			sItem;
-    std::vector<sItemAct>::iterator li;
-    int		i = 0;
-
-    // Restricted ITEM_HELPER special items starting at local index 135.
-    for (i = 0; i < RESTRICTED_SPECIAL_MISC_COUNT; i++)
-    {
-        sItem.push_back(Set_ItemActOption(ITEM_HELPER + RESTRICTED_SPECIAL_MISC_START_INDEX + i, ITEM_ACTION_BLOCK_STORAGE_TRADE));
-    }
-    // Restricted ITEM_POTION special jewels starting at local index 160.
-    for (i = 0; i < RESTRICTED_SPECIAL_JEWEL_COUNT; i++)
-    {
-        sItem.push_back(Set_ItemActOption(ITEM_POTION + RESTRICTED_SPECIAL_JEWEL_START_INDEX + i, ITEM_ACTION_BLOCK_STORAGE_TRADE));
-    }
-    for (i = 0; i < LUCKY_SET_ARMOR_COUNT; i++)
-    {
-        sItem.push_back(Set_ItemActOption(ITEM_ARMOR + LUCKY_SET_ARMOR_START_INDEX + i, ITEM_ACTION_BLOCK_SELL_ONLY));
-        sItem.push_back(Set_ItemActOption(ITEM_HELM + LUCKY_SET_ARMOR_START_INDEX + i, ITEM_ACTION_BLOCK_SELL_ONLY));
-        sItem.push_back(Set_ItemActOption(ITEM_BOOTS + LUCKY_SET_ARMOR_START_INDEX + i, ITEM_ACTION_BLOCK_SELL_ONLY));
-        sItem.push_back(Set_ItemActOption(ITEM_GLOVES + LUCKY_SET_ARMOR_START_INDEX + i, ITEM_ACTION_BLOCK_SELL_ONLY));
-        sItem.push_back(Set_ItemActOption(ITEM_PANTS + LUCKY_SET_ARMOR_START_INDEX + i, ITEM_ACTION_BLOCK_SELL_ONLY));
-    }
-
-    for (li = sItem.begin(); li != sItem.end(); li++)
-    {
-        if (li->s_nItemIndex == _pItem->Type)
-        {
-            _bType = (li->s_bType[_eAction]) ^ (!_bType);
-            return _bType;
-        }
-    }
-
-    // 등록되지 않은 아이템은 무시.
-    return false;
-}
-
-bool Check_LuckyItem(int _nIndex, int _nType)
-{
-    int		nItemTabIndex = (_nIndex + _nType) % MAX_ITEM_INDEX;
-
-    if (_nIndex < ITEM_HELM || _nIndex > ITEM_WING)	return false;
-    if (nItemTabIndex >= LUCKY_SET_ARMOR_START_INDEX
-        && nItemTabIndex < LUCKY_SET_ARMOR_START_INDEX + LUCKY_SET_ARMOR_COUNT)
-        return true;
-
-    return false;
-}
-
-bool IsLuckySetItem(int iType)
-{
-    int iItemIndex = iType % MAX_ITEM_INDEX;
-
-#ifdef LEM_FIX_SELL_LUCKYITEM_BOOTS_POPUP
-    if ((iType >= ITEM_HELM && iType <= ITEM_WING)
-#else // LEM_FIX_SELL_LUCKYITEM_BOOTS_POPUP
-    if ((iType >= ITEM_HELM && iType <= ITEM_BOOTS)
-#endif // LEM_FIX_SELL_LUCKYITEM_BOOTS_POPUP
-        && (iItemIndex >= LUCKY_SET_ARMOR_START_INDEX
-            && iItemIndex < LUCKY_SET_ARMOR_START_INDEX + LUCKY_SET_ARMOR_COUNT))
-    {
-        return true;
-    }
-
-    return false;
-}
-
-bool IsDropBan(ITEM* pItem)
-{
-    if ((!pItem->bPeriodItem) &&
-        (pItem->Type == ITEM_POTION + 96
-            || pItem->Type == ITEM_POTION + 54
-            || pItem->Type == ITEM_DEMON
-            || pItem->Type == ITEM_SPIRIT_OF_GUARDIAN
-            || pItem->Type == ITEM_PET_PANDA
-            || pItem->Type == ITEM_PANDA_TRANSFORMATION_RING
-            || pItem->Type == ITEM_SKELETON_TRANSFORMATION_RING
-            || pItem->Type == ITEM_PET_SKELETON
-            || (pItem->Type == ITEM_WIZARDS_RING && pItem->Level == 0)
-            ))
-    {
-        return false;
-    }
-
-    if (true == false || pItem->Type == ITEM_POTION + 123 || pItem->Type == ITEM_POTION + 124)
-    {
-        return false;
-    }
-
-    if ((pItem->Type >= ITEM_SCROLL_OF_EMPEROR_RING_OF_HONOR && pItem->Type <= ITEM_SOUL_SHARD_OF_WIZARD)
-        || (pItem->Type >= ITEM_FLAME_OF_DEATH_BEAM_KNIGHT && pItem->Type <= ITEM_EYE_OF_ABYSSAL)
-        || IsPartChargeItem(pItem)
-        || ((pItem->Type >= ITEM_TYPE_CHARM_MIXWING + EWS_BEGIN)
-            && (pItem->Type <= ITEM_TYPE_CHARM_MIXWING + EWS_END))
-        || pItem->Type == ITEM_HELPER + 97
-        || pItem->Type == ITEM_HELPER + 98
-        || pItem->Type == ITEM_POTION + 91
-        || pItem->Type == ITEM_HELPER + 99
-        || pItem->Type == ITEM_PET_PANDA
-        || pItem->Type == ITEM_PANDA_TRANSFORMATION_RING
-        || pItem->Type == ITEM_SKELETON_TRANSFORMATION_RING
-        || pItem->Type == ITEM_PET_SKELETON
-        || pItem->Type == ITEM_POTION + 121
-        || pItem->Type == ITEM_POTION + 122
-#ifdef LJH_ADD_SYSTEM_OF_EQUIPPING_ITEM_FROM_INVENTORY
-        || g_pMyInventory->IsInvenItem(pItem->Type)
-#endif //LJH_ADD_SYSTEM_OF_EQUIPPING_ITEM_FROM_INVENTORY
-        )
-    {
-        return true;
-    }
-
-    if (Check_ItemAction(pItem, eITEM_DROP))	return true;
-
-    return false;
-}
-
-bool IsSellingBan(ITEM* pItem)
-{
-    int Level = pItem->Level;
-
-    if (true == false
-        || pItem->Type == ITEM_POTION + 112
-        || pItem->Type == ITEM_POTION + 113
-        || pItem->Type == ITEM_POTION + 121
-        || pItem->Type == ITEM_POTION + 122
-        || pItem->Type == ITEM_POTION + 123
-        || pItem->Type == ITEM_POTION + 124
-        || pItem->Type == ITEM_WING + 130
-        || pItem->Type == ITEM_WING + 131
-        || pItem->Type == ITEM_WING + 132
-        || pItem->Type == ITEM_WING + 133
-        || pItem->Type == ITEM_WING + 134
-        || pItem->Type == ITEM_WING + 135
-        || pItem->Type == ITEM_PET_PANDA
-        || pItem->Type == ITEM_PANDA_TRANSFORMATION_RING
-        || pItem->Type == ITEM_SKELETON_TRANSFORMATION_RING
-        || pItem->Type == ITEM_PET_SKELETON
-        || pItem->Type == ITEM_DEMON
-        || pItem->Type == ITEM_SPIRIT_OF_GUARDIAN
-        || pItem->Type == ITEM_HELPER + 109
-        || pItem->Type == ITEM_HELPER + 110
-        || pItem->Type == ITEM_HELPER + 111
-        || pItem->Type == ITEM_HELPER + 112
-        || pItem->Type == ITEM_HELPER + 113
-        || pItem->Type == ITEM_HELPER + 114
-        || pItem->Type == ITEM_HELPER + 115
-#ifdef LJH_ADD_SYSTEM_OF_EQUIPPING_ITEM_FROM_INVENTORY
-        || (g_pMyInventory->IsInvenItem(pItem->Type) && pItem->Durability != 254)
-#endif //LJH_ADD_SYSTEM_OF_EQUIPPING_ITEM_FROM_INVENTORY
-        || ((pItem->Type == ITEM_WIZARDS_RING) && (Level == 0))
-        || (pItem->Type == ITEM_PET_UNICORN)
-        || (pItem->Type == ITEM_HELPER + 107)
-        )
-    {
-        if (true == pItem->bPeriodItem && true == pItem->bExpiredPeriod)
-        {
-            return false;
-        }
-    }
-
-    if (pItem->Type == ITEM_BOX_OF_LUCK
-        || (pItem->Type == ITEM_POTION + 21 && Level == 1)
-        || ((pItem->bPeriodItem == true) && (pItem->bExpiredPeriod == false) && (pItem->Type == ITEM_WIZARDS_RING) && (Level == 0))
-        || (pItem->Type == ITEM_WIZARDS_RING && (Level == 1 || Level == 2))
-        || pItem->Type == ITEM_WEAPON_OF_ARCHANGEL
-        || (pItem->Type == ITEM_POTION + 20 && Level >= 1 && Level <= 5)
-        || IsPartChargeItem(pItem)
-        || ((pItem->Type >= ITEM_TYPE_CHARM_MIXWING + EWS_BEGIN)
-            && (pItem->Type <= ITEM_TYPE_CHARM_MIXWING + EWS_END))
-        || pItem->Type == ITEM_PET_PANDA
-        || pItem->Type == ITEM_PANDA_TRANSFORMATION_RING
-        || pItem->Type == ITEM_SKELETON_TRANSFORMATION_RING
-        || pItem->Type == ITEM_PET_SKELETON
-#ifdef LJH_ADD_SYSTEM_OF_EQUIPPING_ITEM_FROM_INVENTORY
-        || (g_pMyInventory->IsInvenItem(pItem->Type))
-#endif //LJH_ADD_SYSTEM_OF_EQUIPPING_ITEM_FROM_INVENTORY
-        || (pItem->Type == ITEM_PET_UNICORN)
-        || (pItem->Type == ITEM_HELPER + 107)
-#ifdef KJH_FIX_SELL_LUCKYITEM
-        || ((IsLuckySetItem(pItem->Type) == true) && (pItem->Durability > 0))
-#endif // KJH_FIX_SELL_LUCKYITEM
-        )
-    {
-        return true;
-    }
-
-    if (Check_ItemAction(pItem, eITEM_SELL))	return true;
-
-    return false;
-}
-
-bool IsRepairBan(ITEM* pItem)
-{
-    if (g_ChangeRingMgr->CheckRepair(pItem->Type) == true)
-    {
-        return true;
-    }
-    if (IsPartChargeItem(pItem) == true || ((pItem->Type >= ITEM_TYPE_CHARM_MIXWING + EWS_BEGIN) && (pItem->Type <= ITEM_TYPE_CHARM_MIXWING + EWS_END)))
-    {
-        return true;
-    }
-
-    if ((pItem->Type >= ITEM_POTION + 55 && pItem->Type <= ITEM_POTION + 57)
-        || pItem->Type == ITEM_HELPER + 43
-        || pItem->Type == ITEM_HELPER + 44
-        || pItem->Type == ITEM_HELPER + 45
-        || (pItem->Type >= ITEM_HELPER && pItem->Type <= ITEM_HORN_OF_DINORANT)
-        || pItem->Type == ITEM_BOLT
-        || pItem->Type == ITEM_ARROWS
-        || pItem->Type >= ITEM_POTION
-        || (pItem->Type >= ITEM_ORB_OF_TWISTING_SLASH && pItem->Type <= ITEM_ORB_OF_DEATH_STAB)
-        || (pItem->Type >= ITEM_LOCHS_FEATHER && pItem->Type <= ITEM_WEAPON_OF_ARCHANGEL)
-        || pItem->Type == ITEM_POTION + 21
-        || pItem->Type == ITEM_DARK_HORSE_ITEM
-        || pItem->Type == ITEM_DARK_RAVEN_ITEM
-        || pItem->Type == ITEM_MOONSTONE_PENDANT
-        || pItem->Type == ITEM_PET_RUDOLF
-        || pItem->Type == ITEM_PET_PANDA
-        || pItem->Type == ITEM_PANDA_TRANSFORMATION_RING
-        || pItem->Type == ITEM_SKELETON_TRANSFORMATION_RING
-        || pItem->Type == ITEM_PET_SKELETON
-        || pItem->Type == ITEM_PET_UNICORN
-        || pItem->Type == ITEM_CHERRY_BLOSSOM_PLAYBOX
-        || pItem->Type == ITEM_CHERRY_BLOSSOM_WINE
-        || pItem->Type == ITEM_CHERRY_BLOSSOM_RICE_CAKE
-        || pItem->Type == ITEM_CHERRY_BLOSSOM_FLOWER_PETAL
-        || pItem->Type == ITEM_POTION + 88
-        || pItem->Type == ITEM_POTION + 89
-        || pItem->Type == ITEM_GOLDEN_CHERRY_BLOSSOM_BRANCH
-#ifdef LJH_ADD_SYSTEM_OF_EQUIPPING_ITEM_FROM_INVENTORY
-        || g_pMyInventory->IsInvenItem(pItem->Type)
-#endif //LJH_ADD_SYSTEM_OF_EQUIPPING_ITEM_FROM_INVENTORY
-        || pItem->Type == ITEM_HELPER + 7
-        || pItem->Type == ITEM_TRANSFORMATION_RING
-        || pItem->Type == ITEM_LIFE_STONE_ITEM
-        || pItem->Type == ITEM_WIZARDS_RING
-        || pItem->Type == ITEM_ARMOR_OF_GUARDSMAN
-        || pItem->Type == ITEM_SPLINTER_OF_ARMOR
-        || pItem->Type == ITEM_BLESS_OF_GUARDIAN
-        || pItem->Type == ITEM_CLAW_OF_BEAST
-        || pItem->Type == ITEM_FRAGMENT_OF_HORN
-        || pItem->Type == ITEM_BROKEN_HORN
-        || pItem->Type == ITEM_HORN_OF_FENRIR
-        || pItem->Type == ITEM_OLD_SCROLL
-        || pItem->Type == ITEM_ILLUSION_SORCERER_COVENANT
-        || pItem->Type == ITEM_SCROLL_OF_BLOOD
-        || pItem->Type == ITEM_HELPER + 66
-        || pItem->Type == ITEM_HELPER + 71
-        || pItem->Type == ITEM_HELPER + 72
-        || pItem->Type == ITEM_HELPER + 73
-        || pItem->Type == ITEM_HELPER + 74
-        || pItem->Type == ITEM_HELPER + 75
-        )
-    {
-        return true;
-    }
-
-    if (Check_ItemAction(pItem, eITEM_REPAIR))	return true;
-
-    return false;
-}
-
-bool IsWingItem(ITEM* pItem)
-{
-    switch (pItem->Type)
-    {
-    case ITEM_WING:
-    case ITEM_WINGS_OF_HEAVEN:
-    case ITEM_WINGS_OF_SATAN:
-    case ITEM_WINGS_OF_SPIRITS:
-    case ITEM_WINGS_OF_SOUL:
-    case ITEM_WINGS_OF_DRAGON:
-    case ITEM_WINGS_OF_DARKNESS:
-    case ITEM_CAPE_OF_LORD:
-    case ITEM_WING_OF_STORM:
-    case ITEM_WING_OF_ETERNAL:
-    case ITEM_WING_OF_ILLUSION:
-    case ITEM_WING_OF_RUIN:
-    case ITEM_CAPE_OF_EMPEROR:
-    case ITEM_WING_OF_CURSE:
-    case ITEM_WINGS_OF_DESPAIR:
-    case ITEM_WING_OF_DIMENSION:
-    case ITEM_WING + 130:
-    case ITEM_WING + 131:
-    case ITEM_WING + 132:
-    case ITEM_WING + 133:
-    case ITEM_WING + 134:
-    case ITEM_CAPE_OF_FIGHTER:
-    case ITEM_CAPE_OF_OVERRULE:
-    case ITEM_WING + 135:
-        return true;
-    }
-
-    return false;
-}
-
-bool IsJewelItem(ITEM* pItem)
-{
-    if (pItem->Type == ITEM_JEWEL_OF_BLESS
-        || pItem->Type == ITEM_JEWEL_OF_SOUL
-        || pItem->Type == ITEM_JEWEL_OF_LIFE
-        || pItem->Type == ITEM_JEWEL_OF_CHAOS
-        || pItem->Type == ITEM_JEWEL_OF_CREATION
-        || pItem->Type == ITEM_JEWEL_OF_GUARDIAN)
-    {
-        return true;
-    }
-
-    return false;
-}
-
 bool IsExcellentItem(ITEM* pItem)
 {
     return pItem->ExcellentFlags;
@@ -8031,7 +6518,15 @@ std::wstring GetItemDisplayName(ITEM* pItem)
 
 OBJECT ObjectSelect;
 
-void RenderObjectScreen(int Type, int ItemLevel, int excellentFlags, int ancientDiscriminator, vec3_t Target, int Select, bool PickUp)
+namespace
+{
+// Degrees per millisecond of WorldTime.
+constexpr float GambleItemTurnSpeed = 0.2f;
+constexpr float SelectedItemTurnSpeed = 0.45f;
+} // namespace
+
+void RenderObjectScreen(int Type, int ItemLevel, int excellentFlags, int ancientDiscriminator, vec3_t Target,
+                        int Select, bool PickUp)
 {
     int Level = ItemLevel;
     vec3_t Direction, Position;
@@ -8042,2017 +6537,38 @@ void RenderObjectScreen(int Type, int ItemLevel, int excellentFlags, int ancient
     else
         VectorMA(MousePosition, 0.1f, Direction, Position);
 
-    if (Type == MODEL_KRIS)
-    {
-        Position[0] -= 0.02f;
-        Position[1] += 0.03f;
-        Vector(180.f, 270.f, 15.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_BOLT || Type == MODEL_ARROWS)
-    {
-        Vector(0.f, 270.f, 15.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_LIGHT_SPEAR)
-    {
-        Position[1] += 0.05f;
-        Vector(0.f, 90.f, 20.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_CELESTIAL_BOW)
-    {
-        Vector(0.f, 90.f, 15.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_SYLPHID_RAY_HELM)
-    {
-        Position[1] -= 0.06f;
-        Position[0] += 0.03f;
-        Vector(-90.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_VENOM_MIST_HELM)
-    {
-        Position[1] += 0.07f;
-        Position[0] -= 0.03f;
-        Vector(-90.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_VENOM_MIST_ARMOR)
-    {
-        Position[1] += 0.1f;
-        Vector(-90.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_DRAGON_KNIGHT_ARMOR)
-    {
-        Position[1] += 0.07f;
-        Vector(-90.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_SYLPH_WIND_BOW)
-    {
-        Position[1] += 0.12f;
-        Vector(180.f, -90.f, 15.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_GRAND_VIPER_STAFF)
-    {
-        Position[1] -= 0.1f;
-        Position[0] += 0.025f;
-        Vector(180.f, 0.f, 8.f, ObjectSelect.Angle);
-    }
-    else if (Type >= MODEL_BOOK_OF_SAHAMUTT && Type <= MODEL_STAFF + 29)
-    {
-        Vector(0.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_SOLEIL_SCEPTER)
-    {
-        Position[1] += 0.1f;
-        Position[0] -= 0.01;
-        Vector(180.f, 90.f, 13.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_ASHCROW_ARMOR)
-    {
-        Position[1] += 0.03f;
-        Vector(-90.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_ECLIPSE_HELM)
-    {
-        Position[0] -= 0.02f;
-        Position[1] += 0.05f;
-        Vector(-90.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_ECLIPSE_ARMOR)
-    {
-        Position[1] += 0.05f;
-        Vector(-90.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_IRIS_ARMOR)
-    {
-        Position[1] -= 0.05f;
-        Vector(-90.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_VALIANT_ARMOR)
-    {
-        Position[1] -= 0.05f;
-        Vector(-90.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (MODEL_MISTERY_HELM <= Type && MODEL_LILIUM_HELM >= Type)
-    {
-        Position[1] -= 0.05f;
-        Vector(-90.f, 25.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (MODEL_GLORIOUS_ARMOR <= Type && MODEL_LILIUM_ARMOR >= Type)
-    {
-        Position[1] -= 0.08f;
-        Vector(-90.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_DAYBREAK)
-    {
-        Position[0] -= 0.02f;
-        Position[1] += 0.03f;
-        Vector(180.f, 90.f, 15.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_SHINING_SCEPTER)
-    {
-        Position[1] += 0.05f;
-        Vector(180.f, 90.f, 13.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_ALBATROSS_BOW || Type == MODEL_STINGER_BOW)
-    {
-        Position[0] -= 0.10f;
-        Position[1] += 0.08f;
-        Vector(180.f, -90.f, 15.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_PLATINA_STAFF)
-    {
-        Position[0] += 0.02f;
-        Position[1] += 0.02f;
-        Vector(180.f, 90.f, 8.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_ARROW_VIPER_BOW)
-    {
-        Vector(180.f, -90.f, 15.f, ObjectSelect.Angle);
-    }
-    else if (Type >= MODEL_CROSSBOW && Type < MODEL_BOW + MAX_ITEM_INDEX)
-    {
-        Vector(90.f, 180.f, 20.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_DRAGON_SPEAR)
-    {
-        Vector(180.f, 270.f, 20.f, ObjectSelect.Angle);
-    }
-    else if (Type >= MODEL_SWORD && Type < MODEL_STAFF + MAX_ITEM_INDEX)
-    {
-        switch (Type)
-        {
-        case MODEL_MISTERY_STICK:							Position[1] += 0.04f;	break;
-        case MODEL_ANCIENT_STICK:	Position[0] += 0.02f;	Position[1] += 0.03f;	break;
-        case MODEL_DEMONIC_STICK:	Position[0] += 0.02f;							break;
-        case MODEL_STORM_BLITZ_STICK:	Position[0] -= 0.02f;	Position[1] -= 0.02f;	break;
-        case MODEL_ETERNAL_WING_STICK:	Position[0] += 0.01f;	Position[1] -= 0.01f;	break;
-        }
+    Type = Render::Items::Display::GetDrawnModel(Type, Level);
 
-        if (!ItemAttribute[Type - MODEL_ITEM].TwoHand)
-        {
-            Vector(180.f, 270.f, 15.f, ObjectSelect.Angle);
-        }
-        else
-        {
-            Vector(180.f, 270.f, 25.f, ObjectSelect.Angle);
-        }
-    }
-    else if (Type >= MODEL_SHIELD && Type < MODEL_SHIELD + MAX_ITEM_INDEX)
-    {
-        Vector(270.f, 270.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HORN_OF_DINORANT)
-    {
-        Vector(-90.f, -90.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_DARK_HORSE_ITEM)
-    {
-        Vector(-90.f, -90.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_DARK_RAVEN_ITEM)
-    {
-        Vector(-90.f, -35.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_SPIRIT)
-    {
-        Vector(-90.f, -90.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_CAPE_OF_LORD)
-    {
-        Vector(-90.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_EVENT + 16)
-    {
-        Vector(-90.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_SCROLL_OF_ARCHANGEL || Type == MODEL_BLOOD_BONE)
-    {
-        Vector(270.f, -10.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_INVISIBILITY_CLOAK)
-    {
-        Vector(290.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_EVENT + 11)
-    {
-        Vector(-90.f, -20.f, -20.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_EVENT + 12)
-    {
-        Vector(250.f, 140.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_EVENT + 14)
-    {
-        Vector(255.f, 160.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_EVENT + 15)
-    {
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type >= MODEL_RING_OF_FIRE && Type <= MODEL_RING_OF_MAGIC)
-    {
-        Vector(270.f, 160.f, 20.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_ARMOR_OF_GUARDSMAN)
-    {
-        Vector(290.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
+    const Render::Items::Display::InventoryDisplay display = Render::Items::Display::GetInventoryDisplay(Type);
+    Vector(display.rotation[0], display.rotation[1], display.rotation[2], ObjectSelect.Angle);
 
-    else if (Type == MODEL_SPLINTER_OF_ARMOR)
+    // Gamble items turn slowly, and every item turns while the mouse is on it.
+    if (GameLogic::Items::IsGambleItemModel(Type) && Select != 1)
     {
-        Position[0] += 0.01f;
-        Position[1] -= 0.03f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
+        ObjectSelect.Angle[1] = WorldTime * GambleItemTurnSpeed;
     }
-    else if (Type == MODEL_BLESS_OF_GUARDIAN)
-    {
-        Position[1] += 0.02f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_CLAW_OF_BEAST)
-    {
-        Position[0] += 0.01f;
-        Position[1] += 0.02f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_FRAGMENT_OF_HORN)
-    {
-        Position[0] += 0.01f;
-        Position[1] += 0.02f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_BROKEN_HORN)
-    {
-        Position[0] += 0.01f;
-        Position[1] += 0.05f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HORN_OF_FENRIR)
-    {
-        Position[0] += 0.01f;
-        Position[1] += 0.04f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_OLD_SCROLL)
-    {
-        Position[1] -= 0.04f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_ILLUSION_SORCERER_COVENANT)
-    {
-        Position[1] -= 0.03f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_SCROLL_OF_BLOOD)
-    {
-        Position[1] -= 0.02f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_POTION + 64)
-    {
-        Position[1] += 0.02f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_FLAME_OF_CONDOR)
-    {
-        Position[1] += 0.045f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_FEATHER_OF_CONDOR)
-    {
-        Position[1] += 0.04f;
-        Vector(270.f, 120.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_WING_OF_ETERNAL)
-    {
-        Position[1] += 0.05f;
-        Vector(270.f, -10.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_WING_OF_ILLUSION)
-    {
-        Position[1] += 0.05f;
-        Vector(270.f, -10.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_WING_OF_RUIN)
-    {
-        Position[1] += 0.08f;
-        Vector(270.f, -10.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_CAPE_OF_EMPEROR)
-    {
-        Position[1] += 0.05f;
-        Vector(270.f, -10.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_WINGS_OF_DESPAIR)
-    {
-        Position[1] += 0.05f;
-        Vector(270.f, 0.f, 2.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 46)
-    {
-        Position[1] -= 0.04f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 47)
-    {
-        Position[1] -= 0.04f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 48)
-    {
-        Position[1] -= 0.04f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_POTION + 54)
-    {
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_POTION + 58)
-    {
-        Position[1] += 0.07f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_POTION + 59 || Type == MODEL_POTION + 60)
-    {
-        Position[1] += 0.06f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_POTION + 61 || Type == MODEL_POTION + 62)
-    {
-        Position[1] += 0.06f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_POTION + 53)
-    {
-        Position[1] += 0.042f;
-        Vector(180.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 43)
-    {
-        Position[1] -= 0.027f;
-        Position[0] += 0.005f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 44)
-    {
-        Position[1] -= 0.03f;
-        Position[0] += 0.005f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 45)
-    {
-        Position[1] -= 0.02f;
-        Position[0] += 0.005f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type >= MODEL_POTION + 70 && Type <= MODEL_POTION + 71)
-    {
-        Position[0] += 0.01f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type >= MODEL_POTION + 72 && Type <= MODEL_POTION + 77)
-    {
-        Position[1] += 0.08f;
-        Vector(0.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 59)
-    {
-        Position[0] += 0.01f;
-        Position[1] += 0.02f;
-        Vector(90.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type >= MODEL_HELPER + 54 && Type <= MODEL_HELPER + 58)
-    {
-        Position[1] -= 0.02f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type >= MODEL_POTION + 78 && Type <= MODEL_POTION + 82)
-    {
-        Position[1] += 0.01f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 60)
-    {
-        Position[1] -= 0.06f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 61)
-    {
-        Position[1] -= 0.04f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_POTION + 83)
-    {
-        Position[1] += 0.06f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_POTION + 91)
-    {
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_POTION + 92)
-    {
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_POTION + 93)
-    {
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_POTION + 95)
-    {
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_POTION + 94)
-    {
-        Position[0] += 0.01f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type >= MODEL_CHERRY_BLOSSOM_PLAYBOX && Type <= MODEL_GOLDEN_CHERRY_BLOSSOM_BRANCH)
-    {
-        if (Type == MODEL_CHERRY_BLOSSOM_PLAYBOX)
-        {
-            Position[1] += 0.01f;
-            Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-        }
-        else if (Type == MODEL_CHERRY_BLOSSOM_WINE)
-        {
-            Position[1] -= 0.01f;
-            Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-        }
-        else if (Type == MODEL_CHERRY_BLOSSOM_RICE_CAKE)
-        {
-            Position[1] += 0.01f;
-            Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-        }
-        else if (Type == MODEL_CHERRY_BLOSSOM_FLOWER_PETAL)
-        {
-            Position[1] += 0.01f;
-            Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-        }
-        else if (Type == MODEL_POTION + 88)
-        {
-            Position[1] += 0.015f;
-            Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-        }
-        else if (Type == MODEL_POTION + 89)
-        {
-            Position[1] += 0.015f;
-            Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-        }
-        else if (Type == MODEL_GOLDEN_CHERRY_BLOSSOM_BRANCH)
-        {
-            Position[1] += 0.015f;
-            Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-        }
-    }
-    else if (Type == MODEL_HELPER + 62)
-    {
-        Position[0] += 0.01f;
-        Position[1] -= 0.03f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 63)
-    {
-        Position[0] += 0.01f;
-        Position[1] += 0.082f;
-        Vector(90.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type >= MODEL_POTION + 97 && Type <= MODEL_POTION + 98)
-    {
-        Position[1] += 0.09f;
-        Vector(0.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_POTION + 96)
-    {
-        Position[1] -= 0.013f;
-        Position[0] += 0.003f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (MODEL_DEMON <= Type && Type <= MODEL_SPIRIT_OF_GUARDIAN)
-    {
-        switch (Type)
-        {
-        case MODEL_DEMON:
-            Position[1] -= 0.05f;
-            break;
-        case MODEL_SPIRIT_OF_GUARDIAN:
-            Position[1] -= 0.02f;
-            break;
-        }
-        Vector(270.f, -10.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_FLAME_OF_DEATH_BEAM_KNIGHT)
-    {
-        Position[1] += 0.05f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HORN_OF_HELL_MAINE)
-    {
-        Position[1] += 0.11f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_FEATHER_OF_DARK_PHOENIX)
-    {
-        Position[1] += 0.11f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_ELITE_TRANSFER_SKELETON_RING)
-    {
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 43)
-    {
-        //		Position[1] += 0.082f;
-        Position[1] -= 0.03f;
-        Vector(90.f, 0.f, 180.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 44)
-    {
-        Position[1] += 0.08f;
-        Vector(90.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 45)
-    {
-        Position[1] += 0.07f;
-        Vector(90.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_JACK_OLANTERN_TRANSFORMATION_RING)
-    {
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_CHRISTMAS_TRANSFORMATION_RING)
-    {
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_SCROLL_OF_BLOOD)
-    {
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_GAME_MASTER_TRANSFORMATION_RING)
-    {
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_MOONSTONE_PENDANT)
-    {
-        Position[0] += 0.00f;
-        Position[1] += 0.02f;
-        Vector(-48 - 150.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_GEMSTONE)
-    {
-        Position[1] += 0.02f;
-        Vector(270.f, 90.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_JEWEL_OF_HARMONY)
-    {
-        Position[1] += 0.02f;
-        Vector(270.f, -10.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_LOWER_REFINE_STONE || Type == MODEL_HIGHER_REFINE_STONE)
-    {
-        Position[0] -= 0.04f;
-        Position[1] += 0.02f;
-        Position[2] += 0.02f;
-        Vector(270.f, -10.f, -45.f, ObjectSelect.Angle);
-    }
-    else if (Type >= MODEL_PENDANT_OF_LIGHTING && Type < MODEL_HELPER + MAX_ITEM_INDEX && Type != MODEL_LOCHS_FEATHER && Type != MODEL_FRUITS)
-    {
-        Vector(270.f + 90.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_POTION + 12)
-    {
-        switch (Level)
-        {
-        case 0:Vector(180.f, 0.f, 0.f, ObjectSelect.Angle); break;
-        case 1:Vector(270.f, 90.f, 0.f, ObjectSelect.Angle); break;
-        case 2:Vector(90.f, 0.f, 0.f, ObjectSelect.Angle); break;
-        }
-    }
-    else if (Type == MODEL_EVENT + 5)
-    {
-        Vector(270.f, 180.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_EVENT + 6)
-    {
-        Vector(270.f, 90.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_EVENT + 7)
-    {
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_POTION + 20)
-    {
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_POTION + 27)
-    {
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_FIRECRACKER)
-    {
-        Position[1] += 0.08f;
-        Vector(-50.f, -60.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_GM_GIFT)
-    {
-        //Position[1] += 0.08f;
-        Vector(270.f, -25.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type >= MODEL_CHAIN_LIGHTNING_PARCHMENT && Type <= MODEL_INNOVATION_PARCHMENT)
-    {
-        Position[0] += 0.03f;
-        Position[1] += 0.03f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_ORB_OF_TWISTING_SLASH)
-    {
-        Position[0] += 0.005f;
-        Position[1] -= 0.015f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_VINE_ARMOR)
-    {
-        Position[1] -= 0.1f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_VINE_PANTS)
-    {
-        Position[1] -= 0.08f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_SILK_ARMOR)
-    {
-        Position[1] -= 0.1f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_SILK_PANTS)
-    {
-        Position[1] -= 0.08f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_CRYSTAL_OF_DESTRUCTION)
-    {
-        Position[0] += 0.005f;
-        Position[1] -= 0.015f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_CRYSTAL_OF_RECOVERY || Type == MODEL_CRYSTAL_OF_MULTI_SHOT)
-    {
-        Position[0] += 0.005f;
-        Position[1] -= 0.015f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else
-    {
-        Vector(270.f, -10.f, 0.f, ObjectSelect.Angle);
-    }
-
-    if (Type >= MODEL_SEED_FIRE && Type <= MODEL_SEED_EARTH)
-    {
-        Vector(10.f, -10.f, 10.f, ObjectSelect.Angle);
-    }
-    else if (Type >= MODEL_SPHERE_MONO && Type <= MODEL_SPHERE_5)
-    {
-        Vector(0.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type >= MODEL_SEED_SPHERE_FIRE_1 && Type <= MODEL_SEED_SPHERE_EARTH_5)
-    {
-        Vector(0.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_PET_RUDOLF)
-    {
-        Position[1] -= 0.05f;
-        Vector(270.f, 40.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_PET_SKELETON)
-    {
-        Position[1] -= 0.05f;
-        Vector(270.f, 40.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_POTION + 140)
-    {
-        Position[1] += 0.09f;
-        Vector(0.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type >= MODEL_POTION + 145 && Type <= MODEL_POTION + 150)
-    {
-        Position[0] += 0.010f;
-        Position[1] += 0.040f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type >= MODEL_HELPER + 125 && Type <= MODEL_HELPER + 127)
-    {
-        Position[0] += 0.007f;
-        Position[1] -= 0.035f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 124)
-    {
-        Position[1] -= 0.04f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_PET_PANDA)
-    {
-        Position[1] -= 0.05f;
-        Vector(270.f, 40.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_PET_UNICORN)
-    {
-        Position[0] += 0.01f;
-        Position[1] -= 0.05f;
-        Vector(255.f, 45.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_SNOWMAN_TRANSFORMATION_RING)
-    {
-        Position[0] += 0.02f;
-        Position[1] -= 0.02f;
-        Vector(300.f, 10.f, 20.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_PANDA_TRANSFORMATION_RING)
-    {
-        //		Position[0] += 0.02f;
-        Position[1] -= 0.02f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_SKELETON_TRANSFORMATION_RING)
-    {
-        Position[0] += 0.01f;
-        Position[1] -= 0.035f;
-        Vector(290.f, -20.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 128)
-    {
-        Position[0] += 0.017f;
-        Position[1] -= 0.053f;
-        Vector(270.f, -20.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 129)
-    {
-        Position[0] += 0.012f;
-        Position[1] -= 0.045f;
-        Vector(270.f, -20.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 134)
-    {
-        Position[0] += 0.005f;
-        Position[1] -= 0.033f;
-        Vector(270.f, -20.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 130)
-    {
-        Position[0] += 0.007f;
-        Position[1] += 0.005f;
-        Vector(270.f, -20.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 131)
-    {
-        Position[0] += 0.017f;
-        Position[1] -= 0.053f;
-        Vector(270.f, -20.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 132)
-    {
-        Position[0] += 0.007f;
-        Position[1] += 0.045f;
-        Vector(270.f, -20.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 133)
-    {
-        Position[0] += 0.017f;
-        Position[1] -= 0.053f;
-        Vector(270.f, -20.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 69)
-    {
-        Position[0] += 0.005f;
-        Position[1] -= 0.05f;
-        Vector(270.f, -30.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 70)
-    {
-        Position[0] += 0.040f;
-        Position[1] -= 0.000f;
-        Vector(270.f, -0.f, 70.f, ObjectSelect.Angle);
-    }
-
-    else if (Type == MODEL_HELPER + 81)
-    {
-        Position[0] += 0.005f;
-        Position[1] += 0.035f;
-        Vector(-90.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 82)
-    {
-        Position[0] += 0.005f;
-        Position[1] += 0.035f;
-        Vector(-90.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 93)
-    {
-        Position[0] += 0.005f;
-        Vector(-90.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 94)
-    {
-        Position[0] += 0.005f;
-        Vector(-90.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 66)
-    {
-        Position[0] += 0.01f;
-        Position[1] -= 0.05f;
-        Vector(270.0f, 0.0f, 0.0f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_POTION + 100)
-    {
-        Position[0] += 0.01f;
-        Position[1] -= 0.05f;
-        Vector(0.0f, 0.0f, 0.0f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_CHRISTMAS_FIRECRACKER)
-    {
-        Position[0] += 0.02f;
-        Position[1] -= 0.03f;
-        //Vector(270.f,0.f,30.f,ObjectSelect.Angle);
-        Vector(290.f, -40.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_CHROMATIC_STAFF)
-    {
-        Position[0] += 0.02f;
-        Position[1] -= 0.06f;
-        Vector(180.f, 90.f, 10.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_RAVEN_STICK)
-    {
-        Position[1] -= 0.05f;
-        Vector(180.f, 90.f, 10.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_BEUROBA)
-    {
-        Position[1] += 0.02f;
-        Vector(180.f, 90.f, 15.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_STRYKER_SCEPTER)
-    {
-        Position[0] -= 0.03f;
-        Position[1] += 0.06f;
-        Vector(180.f, 90.f, 2.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_AIR_LYN_BOW)
-    {
-        Position[0] -= 0.07f;
-        Position[1] += 0.07f;
-        Vector(180.f, -90.f, 15.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_CRYSTAL_OF_FLAME_STRIKE)
-    {
-        Position[0] += 0.005f;
-        Position[1] -= 0.015f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 71 || Type == MODEL_HELPER + 72 || Type == MODEL_HELPER + 73 || Type == MODEL_HELPER + 74 || Type == MODEL_HELPER + 75)
-    {
-        Position[1] += 0.07f;
-        Vector(270.f, 180.f, 0.f, ObjectSelect.Angle);
-        if (Select != 1)
-        {
-            ObjectSelect.Angle[1] = WorldTime * 0.2f;
-        }
-    }
-    else if (Type >= static_cast<int>(MODEL_TYPE_CHARM_MIXWING) + EWS_BEGIN && Type <= static_cast<int>(MODEL_TYPE_CHARM_MIXWING) + EWS_END)
-    {
-        Position[1] -= 0.03f;
-        Vector(-90.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 97 || Type == MODEL_HELPER + 98 || Type == MODEL_POTION + 91)
-    {
-        Position[1] -= 0.04f;
-        Position[0] += 0.002f;
-        Vector(270.0f, 0.0f, 0.0f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 99)
-    {
-        Position[0] += 0.002f;
-        Position[1] += 0.025f;
-        Vector(270.0f, 180.0f, 45.0f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_POTION + 110)
-    {
-        Position[0] += 0.005f;
-        Position[1] -= 0.02f;
-    }
-    else if (Type == MODEL_POTION + 111)
-    {
-        Position[0] += 0.01f;
-        Position[1] -= 0.02f;
-    }
-    else if (Type == MODEL_HELPER + 107)
-    {
-        Position[0] -= 0.0f;
-        Position[1] += 0.0f;
-        Vector(90.0f, 225.0f, 45.0f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 104)
-    {
-        Position[0] += 0.01f;
-        Position[1] -= 0.03f;
-        Vector(270.0f, 0.0f, 0.0f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 105)
-    {
-        Position[0] += 0.01f;
-        Position[1] -= 0.03f;
-        Vector(270.0f, 0.0f, 0.0f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 103)
-    {
-        Position[0] += 0.01f;
-        Position[1] += 0.01f;
-        Vector(0.0f, 0.0f, 0.0f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_POTION + 133)
-    {
-        Position[0] += 0.01f;
-        Position[1] -= 0.0f;
-        Vector(270.0f, 0.0f, 0.0f, ObjectSelect.Angle);
-    }
-    else if (MODEL_SUSPICIOUS_SCRAP_OF_PAPER <= Type && Type <= MODEL_COMPLETE_SECROMICON)
-    {
-        switch (Type)
-        {
-        case MODEL_SUSPICIOUS_SCRAP_OF_PAPER:
-        {
-            Position[0] += 0.005f;
-            //Position[1] -= 0.02f;
-        }break;
-        case MODEL_GAIONS_ORDER:
-        {
-            Position[0] += 0.005f;
-            Position[1] += 0.05f;
-            Vector(0.0f, 0.0f, 30.0f, ObjectSelect.Angle);
-        }break;
-        case MODEL_FIRST_SECROMICON_FRAGMENT:
-        case MODEL_SECOND_SECROMICON_FRAGMENT:
-        case MODEL_THIRD_SECROMICON_FRAGMENT:
-        case MODEL_FOURTH_SECROMICON_FRAGMENT:
-        case MODEL_FIFTH_SECROMICON_FRAGMENT:
-        case MODEL_SIXTH_SECROMICON_FRAGMENT:
-        {
-            Position[0] += 0.005f;
-            Position[1] += 0.05f;
-            Vector(0.0f, 0.0f, 30.0f, ObjectSelect.Angle);
-        }break;
-        case MODEL_COMPLETE_SECROMICON:
-        {
-            Position[0] += 0.005f;
-            Position[1] += 0.05f;
-            Vector(0.0f, 0.0f, 0.0f, ObjectSelect.Angle);
-        }break;
-        }
-    }
-    else if (Type >= MODEL_HELPER + 109 && Type <= MODEL_HELPER + 112)
-    {
-        Position[0] += 0.025f;
-        Position[1] -= 0.035f;
-        Vector(270.0f, 25.0f, 25.0f, ObjectSelect.Angle);
-    }
-    else if (Type >= MODEL_HELPER + 113 && Type <= MODEL_HELPER + 115)
-    {
-        Position[0] += 0.005f;
-        Position[1] -= 0.00f;
-        Vector(270.0f, 0.0f, 0.0f, ObjectSelect.Angle);
-    }
-    else if (Type >= MODEL_POTION + 112 && Type <= MODEL_POTION + 113)
-    {
-        Position[0] += 0.05f;
-        Position[1] += 0.009f;
-        Vector(270.0f, 180.0f, 45.0f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_POTION + 120)
-    {
-        Position[0] += 0.01f;
-        Position[1] += 0.05f;
-        Vector(270.0f, 0.0f, 0.0f, ObjectSelect.Angle);
-    }
-    else if (MODEL_POTION + 134 <= Type && Type <= MODEL_POTION + 139)
-    {
-        Position[0] += 0.00f;
-        Position[1] += 0.05f;
-        Vector(270.0f, 0.0f, 0.0f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 116)
-    {
-        Position[1] -= 0.03f;
-        Position[0] += 0.005f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type >= MODEL_POTION + 114 && Type <= MODEL_POTION + 119)
-    {
-        Position[0] += 0.00f;
-        Position[1] += 0.06f;
-        Vector(270.0f, 0.0f, 0.0f, ObjectSelect.Angle);
-    }
-    else if (Type >= MODEL_POTION + 126 && Type <= MODEL_POTION + 129)
-    {
-        Position[0] += 0.00f;
-        Position[1] += 0.06f;
-        Vector(270.0f, 0.0f, 0.0f, ObjectSelect.Angle);
-    }
-    else if (Type >= MODEL_POTION + 130 && Type <= MODEL_POTION + 132)
-    {
-        Position[0] += 0.00f;
-        Position[1] += 0.06f;
-        Vector(270.0f, 0.0f, 0.0f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_HELPER + 121)
-    {
-        Position[1] -= 0.04f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_SACRED_HELM)
-    {
-        Position[1] += 0.04f;
-        Vector(-90.f, 25.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_ARMORINVEN_60
-        || Type == MODEL_ARMORINVEN_61
-        || Type == MODEL_ARMORINVEN_62)
-    {
-        Position[0] += 0.01f;
-        Position[1] += 0.08f;
-        Vector(0.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_ARMORINVEN_74)
-    {
-        Position[0] += 0.01f;
-        Position[1] += 0.05f;
-        Vector(90.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_SACRED_GLOVE)
-    {
-        Position[0] += 0.005f;
-        Position[1] += 0.015f;
-        Vector(-90.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type >= MODEL_STORM_HARD_GLOVE && Type <= MODEL_PIERCING_BLADE_GLOVE)
-    {
-        Position[0] += 0.002f;
-        Position[1] += 0.02f;
-        Vector(0.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_PHOENIX_SOUL_STAR)
-    {
-        Position[0] -= 0.005f;
-        Position[1] += 0.015f;
-        Vector(0.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_CAPE_OF_FIGHTER)
-    {
-        Position[1] += 0.01f;
-        Position[0] += 0.015f;
-        Vector(-90.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_CAPE_OF_OVERRULE)
-    {
-        Position[1] += 0.15f;
-        Vector(270.f, -10.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type >= MODEL_CHAIN_DRIVE_PARCHMENT && Type <= MODEL_INCREASE_BLOCK_PARCHMENT)
-    {
-        Position[0] += 0.03f;
-        Position[1] += 0.03f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_WING + 135)
-    {
-        Position[1] += 0.05f;
-        Position[0] += 0.005f;
-    }
-    else if (Type >= MODEL_HELPER + 135 && Type <= MODEL_HELPER + 145)
-    {
-        Position[1] += 0.02f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (Type == MODEL_POTION + 160 || Type == MODEL_POTION + 161)
-    {
-        Position[1] += 0.05f;
-        Vector(270.f, 0.f, 0.f, ObjectSelect.Angle);
-    }
-    else if (COMGEM::Check_Jewel_Com(Type - MODEL_ITEM) != COMGEM::NOGEM)
-    {
-        Vector(270.f, -10.f, 0.f, ObjectSelect.Angle);
-        switch (COMGEM::Check_Jewel_Com(Type - MODEL_ITEM))
-        {
-        case COMGEM::eLOW_C:
-        case COMGEM::eUPPER_C:
-            Vector(270.f, -10.f, -45.f, ObjectSelect.Angle);
-            break;
-        case COMGEM::eLIFE_C:
-        case COMGEM::eCREATE_C:
-            Position[1] -= 0.05f;
-            break;
-        case COMGEM::eGEMSTONE_C:
-            Position[1] -= 0.05f;
-            Vector(270.f, 90.f, 0.f, ObjectSelect.Angle);
-            break;
-        }
-    }
-
-    switch (Type)
-    {
-    case MODEL_FLAMBERGE:
-    {
-        Position[0] -= 0.02f;
-        Position[1] += 0.04f;
-        Vector(180.f, 270.f, 10.f, ObjectSelect.Angle);
-    }break;
-    case MODEL_SWORD_BREAKER:
-    {
-        Vector(180.f, 270.f, 15.f, ObjectSelect.Angle);
-    }break;
-    case MODEL_IMPERIAL_SWORD:
-    {
-        Position[1] += 0.02f;
-        Vector(180.f, 270.f, 10.f, ObjectSelect.Angle);
-    }break;
-    case MODEL_FROST_MACE:
-    {
-        Position[0] -= 0.02f;
-        Vector(180.f, 270.f, 15.f, ObjectSelect.Angle);
-    }
-    break;
-    case MODEL_ABSOLUTE_SCEPTER:
-    {
-        Position[0] -= 0.02f;
-        Position[1] += 0.04f;
-        Vector(180.f, 270.f, 15.f, ObjectSelect.Angle);
-    }break;
-    case MODEL_DEADLY_STAFF:
-    {
-        Vector(180.f, 90.f, 10.f, ObjectSelect.Angle);
-    }break;
-    case MODEL_IMPERIAL_STAFF:
-    {
-        Vector(180.f, 90.f, 10.f, ObjectSelect.Angle);
-    }break;
-    case MODEL_STAFF + 32:
-    {
-        Vector(180.f, 90.f, 10.f, ObjectSelect.Angle);
-    }break;
-    }
-
-    switch (Type)
-    {
-    case MODEL_CHAOS_LIGHTNING_STAFF:
-    {
-        Vector(0.f, 0.f, 205.f, ObjectSelect.Angle);
-    }break;
-    }
-
-    switch (Type)
-    {
-    case MODEL_ORB_OF_HEALING:
-    case MODEL_ORB_OF_GREATER_DEFENSE:
-    case MODEL_ORB_OF_GREATER_DAMAGE:
-    case MODEL_ORB_OF_SUMMONING:
-    {
-        Position[0] += 0.005f;
-        Position[1] -= 0.02f;
-    }
-    break;
-    case MODEL_POTION + 21:
-    {
-        Position[0] += 0.005f;
-        Position[1] -= 0.005f;
-    }
-    break;
-    case MODEL_JEWEL_OF_BLESS:
-    case MODEL_JEWEL_OF_SOUL:
-    case MODEL_JEWEL_OF_CREATION:
-    {
-        Position[0] += 0.005f;
-        Position[1] += 0.015f;
-    }
-    break;
-    }
-
     if (1 == Select)
     {
-        ObjectSelect.Angle[1] = WorldTime * 0.45f;
+        ObjectSelect.Angle[1] = WorldTime * SelectedItemTurnSpeed;
     }
 
-    ObjectSelect.Type = Type;
-    if (ObjectSelect.Type >= MODEL_HELM && ObjectSelect.Type < MODEL_BOOTS + MAX_ITEM_INDEX
-        || ObjectSelect.Type == MODEL_ARMORINVEN_60
-        || ObjectSelect.Type == MODEL_ARMORINVEN_61
-        || ObjectSelect.Type == MODEL_ARMORINVEN_62
-        || ObjectSelect.Type == MODEL_ARMORINVEN_74)
-        ObjectSelect.Type = MODEL_PLAYER;
-    else if (ObjectSelect.Type == MODEL_POTION + 12)
-    {
-        if (Level == 0)
-        {
-            ObjectSelect.Type = MODEL_EVENT;
-            Type = MODEL_EVENT;
-        }
-        else if (Level == 2)
-        {
-            ObjectSelect.Type = MODEL_EVENT + 1;
-            Type = MODEL_EVENT + 1;
-        }
-    }
+    ObjectSelect.Type = Render::Items::Display::IsDrawnOnCharacterSkeleton(Type) ? MODEL_PLAYER : Type;
 
     BMD* b = &Models[ObjectSelect.Type];
     b->CurrentAction = 0;
     ObjectSelect.AnimationFrame = 0;
     ObjectSelect.PriorAnimationFrame = 0;
     ObjectSelect.PriorAction = 0;
-    if (Type >= MODEL_HELM && Type < MODEL_HELM + MAX_ITEM_INDEX)
+    b->BodyHeight = display.bodyHeight;
+
+    float Scale = display.scale;
+    if (const std::optional<float> smallScale = Render::Items::Display::GetSmallArchangelWeaponScale(Type, ItemLevel))
     {
-        b->BodyHeight = -160.f;
-
-        if (Check_LuckyItem(Type - MODEL_ITEM))				b->BodyHeight -= 10.0f;
-        if (Type == MODEL_HELM + 65 || Type == MODEL_HELM + 70)	Position[0] += 0.04f;
+        Scale = *smallScale;
+        ItemLevel = 0;
     }
-    else if (Type >= MODEL_ARMOR && Type < MODEL_ARMOR + MAX_ITEM_INDEX)
-    {
-        b->BodyHeight = -100.f;
 
-        if (Check_LuckyItem(Type - MODEL_ITEM))	b->BodyHeight -= 13.0f;
-    }
-    else if (Type >= MODEL_GLOVES && Type < MODEL_GLOVES + MAX_ITEM_INDEX)
-        b->BodyHeight = -70.f;
-    else if (Type >= MODEL_PANTS && Type < MODEL_PANTS + MAX_ITEM_INDEX)
-        b->BodyHeight = -50.f;
-    else
-        b->BodyHeight = 0.f;
-    float Scale = 0.f;
-
-    if (Type >= MODEL_HELM && Type < MODEL_BOOTS + MAX_ITEM_INDEX)
-    {
-        if (Type >= MODEL_HELM && Type < MODEL_HELM + MAX_ITEM_INDEX)
-        {
-            Scale = MODEL_MISTERY_HELM <= Type && MODEL_LILIUM_HELM >= Type ? 0.007f : 0.0039f;
-            if (Type == MODEL_SYLPHID_RAY_HELM)
-                Scale = 0.007f;
-
-            if (Type == MODEL_HELM + 65 || Type == MODEL_HELM + 70)	Scale = 0.007f;
-        }
-        else if (Type >= MODEL_ARMOR && Type < MODEL_ARMOR + MAX_ITEM_INDEX)
-            Scale = 0.0039f;
-        else if (Type >= MODEL_GLOVES && Type < MODEL_GLOVES + MAX_ITEM_INDEX)
-            Scale = 0.0038f;
-        else if (Type >= MODEL_PANTS && Type < MODEL_PANTS + MAX_ITEM_INDEX)
-            Scale = 0.0033f;
-        else if (Type >= MODEL_BOOTS && Type < MODEL_BOOTS + MAX_ITEM_INDEX)
-            Scale = 0.0032f;
-        else if (Type == MODEL_VENOM_MIST_ARMOR)
-            Scale = 0.0035f;
-        else if (Type == MODEL_VOLCANO_ARMOR)
-            Scale = 0.0035f;
-        else if (Type == MODEL_DRAGON_KNIGHT_ARMOR)
-            Scale = 0.0033f;
-        if (Type == MODEL_ASHCROW_ARMOR)
-            Scale = 0.0032f;
-        else if (Type == MODEL_ECLIPSE_ARMOR)
-            Scale = 0.0032f;
-        else if (Type == MODEL_GLORIOUS_GLOVES)
-            Scale = 0.0032f;
-    }
-    else
-    {
-        if (Type == MODEL_WINGS_OF_DARKNESS)
-            Scale = 0.0015f;
-        else if (COMGEM::Check_Jewel_Com(Type - MODEL_ITEM) != COMGEM::NOGEM)
-        {
-            Scale = 0.004f;
-            switch (COMGEM::Check_Jewel_Com(Type - MODEL_ITEM))
-            {
-            case COMGEM::eLOW_C:
-                Position[0] -= 0.05f;
-                Scale = 0.003f;
-                break;
-            case COMGEM::eUPPER_C:
-                Position[0] -= 0.05f;
-                Scale = 0.004f;
-                break;
-            case COMGEM::eCREATE_C:
-                Position[1] += 0.05f;
-                Scale = 0.0025f;
-                break;
-            case COMGEM::eCHAOS_C:
-                Position[1] += 0.025f;
-                Scale = 0.002f;
-                break;
-            case COMGEM::ePROTECT_C:
-                Position[1] += 0.05f;
-                Scale = 0.0036f;
-                break;
-            case COMGEM::eLIFE_C:
-                Position[1] += 0.025f;
-                Scale = 0.0035f;
-                break;
-            case COMGEM::eGEMSTONE_C:
-                Position[1] += 0.05f;
-                Scale = 0.0035f;
-                break;
-            case COMGEM::eHARMONY_C:
-                Scale = 0.005f;
-                break;
-            }
-        }
-        else if (Type >= MODEL_RED_RIBBON_BOX && Type <= MODEL_BLUE_RIBBON_BOX)
-        {
-            Scale = 0.001f;
-            Position[1] -= 0.05f;
-        }
-        else if (Type >= MODEL_SEED_FIRE && Type <= MODEL_SEED_EARTH)
-            Scale = 0.0022f;
-        else if (Type >= MODEL_SPHERE_MONO && Type <= MODEL_SPHERE_5)
-            Scale = 0.0017f;
-        else if (Type >= MODEL_SEED_SPHERE_FIRE_1 && Type <= MODEL_SEED_SPHERE_EARTH_5)
-            Scale = 0.0017f;
-        else if (Type >= MODEL_WING && Type < MODEL_WING + MAX_ITEM_INDEX)
-        {
-            Scale = 0.002f;
-        }
-        else
-            if (Type == MODEL_PUMPKIN_OF_LUCK || Type == MODEL_JACK_OLANTERN_FOOD)
-            {
-                Scale = 0.003f;
-            }
-            else
-                if (Type >= MODEL_JACK_OLANTERN_BLESSINGS && Type <= MODEL_JACK_OLANTERN_CRY)
-                {
-                    Scale = 0.0025f;
-                }
-                else
-                    if (Type == MODEL_JACK_OLANTERN_DRINK)
-                    {
-                        Scale = 0.001f;
-                    }
-                    else
-                        if (Type >= MODEL_PINK_CHOCOLATE_BOX && Type <= MODEL_BLUE_CHOCOLATE_BOX)
-                        {
-                            Scale = 0.002f;
-                            Position[1] += 0.05f;
-                            Vector(0.f, ObjectSelect.Angle[1], 0.f, ObjectSelect.Angle);
-                        }
-                        else
-                            if (Type >= MODEL_EVENT + 21 && Type <= MODEL_EVENT + 23)
-                            {
-                                Scale = 0.002f;
-                                if (Type == MODEL_EVENT + 21)
-                                    Position[1] += 0.08f;
-                                else
-                                    Position[1] += 0.06f;
-                                Vector(0.f, ObjectSelect.Angle[1], 0.f, ObjectSelect.Angle);
-                            }
-                            else if (Type == MODEL_POTION + 21)
-                                Scale = 0.002f;
-                            else if (Type == MODEL_GREAT_REIGN_CROSSBOW)
-                                Scale = 0.002f;
-                            else if (Type == MODEL_EVENT + 11)
-                                Scale = 0.0015f;
-                            else if (Type == MODEL_DARK_HORSE_ITEM)
-                                Scale = 0.0015f;
-                            else if (Type == MODEL_DARK_RAVEN_ITEM)
-                                Scale = 0.005f;
-                            else if (Type == MODEL_CAPE_OF_LORD)
-                                Scale = 0.002f;
-                            else if (Type == MODEL_EVENT + 16)
-                                Scale = 0.002f;
-                            else if (Type == MODEL_SCROLL_OF_ARCHANGEL)
-                                Scale = 0.002f;
-                            else if (Type == MODEL_BLOOD_BONE)
-                                Scale = 0.0018f;
-                            else if (Type == MODEL_INVISIBILITY_CLOAK)
-                                Scale = 0.0018f;
-                            else if (Type == MODEL_HELPER + 46)
-                            {
-                                Scale = 0.0018f;
-                            }
-                            else if (Type == MODEL_HELPER + 47)
-                            {
-                                Scale = 0.0018f;
-                            }
-                            else if (Type == MODEL_HELPER + 48)
-                            {
-                                Scale = 0.0018f;
-                            }
-                            else if (Type == MODEL_POTION + 54)
-                            {
-                                Scale = 0.0024f;
-                            }
-                            else if (Type == MODEL_POTION + 58)
-                            {
-                                Scale = 0.0012f;
-                            }
-                            else if (Type == MODEL_POTION + 59 || Type == MODEL_POTION + 60)
-                            {
-                                Scale = 0.0010f;
-                            }
-                            else if (Type == MODEL_POTION + 61 || Type == MODEL_POTION + 62)
-                            {
-                                Scale = 0.0009f;
-                            }
-                            else if (Type == MODEL_POTION + 53)
-                            {
-                                Scale = 0.00078f;
-                            }
-                            else if (Type == MODEL_HELPER + 43 || Type == MODEL_HELPER + 44 || Type == MODEL_HELPER + 45)
-                            {
-                                Scale = 0.0021f;
-                            }
-                            else if (Type >= MODEL_POTION + 70 && Type <= MODEL_POTION + 71)
-                            {
-                                Scale = 0.0028f;
-                            }
-                            else if (Type >= MODEL_POTION + 72 && Type <= MODEL_POTION + 77)
-                            {
-                                Scale = 0.0025f;
-                            }
-                            else if (Type == MODEL_HELPER + 59)
-                            {
-                                Scale = 0.0008f;
-                            }
-                            else if (Type >= MODEL_HELPER + 54 && Type <= MODEL_HELPER + 58)
-                            {
-                                Scale = 0.004f;
-                            }
-                            else if (Type >= MODEL_POTION + 78 && Type <= MODEL_POTION + 82)
-                            {
-                                Scale = 0.0025f;
-                            }
-                            else if (Type == MODEL_HELPER + 60)
-                            {
-                                Scale = 0.005f;
-                            }
-                            else if (Type == MODEL_HELPER + 61)
-                            {
-                                Scale = 0.0018f;
-                            }
-                            else if (Type == MODEL_POTION + 83)
-                            {
-                                Scale = 0.0009f;
-                            }
-                            else if (Type == MODEL_HELPER + 43 || Type == MODEL_HELPER + 44 || Type == MODEL_HELPER + 45)
-                            {
-                                Scale = 0.0021f;
-                            }
-                            else if (Type == MODEL_POTION + 91)
-                            {
-                                Scale = 0.0034f;
-                            }
-                            else if (Type == MODEL_POTION + 92)
-                            {
-                                Scale = 0.0024f;
-                            }
-                            else if (Type == MODEL_POTION + 93)
-                            {
-                                Scale = 0.0024f;
-                            }
-                            else if (Type == MODEL_POTION + 95)
-                            {
-                                Scale = 0.0024f;
-                            }
-                            else if (Type == MODEL_POTION + 94)
-                            {
-                                Scale = 0.0022f;
-                            }
-                            else if (Type == MODEL_CHERRY_BLOSSOM_PLAYBOX)
-                            {
-                                Scale = 0.0031f;
-                            }
-                            else if (Type == MODEL_CHERRY_BLOSSOM_WINE)
-                            {
-                                Scale = 0.0044f;
-                            }
-                            else if (Type == MODEL_CHERRY_BLOSSOM_RICE_CAKE)
-                            {
-                                Scale = 0.0031f;
-                            }
-                            else if (Type == MODEL_CHERRY_BLOSSOM_FLOWER_PETAL)
-                            {
-                                Scale = 0.0061f;
-                            }
-                            else if (Type == MODEL_POTION + 88)
-                            {
-                                Scale = 0.0035f;
-                            }
-                            else if (Type == MODEL_POTION + 89)
-                            {
-                                Scale = 0.0035f;
-                            }
-                            else if (Type == MODEL_GOLDEN_CHERRY_BLOSSOM_BRANCH)
-                            {
-                                Scale = 0.0035f;
-                            }
-                            else if (Type >= MODEL_HELPER + 62 && Type <= MODEL_HELPER + 63)
-                            {
-                                Scale = 0.002f;
-                            }
-                            else if (Type >= MODEL_POTION + 97 && Type <= MODEL_POTION + 98)
-                            {
-                                Scale = 0.003f;
-                            }
-                            else if (Type == MODEL_POTION + 96)
-                            {
-                                Scale = 0.0028f;
-                            }
-                            else if (MODEL_DEMON == Type || Type == MODEL_SPIRIT_OF_GUARDIAN)
-                            {
-                                switch (Type)
-                                {
-                                case MODEL_DEMON: Scale = 0.0005f; break;
-                                case MODEL_SPIRIT_OF_GUARDIAN: Scale = 0.0016f; break;
-                                }
-                            }
-                            else if (Type == MODEL_PET_RUDOLF)
-                            {
-                                Scale = 0.0015f;
-                            }
-                            else if (Type == MODEL_PET_PANDA)
-                            {
-                                Scale = 0.0020f;
-                            }
-                            else if (Type == MODEL_SNOWMAN_TRANSFORMATION_RING)
-                            {
-                                Scale = 0.0026f;
-                            }
-                            else if (Type == MODEL_PANDA_TRANSFORMATION_RING)
-                            {
-                                Scale = 0.0026f;
-                            }
-                            else if (Type == MODEL_HELPER + 69)
-                            {
-                                Scale = 0.0023f;
-                            }
-                            else if (Type == MODEL_HELPER + 70)
-                            {
-                                Scale = 0.0018f;
-                            }
-                            else if (Type == MODEL_HELPER + 81)
-                                Scale = 0.0012f;
-                            else if (Type == MODEL_HELPER + 82)
-                                Scale = 0.0012f;
-                            else if (Type == MODEL_HELPER + 93)
-                                Scale = 0.0021f;
-                            else if (Type == MODEL_HELPER + 94)
-                                Scale = 0.0021f;
-                            else if (Type == MODEL_DIVINE_SWORD_OF_ARCHANGEL)
-                            {
-                                if (ItemLevel >= 0)
-                                {
-                                    Scale = 0.0025f;
-                                }
-                                else
-                                {
-                                    Scale = 0.001f;
-                                    ItemLevel = 0;
-                                }
-                            }
-                            else if (Type == MODEL_DIVINE_STAFF_OF_ARCHANGEL)
-                            {
-                                if (ItemLevel >= 0)
-                                {
-                                    Scale = 0.0019f;
-                                }
-                                else
-                                {
-                                    Scale = 0.001f;
-                                    ItemLevel = 0;
-                                }
-                            }
-                            else if (Type == MODEL_DIVINE_CB_OF_ARCHANGEL)
-                            {
-                                if (ItemLevel >= 0)
-                                {
-                                    Scale = 0.0025f;
-                                }
-                                else
-                                {
-                                    Scale = 0.0015f;
-                                    ItemLevel = 0;
-                                }
-                            }
-                            else if (Type >= MODEL_BATTLE_SCEPTER && Type <= MODEL_LORD_SCEPTER)
-                            {
-                                Scale = 0.003f;
-                            }
-                            else if (Type == MODEL_GREAT_LORD_SCEPTER)
-                            {
-                                Scale = 0.0025f;
-                            }
-                            else if (Type == MODEL_STRYKER_SCEPTER)
-                            {
-                                Scale = 0.0024f;
-                            }
-                            else if (Type == MODEL_EVENT + 12)
-                            {
-                                Scale = 0.0012f;
-                            }
-                            else if (Type == MODEL_EVENT + 13)
-                            {
-                                Scale = 0.0025f;
-                            }
-                            else if (Type == MODEL_EVENT + 14)
-                            {
-                                Scale = 0.0028f;
-                            }
-                            else if (Type == MODEL_EVENT + 15)
-                            {
-                                Scale = 0.0023f;
-                            }
-                            else if (Type >= MODEL_JEWEL_OF_CREATION && Type < MODEL_TEAR_OF_ELF)
-                            {
-                                Scale = 0.0025f;
-                            }
-                            else if (Type >= MODEL_TEAR_OF_ELF && Type < MODEL_POTION + 27)
-                            {
-                                Scale = 0.0028f;
-                            }
-                            else if (Type == MODEL_FIRECRACKER)
-                            {
-                                Scale = 0.007f;
-                            }
-                            else if (Type == MODEL_CHRISTMAS_FIRECRACKER)
-                            {
-                                Scale = 0.0025f;
-                            }
-                            else if (Type == MODEL_GM_GIFT)
-                            {
-                                Scale = 0.0014f;
-                            }
-                            else if (Type == MODEL_MOONSTONE_PENDANT)
-                            {
-                                Scale = 0.0025f;
-                            }
-                            else if (Type == MODEL_GEMSTONE)
-                            {
-                                Scale = 0.0035f;
-                            }
-                            else if (Type == MODEL_JEWEL_OF_HARMONY)
-                            {
-                                Scale = 0.005f;
-                            }
-                            else if (Type == MODEL_LOWER_REFINE_STONE)
-                            {
-                                Position[1] += -0.005f;
-                                Scale = 0.0035f;
-                            }
-                            else if (Type == MODEL_HIGHER_REFINE_STONE)
-                            {
-                                Position[1] += -0.005f;
-                                Scale = 0.004f;
-                            }
-                            else if (Type == MODEL_SIEGE_POTION)
-                            {
-                                Scale = 0.0025f;
-                            }
-                            else if (Type == MODEL_HELPER + 43 || Type == MODEL_HELPER + 44 || Type == MODEL_HELPER + 45)
-                            {
-                                Scale = 0.0021f;
-                            }
-                            else if (Type == MODEL_HELPER + 7)
-                            {
-                                Scale = 0.0025f;
-                            }
-                            else if (Type == MODEL_LIFE_STONE_ITEM)
-                            {
-                                Scale = 0.0025f;
-                            }
-                            else if (Type == MODEL_SPLINTER_OF_ARMOR)
-                            {
-                                Scale = 0.0019f;
-                            }
-                            else if (Type == MODEL_BLESS_OF_GUARDIAN)
-                            {
-                                Scale = 0.004f;
-                            }
-                            else if (Type == MODEL_CLAW_OF_BEAST)
-                            {
-                                Scale = 0.004f;
-                            }
-                            else if (Type == MODEL_FRAGMENT_OF_HORN)
-                            {
-                                Scale = 0.004f;
-                            }
-                            else if (Type == MODEL_BROKEN_HORN)
-                            {
-                                Scale = 0.007f;
-                            }
-                            else if (Type == MODEL_HORN_OF_FENRIR)
-                            {
-                                Scale = 0.005f;
-                            }
-                            else if (Type == MODEL_SYLPH_WIND_BOW)
-                            {
-                                Scale = 0.0022f;
-                            }
-                            else if (Type == MODEL_OLD_SCROLL)
-                            {
-                                Scale = 0.0013f;
-                            }
-                            else if (Type == MODEL_ILLUSION_SORCERER_COVENANT)
-                            {
-                                Scale = 0.003f;
-                            }
-                            else if (Type == MODEL_SCROLL_OF_BLOOD)
-                            {
-                                Scale = 0.003f;
-                            }
-                            else if (Type == MODEL_POTION + 64)
-                            {
-                                Scale = 0.003f;
-                            }
-                            else if (Type == MODEL_FLAME_OF_DEATH_BEAM_KNIGHT)
-                                Scale = 0.003f;
-                            else if (Type == MODEL_HORN_OF_HELL_MAINE)
-                                Scale = 0.0035f;
-                            else if (Type == MODEL_FEATHER_OF_DARK_PHOENIX)
-                                Scale = 0.0035f;
-                            else if (Type == MODEL_EYE_OF_ABYSSAL)
-                                Scale = 0.003f;
-                            else if (Type == MODEL_FLAME_OF_CONDOR)
-                                Scale = 0.005f;
-                            else if (Type == MODEL_FEATHER_OF_CONDOR)
-                                Scale = 0.005f;
-                            else if (Type == MODEL_DAYBREAK)
-                            {
-                                Scale = 0.0028f;
-                            }
-                            else if (Type == MODEL_ALBATROSS_BOW)
-                            {
-                                Scale = 0.0020f;
-                            }
-                            else if (Type == MODEL_STINGER_BOW)
-                            {
-                                Scale = 0.0032f;
-                            }
-                            else if (Type == MODEL_LOCHS_FEATHER || Type == MODEL_FRUITS)
-                            {
-                                Scale = 0.003f;
-                            }
-                            else if (Type == MODEL_POTION + 100)
-                            {
-                                Scale = 0.0040f;
-                            }
-                            else if (Type >= MODEL_POTION && Type < MODEL_POTION + MAX_ITEM_INDEX)
-                            {
-                                Scale = 0.0035f;
-                            }
-                            else if (Type >= MODEL_SPEAR && Type < MODEL_SPEAR + MAX_ITEM_INDEX)
-                            {
-                                if (Type == MODEL_DRAGON_SPEAR)
-                                    Scale = 0.0018f;
-                                else if (Type == MODEL_BEUROBA)
-                                    Scale = 0.0025f;
-                                else
-                                    Scale = 0.0021f;
-                            }
-                            else if (Type >= MODEL_STAFF && Type < MODEL_STAFF + MAX_ITEM_INDEX)
-                            {
-                                if (Type >= MODEL_MISTERY_STICK && Type <= MODEL_ETERNAL_WING_STICK)
-                                    Scale = 0.0028f;
-                                else if (Type >= MODEL_BOOK_OF_SAHAMUTT && Type <= MODEL_STAFF + 29)
-                                    Scale = 0.004f;
-                                else if (Type == MODEL_CHROMATIC_STAFF)
-                                    Scale = 0.0028f;
-                                else if (Type == MODEL_RAVEN_STICK)
-                                    Scale = 0.0028f;
-                                else
-                                    Scale = 0.0022f;
-                            }
-                            else if (Type == MODEL_ARROWS)
-                                Scale = 0.0011f;
-                            else if (Type == MODEL_BOLT)
-                                Scale = 0.0012f;
-                            else if (Type == MODEL_EVENT + 6)
-                                Scale = 0.0039f;
-                            else if (Type == MODEL_EVENT + 8)
-                                Scale = 0.0015f;
-                            else if (Type == MODEL_EVENT + 9)
-                                Scale = 0.0019f;
-                            else
-                            {
-                                Scale = 0.0025f;
-                            }
-
-        if (Type >= static_cast<int>(MODEL_TYPE_CHARM_MIXWING) + EWS_BEGIN
-            && Type <= static_cast<int>(MODEL_TYPE_CHARM_MIXWING) + EWS_END)
-        {
-            Scale = 0.0020f;
-        }
-
-        if (Type == MODEL_EVENT + 10)
-        {
-            Scale = 0.001f;
-        }
-        else if (Type >= MODEL_CHAIN_LIGHTNING_PARCHMENT && Type <= MODEL_INNOVATION_PARCHMENT)
-        {
-            Scale = 0.0023f;
-        }
-        else if (Type == MODEL_HELPER + 66)
-        {
-            Scale = 0.0020f;
-        }
-        else if (Type == MODEL_POTION + 140)
-        {
-            Scale = 0.0026f;
-        }
-        else if (Type == MODEL_SKELETON_TRANSFORMATION_RING)
-        {
-            Scale = 0.0033f;
-        }
-        else if (Type == MODEL_PET_SKELETON)
-        {
-            Scale = 0.0009f;
-        }
-        else if (Type >= MODEL_POTION + 145 && Type <= MODEL_POTION + 150)
-        {
-            Scale = 0.0018f;
-        }
-        else if (Type >= MODEL_HELPER + 125 && Type <= MODEL_HELPER + 127)
-        {
-            Scale = 0.0013f;
-        }
-#ifdef LJH_ADD_ITEMS_EQUIPPED_FROM_INVENTORY_SYSTEM
-        else if (Type == MODEL_HELPER + 128)		// 매조각상
-        {
-            Scale = 0.0035f;
-        }
-        else if (Type == MODEL_HELPER + 129)		// 양조각상
-        {
-            Scale = 0.0035f;
-        }
-        else if (Type == MODEL_HELPER + 134)		// 편자
-        {
-            Scale = 0.0033f;
-        }
-#endif	//LJH_ADD_ITEMS_EQUIPPED_FROM_INVENTORY_SYSTEM
-#ifdef LJH_ADD_ITEMS_EQUIPPED_FROM_INVENTORY_SYSTEM_PART_2
-        else if (Type == MODEL_HELPER + 130)		// 오크참
-        {
-            Scale = 0.0032f;
-        }
-        else if (Type == MODEL_HELPER + 131)		// 메이플참
-        {
-            Scale = 0.0033f;
-        }
-        else if (Type == MODEL_HELPER + 132)		// 골든오크참
-        {
-            Scale = 0.0025f;
-        }
-        else if (Type == MODEL_HELPER + 133)		// 골든메이플참
-        {
-            Scale = 0.0033f;
-        }
-#endif	//LJH_ADD_ITEMS_EQUIPPED_FROM_INVENTORY_SYSTEM_PART_2
-        else if (Type == MODEL_HELPER + 71 || Type == MODEL_HELPER + 72 || Type == MODEL_HELPER + 73 || Type == MODEL_HELPER + 74 || Type == MODEL_HELPER + 75)
-        {
-            Scale = 0.0019f;
-        }
-        else if (Type == MODEL_AIR_LYN_BOW)
-        {
-            Scale = 0.0023f;
-        }
-        else if (Type == MODEL_HELPER + 97 || Type == MODEL_HELPER + 98 || Type == MODEL_POTION + 91)
-        {
-            Scale = 0.0028f;
-        }
-        else if (Type == MODEL_HELPER + 99)
-        {
-            Scale = 0.0025f;
-        }
-        else if (Type == MODEL_POTION + 110)
-        {
-            Scale = 0.004f;
-        }
-        else if (Type == MODEL_HELPER + 107)
-        {
-            Scale = 0.0034f;
-        }
-        else if (Type == MODEL_POTION + 133)
-        {
-            Scale = 0.0030f;
-        }
-        else if (Type == MODEL_HELPER + 105)
-        {
-            Scale = 0.002f;
-        }
-        else if (MODEL_SUSPICIOUS_SCRAP_OF_PAPER <= Type && Type <= MODEL_COMPLETE_SECROMICON)
-        {
-            switch (Type)
-            {
-            case MODEL_SUSPICIOUS_SCRAP_OF_PAPER:
-            {
-                Scale = 0.004f;
-            }break;
-            case MODEL_GAIONS_ORDER:
-            {
-                Scale = 0.005f;
-            }break;
-            case MODEL_FIRST_SECROMICON_FRAGMENT:
-            case MODEL_SECOND_SECROMICON_FRAGMENT:
-            case MODEL_THIRD_SECROMICON_FRAGMENT:
-            case MODEL_FOURTH_SECROMICON_FRAGMENT:
-            case MODEL_FIFTH_SECROMICON_FRAGMENT:
-            case MODEL_SIXTH_SECROMICON_FRAGMENT:
-            {
-                Scale = 0.004f;
-            }break;
-            case MODEL_COMPLETE_SECROMICON:
-            {
-                Scale = 0.003f;
-            }break;
-            }
-        }
-        else if (Type == MODEL_PET_UNICORN)
-        {
-            Scale = 0.0015f;
-        }
-        else if (Type == MODEL_WING + 130)
-        {
-            Scale = 0.0012f;
-        }
-        else if (Type >= MODEL_POTION + 134 && Type <= MODEL_POTION + 139)
-        {
-            Scale = 0.0050f;
-        }
-        else if (Type >= MODEL_HELPER + 109 && Type <= MODEL_HELPER + 112)
-        {
-            Scale = 0.0045f;
-        }
-
-        else if (Type >= MODEL_HELPER + 113 && Type <= MODEL_HELPER + 115)
-        {
-            Scale = 0.0018f;
-        }
-        else if (Type >= MODEL_POTION + 112 && Type <= MODEL_POTION + 113)
-        {
-            Scale = 0.0032f;
-        }
-        else if (Type == MODEL_HELPER + 116)
-        {
-            Scale = 0.0021f;
-        }
-        else if (Type >= MODEL_POTION + 114 && Type <= MODEL_POTION + 119)
-        {
-            Scale = 0.0038f;
-        }
-        else if (Type >= MODEL_POTION + 126 && Type <= MODEL_POTION + 129)
-        {
-            Scale = 0.0038f;
-        }
-        else if (Type >= MODEL_POTION + 130 && Type <= MODEL_POTION + 132)
-        {
-            Scale = 0.0038f;
-        }
-        else if (Type == MODEL_HELPER + 121)
-        {
-            Scale = 0.0018f;
-            //Scale = 1.f;
-        }
-        else if (Type == MODEL_HELPER + 124)
-            Scale = 0.0018f;
-        else if (Type >= MODEL_CAPE_OF_FIGHTER && Type <= MODEL_CAPE_OF_OVERRULE)
-        {
-            Scale = 0.002f;
-        }
-        else if (Type == MODEL_WING + 135)
-        {
-            Scale = 0.0012f;
-        }
-        else if (Type >= MODEL_SACRED_GLOVE && Type <= MODEL_PIERCING_BLADE_GLOVE)
-        {
-            Scale = 0.0035f;
-        }
-        else if (Type == MODEL_PHOENIX_SOUL_STAR)
-        {
-            Scale = 0.003f;
-        }
-        else if (Type >= MODEL_CHAIN_DRIVE_PARCHMENT && Type <= MODEL_INCREASE_BLOCK_PARCHMENT)
-        {
-            Scale = 0.0023f;
-        }
-        else if (Type == MODEL_ARMORINVEN_60 || Type == MODEL_ARMORINVEN_62 || Type == MODEL_ARMORINVEN_61 || Type == MODEL_ARMORINVEN_74)
-        {
-            b->BodyHeight = -100.f;
-            Scale = 0.0039f;
-        }
-        // LEM_TSET  상승의 보석, 연장의 보석 스케일[lem_2010.9.7]
-        else if (Type >= MODEL_HELPER + 135 && Type <= MODEL_HELPER + 145)
-        {
-            Scale = 0.001f;
-        }
-        else if (Type == MODEL_POTION + 160 || Type == MODEL_POTION + 161)
-        {
-            Scale = 0.001f;
-        }
-        else if (Type == MODEL_HELM + 62 || Type == MODEL_HELM + 63 || Type == MODEL_HELM + 65 || Type == MODEL_HELM + 70)
-        {
-            Scale = 0.001f;
-        }
-    }
+    VectorAdd(Position, display.offset.data(), Position);
 
     b->Animation(BoneTransform, ObjectSelect.AnimationFrame, ObjectSelect.PriorAnimationFrame, ObjectSelect.PriorAction, ObjectSelect.Angle, ObjectSelect.HeadAngle, false, false);
 
@@ -10080,370 +6596,38 @@ void RenderObjectScreen(int Type, int ItemLevel, int excellentFlags, int ancient
     RenderPartObject(o, Type, NULL, Light, alpha, ItemLevel, excellentFlags, ancientDiscriminator, true, true, true);
 }
 
+bool UI::Items::ShouldAnimatePreview(bool pointerInside, bool pickedItemActive, bool renderingPickedItem)
+{
+    return pointerInside && (!pickedItemActive || renderingPickedItem);
+}
+
+static void RenderItem3DAt(float sx, float sy, float Width, float Height, int Type, int Level, int excellentFlags,
+                           int ancientDiscriminator, bool PickUp, bool hovered);
+
 void RenderItem3D(float sx, float sy, float Width, float Height, int Type, int Level, int excellentFlags, int ancientDiscriminator, bool PickUp)
 {
-    bool Success = false;
-    if ((g_pPickedItem == NULL || PickUp)
-        && SEASON3B::CheckMouseIn(sx, sy, Width, Height))
-    {
-#ifdef PBG_ADD_INGAMESHOPMSGBOX
-        if (g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_INGAMESHOP))
-        {
-            Success = true;
-        }
-        else
-#endif //PBG_ADD_INGAMESHOPMSGBOX
-        {
-            if (g_pNewUISystem->CheckMouseUse() == false)
-                Success = true;
-        }
-    }
+    const bool hovered = g_fWindowMouseX >= sx && g_fWindowMouseX < sx + Width && g_fWindowMouseY >= sy &&
+                         g_fWindowMouseY < sy + Height;
+    RenderItem3DAt(sx, sy, Width, Height, Type, Level, excellentFlags, ancientDiscriminator, PickUp, hovered);
+}
 
-    if (Type >= ITEM_SWORD && Type < ITEM_SWORD + MAX_ITEM_INDEX)
-    {
-        sx += Width * 0.8f;
-        sy += Height * 0.85f;
-    }
-    else if (Type >= ITEM_AXE && Type < ITEM_MACE + MAX_ITEM_INDEX)
-    {
-        if (Type == ITEM_DIVINE_SCEPTER_OF_ARCHANGEL)
-        {
-            sx += Width * 0.6f;
-            sy += Height * 0.5f;
-        }
-        else
-        {
-            sx += Width * 0.8f;
-            sy += Height * 0.7f;
-        }
-    }
-    else if (Type >= ITEM_SPEAR && Type < ITEM_SPEAR + MAX_ITEM_INDEX)
-    {
-        sx += Width * 0.6f;
-        sy += Height * 0.65f;
-    }
-    else if (Type == ITEM_CELESTIAL_BOW)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.5f;
-    }
-    else if (Type == ITEM_GREAT_REIGN_CROSSBOW)
-    {
-        sx += Width * 0.7f;
-        sy += Height * 0.75f;
-    }
-    else if (Type == ITEM_ARROW_VIPER_BOW)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.55f;
-    }
-    else if (Type >= ITEM_CROSSBOW && Type < ITEM_BOW + MAX_ITEM_INDEX)
-    {
-        sx += Width * 0.7f;
-        sy += Height * 0.7f;
-    }
-    else if (Type >= ITEM_STAFF && Type < ITEM_STAFF + MAX_ITEM_INDEX)
-    {
-        sx += Width * 0.6f;
-        sy += Height * 0.55f;
-    }
-    else if (Type >= ITEM_SHIELD && Type < ITEM_SHIELD + MAX_ITEM_INDEX)
-    {
-        sx += Width * 0.5f;
-        if (Type == ITEM_GRAND_SOUL_SHIELD)
-            sy += Height * 0.7f;
-        else if (Type == ITEM_ELEMENTAL_SHIELD)
-            sy += Height * 0.9f;
-        else if (Type == ITEM_CROSS_SHIELD)
-        {
-            sx += Width * 0.05f;
-            sy += Height * 0.5f;
-        }
-        else
-            sy += Height * 0.6f;
-    }
-    else if (Type >= ITEM_HELM && Type < ITEM_HELM + MAX_ITEM_INDEX)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.8f;
-    }
-    else if (Type >= ITEM_ARMOR && Type < ITEM_ARMOR + MAX_ITEM_INDEX)
-    {
-        sx += Width * 0.5f;
-        if (Type == ITEM_PAD_ARMOR || Type == ITEM_BONE_ARMOR || Type == ITEM_SCALE_ARMOR)
-        {
-            sy += Height * 1.05f;
-        }
-        else if (Type == ITEM_LEGENDARY_ARMOR || Type == ITEM_BRASS_ARMOR)
-        {
-            sy += Height * 1.1f;
-        }
-        else if (Type == ITEM_DARK_PHOENIX_ARMOR || Type == ITEM_GRAND_SOUL_ARMOR || Type == ITEM_THUNDER_HAWK_ARMOR)
-        {
-            sy += Height * 0.8f;
-        }
-        else if (Type == ITEM_STORM_CROW_ARMOR)
-        {
-            sy += Height * 1.0f;
-        }
-        else
-        {
-            sy += Height * 0.8f;
-        }
-    }
-    else if (Type >= ITEM_PANTS && Type < ITEM_BOOTS + MAX_ITEM_INDEX)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.9f;
-    }
-    else if (Type == ITEM_LOCHS_FEATHER && Level == 1)
-    {
-        sx += Width * 0.55f;
-        sy += Height * 0.85f;
-    }
-    else if (Type == ITEM_LOCHS_FEATHER || Type == ITEM_FRUITS)
-    {
-        sx += Width * 0.6f;
-        sy += Height * 1.f;
-    }
-    else if (Type == ITEM_SCROLL_OF_ARCHANGEL || Type == ITEM_BLOOD_BONE)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.9f;
-    }
-    else if (Type == ITEM_INVISIBILITY_CLOAK)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.75f;
-    }
-    else if (Type == ITEM_WEAPON_OF_ARCHANGEL)
-    {
-        switch (Level)
-        {
-        case 0: sx += Width * 0.5f; sy += Height * 0.5f; break;
-        case 1: sx += Width * 0.7f; sy += Height * 0.8f; break;
-        case 2: sx += Width * 0.7f; sy += Height * 0.7f; break;
-        }
-    }
-    else if (Type == ITEM_WIZARDS_RING)
-    {
-        switch (Level)
-        {
-        case 0: sx += Width * 0.5f; sy += Height * 0.65f; break;
-        case 1:
-        case 2:
-        case 3:
-            sx += Width * 0.5f; sy += Height * 0.8f; break;
-        }
-    }
-    else if (Type == ITEM_ARMOR_OF_GUARDSMAN)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.5f;
-    }
-    else if (Type == ITEM_DARK_HORSE_ITEM)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.6f;
-    }
-    else if (Type == ITEM_CAPE_OF_LORD)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.5f;
-    }
-    else if (Type == ITEM_SPIRIT)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.9f;
-    }
-    else if (Type == ITEM_SIEGE_POTION)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.5f;
-    }
-    else if (Type == ITEM_HELPER + 7)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.9f;
-    }
-    else if (Type == ITEM_LIFE_STONE_ITEM)
-    {
-        switch (Level)
-        {
-        case 0: sx += Width * 0.5f; sy += Height * 0.8f; break;
-        case 1: sx += Width * 0.5f; sy += Height * 0.5f; break;
-        }
-    }
-    else if (Type == ITEM_SPLINTER_OF_ARMOR)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.5f;
-    }
-    else if (Type == MODEL_BLESS_OF_GUARDIAN)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.5f;
-    }
-    else if (Type == MODEL_CLAW_OF_BEAST)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.5f;
-    }
-    else if (Type == MODEL_FRAGMENT_OF_HORN)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.5f;
-    }
-    else if (Type == MODEL_BROKEN_HORN)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.5f;
-    }
-    else if (Type == MODEL_HORN_OF_FENRIR)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.5f;
-    }
-    else if (Type >= ITEM_HELPER && Type < ITEM_HELPER + MAX_ITEM_INDEX)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.7f;
-    }
-    else if (Type == ITEM_POTION + 12)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.5f;
-    }
-    else if (Type == ITEM_BOX_OF_LUCK && (Level == 3 || Level == 13))
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.5f;
-    }
-    else if (Type == ITEM_BOX_OF_LUCK && (Level == 14 || Level == 15))
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.8f;
-    }
-    else if (Type == ITEM_ALE && Level == 1)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.8f;
-    }
-    else if (Type == ITEM_DEVILS_EYE || Type == ITEM_DEVILS_KEY || Type == ITEM_DEVILS_INVITATION)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.5f;
-    }
-    else if (Type == ITEM_POTION + 21)
-    {
-        switch (Level)
-        {
-        case 0: sx += Width * 0.5f; sy += Height * 0.5f; break;
-        case 1: sx += Width * 0.4f; sy += Height * 0.8f; break;
-        case 2: sx += Width * 0.4f; sy += Height * 0.8f; break;
-        case 3: sx += Width * 0.5f; sy += Height * 0.5f; break;
-        }
-    }
-    else if (Type >= ITEM_JEWEL_OF_CREATION && Type < ITEM_TEAR_OF_ELF)
-    {
-        if (Type == ITEM_BROKEN_SWORD_DARK_STONE && Level == 1)
-        {
-            sx += Width * 0.5f;
-            sy += Height * 0.8f;
-        }
-        else
-        {
-            sx += Width * 0.5f;
-            sy += Height * 0.95f;
-        }
-    }
-    else if (Type >= ITEM_JACK_OLANTERN_BLESSINGS && Type <= ITEM_JACK_OLANTERN_CRY)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.5f;
-    }
-    else if (Type >= ITEM_TEAR_OF_ELF && Type < ITEM_POTION + 27)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.9f;
-    }
-    else if (Type == ITEM_JEWEL_OF_GUARDIAN)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.5f;
-    }
-    else if (Type == INDEX_COMPILED_CELE || Type == INDEX_COMPILED_SOUL)
-    {
-        sx += Width * 0.55f;
-        sy += Height * 0.8f;
-    }
-    else if (Type == ITEM_WINGS_OF_SPIRITS)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.45f;
-    }
-    else if (Type == ITEM_WINGS_OF_SOUL)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.4f;
-    }
-    else if (Type == ITEM_WINGS_OF_DRAGON)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.75f;
-    }
-    else if (Type == ITEM_WINGS_OF_DARKNESS)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.55f;
-    }
-    else if (Type == ITEM_POTION + 100)
-    {
-        sx += Width * 0.49f;
-        //sy += Height*0.28f;
-        sy += Height * 0.28f;
-    }
-    else if (COMGEM::Check_Jewel_Com(Type) != COMGEM::NOGEM)
-    {
-        sx += Width * 0.55f;
-        sy += Height * 0.82f;
-    }
-    else if (Type >= ITEM_POTION && Type < ITEM_POTION + MAX_ITEM_INDEX)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.95f;
-    }
-    else if ((Type >= ITEM_ORB_OF_RAGEFUL_BLOW && Type <= ITEM_ORB_OF_GREATER_FORTITUDE) || (Type >= ITEM_ORB_OF_FIRE_SLASH && Type <= ITEM_ORB_OF_DEATH_STAB))
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.75f;
-    }
-    else if (Type == ITEM_HELPER + 66)
-    {
-        sx += Width * 1.5f;
-        sy += Height * 1.5f;
-    }
-    else if (Type == ITEM_CAPE_OF_FIGHTER)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.5f;
-    }
-    else if (Type == ITEM_CAPE_OF_OVERRULE)
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.5f;
-    }
-    else
-    {
-        sx += Width * 0.5f;
-        sy += Height * 0.6f;
-    }
+void RenderItem3DWithHover(float sx, float sy, float Width, float Height, int Type, int Level, int excellentFlags,
+                           int ancientDiscriminator, bool hovered)
+{
+    RenderItem3DAt(sx, sy, Width, Height, Type, Level, excellentFlags, ancientDiscriminator, false, hovered);
+}
 
-    if (Type >= ITEM_SACRED_GLOVE && Type <= ITEM_PHOENIX_SOUL_STAR)
-    {
-        sx -= Width * 0.25f;
-        sy -= Height * 0.25f;
-    }
+static void RenderItem3DAt(float sx, float sy, float Width, float Height, int Type, int Level, int excellentFlags,
+                           int ancientDiscriminator, bool PickUp, bool hovered)
+{
+    // Item previews are screen-space: keep Classic texture sampling.
+    const mu::ScopedScreenSpaceSampling screenSpaceSampling;
+
+    const bool Success = UI::Items::ShouldAnimatePreview(hovered, g_pPickedItem != nullptr, PickUp);
+
+    const Render::Items::Display::Anchor anchor = Render::Items::Display::GetInventoryAnchor(Type, Level);
+    sx += Width * anchor.x;
+    sy += Height * anchor.y;
 
     vec3_t Position;
     CameraProjection::ScreenToWorldRay(g_Camera, (int)(sx), (int)(sy), Position, false);
@@ -10488,7 +6672,7 @@ void RenderItem3D(float sx, float sy, float Width, float Height, int Type, int L
     {
         RenderObjectScreen(MODEL_EVENT + 7, Level, excellentFlags, ancientDiscriminator, Position, Success, PickUp);
     }
-    else if (Type == ITEM_POTION + 21)
+    else if (Type == ITEM_RENA)
     {
         switch (Level)
         {
@@ -10499,10 +6683,12 @@ void RenderItem3D(float sx, float sy, float Width, float Height, int Type, int L
             RenderObjectScreen(MODEL_EVENT + 11, Level, excellentFlags, ancientDiscriminator, Position, Success, PickUp);
             break;
         case 3:
-            RenderObjectScreen(Type + MODEL_ITEM, Level, excellentFlags, ancientDiscriminator, Position, Success, PickUp);
+            RenderObjectScreen(Data::Items::ToModelSlot(Type), Level, excellentFlags, ancientDiscriminator, Position,
+                               Success, PickUp);
             break;
         default:
-            RenderObjectScreen(Type + MODEL_ITEM, Level, excellentFlags, ancientDiscriminator, Position, Success, PickUp);
+            RenderObjectScreen(Data::Items::ToModelSlot(Type), Level, excellentFlags, ancientDiscriminator, Position,
+                               Success, PickUp);
             break;
         }
     }
@@ -10578,7 +6764,8 @@ void RenderItem3D(float sx, float sy, float Width, float Height, int Type, int L
         switch (Level)
         {
         case 0:
-            RenderObjectScreen(Type + MODEL_ITEM, Level, excellentFlags, ancientDiscriminator, Position, Success, PickUp);
+            RenderObjectScreen(Data::Items::ToModelSlot(Type), Level, excellentFlags, ancientDiscriminator, Position,
+                               Success, PickUp);
             break;
         case 1:
             RenderObjectScreen(MODEL_EVENT + 12, -1, excellentFlags, ancientDiscriminator, Position, Success, PickUp);
@@ -10590,7 +6777,8 @@ void RenderItem3D(float sx, float sy, float Width, float Height, int Type, int L
         switch (Level)
         {
         case 0:
-            RenderObjectScreen(Type + MODEL_ITEM, Level, excellentFlags, ancientDiscriminator, Position, Success, PickUp);
+            RenderObjectScreen(Data::Items::ToModelSlot(Type), Level, excellentFlags, ancientDiscriminator, Position,
+                               Success, PickUp);
             break;
         case 1:
             RenderObjectScreen(MODEL_EVENT + 13, -1, excellentFlags, ancientDiscriminator, Position, Success, PickUp);
@@ -10629,63 +6817,16 @@ void RenderItem3D(float sx, float sy, float Width, float Height, int Type, int L
 
         RenderObjectScreen(MODEL_POTION + 100, Level, excellentFlags, ancientDiscriminator, Position, _Angle, PickUp);
     }
-    else if (Type == ITEM_SACRED_ARMOR)
-    {
-        RenderObjectScreen(MODEL_ARMORINVEN_60, Level, excellentFlags, ancientDiscriminator, Position, Success, PickUp);
-    }
-    else if (Type == ITEM_STORM_HARD_ARMOR)
-    {
-        RenderObjectScreen(MODEL_ARMORINVEN_61, Level, excellentFlags, ancientDiscriminator, Position, Success, PickUp);
-    }
-    else if (Type == ITEM_PIERCING_ARMOR)
-    {
-        RenderObjectScreen(MODEL_ARMORINVEN_62, Level, excellentFlags, ancientDiscriminator, Position, Success, PickUp);
-    }
-    else if (Type == ITEM_PHOENIX_SOUL_ARMOR)
-    {
-        RenderObjectScreen(MODEL_ARMORINVEN_74, Level, excellentFlags, ancientDiscriminator, Position, Success, PickUp);
-    }
     else
     {
-        RenderObjectScreen(Type + MODEL_ITEM, Level, excellentFlags, ancientDiscriminator, Position, Success, PickUp);
+        RenderObjectScreen(Render::Items::Display::GetInventoryModel(Type), Level, excellentFlags, ancientDiscriminator,
+                           Position, Success, PickUp);
     }
 }
 
 void InventoryColor(ITEM* p)
 {
-    switch (p->Color)
-    {
-    case 0:
-        glColor3f(1.f, 1.f, 1.f);
-        break;
-    case 1:
-        glColor3f(0.8f, 0.8f, 0.8f);
-        break;
-    case 2:
-        glColor3f(0.6f, 0.7f, 1.f);
-        break;
-    case 3:
-        glColor3f(1.f, 0.2f, 0.1f);
-        break;
-    case 4:
-        glColor3f(0.5f, 1.f, 0.6f);
-        break;
-    case 5:
-        glColor4f(0.8f, 0.7f, 0.f, 1.f);
-        break;
-    case 6:
-        glColor4f(0.8f, 0.5f, 0.f, 1.f);
-        break;
-    case 7:
-        glColor4f(0.8f, 0.3f, 0.3f, 1.f);
-        break;
-    case 8:
-        glColor4f(1.0f, 0.f, 0.f, 1.f);
-        break;
-    case 99:
-        glColor3f(1.f, 0.2f, 0.1f);
-        break;
-    }
+    (void)p;
 }
 
 void RenderEqiupmentBox()
@@ -10849,177 +6990,6 @@ void InitPartyList()
     PartyKey = 0;
 }
 
-void MoveServerDivisionInventory()
-{
-    if (!g_pUIManager->IsOpen(INTERFACE_SERVERDIVISION)) return;
-    int x = REFERENCE_WIDTH - 190;
-    int y = 0;
-    int Width, Height;
-
-    if (MouseX >= (int)(x) && MouseX < (int)(x + 190) &&
-        MouseY >= (int)(y) && MouseY < (int)(y + 256 + 177))
-    {
-        MouseOnWindow = true;
-    }
-
-    Width = 16; Height = 16; x = InventoryStartX + 25; y = 240;
-    if (MouseX >= x && MouseX < x + Width && MouseY >= y && MouseY < y + Height && MouseLButtonPush)
-    {
-        g_bServerDivisionAccept ^= true;
-
-        MouseLButtonPush = false;
-        MouseLButton = false;
-    }
-
-    if (g_bServerDivisionAccept)
-    {
-        Width = 120; Height = 24; x = (float)InventoryStartX + 35; y = 320;
-        if (MouseX >= x && MouseX < x + Width && MouseY >= y && MouseY < y + Height && MouseLButtonPush)
-        {
-            MouseLButtonPush = false;
-            MouseLButton = false;
-            AskYesOrNo = 4;
-            OkYesOrNo = -1;
-
-            ShowCheckBox(1, 448, MESSAGE_CHECK);
-        }
-    }
-
-    Width = 120; Height = 24; x = (float)InventoryStartX + 35; y = 350;
-    if (MouseX >= x && MouseX < x + Width && MouseY >= y && MouseY < y + Height && MouseLButtonPush)
-    {
-        MouseLButtonPush = false;
-        MouseLButton = false;
-        MouseUpdateTime = 0;
-        MouseUpdateTimeMax = 6;
-
-        SocketClient->ToGameServer()->SendCloseNpcRequest();
-        g_pUIManager->CloseAll();
-    }
-
-    Width = 24; Height = 24; x = InventoryStartX + 25; y = InventoryStartY + 395;
-    if (MouseX >= x && MouseX < x + Width && MouseY >= y && MouseY < y + Height)
-    {
-        if (MouseLButtonPush)
-        {
-            MouseLButtonPush = false;
-            MouseUpdateTime = 0;
-            MouseUpdateTimeMax = 6;
-
-            g_bEventChipDialogEnable = EVENT_NONE;
-
-            SocketClient->ToGameServer()->SendCloseNpcRequest();
-            g_pUIManager->CloseAll();
-        }
-    }
-}
-
-void HideKeyPad(void)
-{
-    g_iKeyPadEnable = 0;
-}
-
-int CheckMouseOnKeyPad(void)
-{
-    int Width, Height, WindowX, WindowY;
-    Width = 213; Height = 2 * 5 + 6 * 40; WindowX = (REFERENCE_WIDTH - Width) / 2; WindowY = 60 + 40;//60 220
-
-    int iButtonTop = 50;
-
-    for (int i = 0; i < 11; ++i)
-    {
-        int xButton = i % 5;
-        int yButton = i / 5;
-
-        int xLeft = WindowX + 10 + xButton * 40;
-        int yTop = WindowY + iButtonTop + yButton * 40;
-        if (xLeft <= MouseX && MouseX < xLeft + 32 &&
-            yTop <= MouseY && MouseY < yTop + 32)
-        {
-            return (i);
-        }
-    }
-    // Ok, Cancel ( 11 - 12)
-    int yTop = WindowY + iButtonTop + 2 * 40 + 5;
-
-    for (int i = 0; i < 2; ++i)
-    {
-        int xLeft = WindowX + 52 + i * 78;
-        if (xLeft <= MouseX && MouseX < xLeft + 70 &&
-            yTop <= MouseY && MouseY < yTop + 21)
-        {
-            return (11 + i);
-        }
-    }
-
-    return (-1);
-}
-
-bool g_bPadPushed = false;
-
-void MovePersonalShop()
-{
-    if ((g_pUIManager->IsOpen(INTERFACE_PERSONALSHOPSALE) || g_pUIManager->IsOpen(INTERFACE_PERSONALSHOPPURCHASE)) && g_iPShopWndType == PSHOPWNDTYPE_SALE)
-    {
-        if (g_iPersonalShopMsgType == 1)
-        {
-            if (OkYesOrNo == 1)
-            {
-                g_iPersonalShopMsgType = 0;
-                OkYesOrNo = -1;
-            }
-            else if (OkYesOrNo == 2)
-            {
-                g_iPersonalShopMsgType = 0;
-                OkYesOrNo = -1;
-            }
-        }
-        g_ptPersonalShop.x = REFERENCE_WIDTH - 190 * 2;
-        g_ptPersonalShop.y = 0;
-
-        int Width = 56, Height = 24;
-        int ButtonX = g_ptPersonalShop.x + 30, ButtonY = g_ptPersonalShop.y + 396;
-        if (MouseX >= ButtonX && MouseX < ButtonX + Width && MouseY >= ButtonY && MouseY < ButtonY + Height && MouseLButtonPush)
-        {
-            MouseLButtonPush = false;
-            if (!IsExistUndecidedPrice() && wcslen(g_szPersonalShopTitle) > 0)
-            {
-                if (g_bEnablePersonalShop)
-                {
-                    SocketClient->ToGameServer()->SendPlayerShopOpen(g_szPersonalShopTitle);
-                    g_pUIManager->Close(INTERFACE_INVENTORY);
-                }
-                else
-                {
-                    SEASON3B::CreateMessageBox(MSGBOX_LAYOUT_CLASS(SEASON3B::CPersonalshopCreateMsgBoxLayout));
-                }
-            }
-            else
-            {
-                g_pSystemLogBox->AddText(I18N::Game::ThereSNoStoreNameOrItemPrice, SEASON3B::TYPE_ERROR_MESSAGE);
-            }
-        }
-
-        ButtonX = g_ptPersonalShop.x + 105;
-        if (MouseX >= ButtonX && MouseX < ButtonX + Width && MouseY >= ButtonY && MouseY < ButtonY + Height && MouseLButtonPush)
-        {
-            MouseLButtonPush = false;
-            if (g_bEnablePersonalShop)
-            {
-                SocketClient->ToGameServer()->SendPlayerShopClose();
-            }
-        }
-
-        Width = 150;
-        ButtonX = g_ptPersonalShop.x + 20;
-        ButtonY = g_ptPersonalShop.y + 65;
-        if (MouseX >= ButtonX && MouseX < ButtonX + Width && MouseY >= ButtonY && MouseY < ButtonY + Height && MouseLButtonPush)
-        {
-            OpenPersonalShopMsgWnd(1);
-        }
-    }
-}
-
 void ClosePersonalShop()
 {
     if (g_iPShopWndType == PSHOPWNDTYPE_PURCHASE)
@@ -11037,7 +7007,7 @@ void ClosePersonalShop()
         }
         if (g_PersonalShopSeller.Key)
         {
-            SocketClient->ToGameServer()->SendPlayerShopCloseOther(g_PersonalShopSeller.Key, g_PersonalShopSeller.ID);
+            SocketClient->ToGameServer()->SendPlayerShopCloseOther(g_PersonalShopSeller.Key, MU_C16(g_PersonalShopSeller.ID));
         }
     }
 
@@ -11087,76 +7057,8 @@ bool IsExistUndecidedPrice()
     return bResult;
 }
 
-void OpenPersonalShopMsgWnd(int iMsgType)
-{
-    if (iMsgType == 1)
-    {
-        SEASON3B::CreateMessageBox(MSGBOX_LAYOUT_CLASS(SEASON3B::CPersonalShopNameMsgBoxLayout));
-    }
-    else if (iMsgType == 2)
-    {
-        SEASON3B::CreateMessageBox(MSGBOX_LAYOUT_CLASS(SEASON3B::CPersonalShopItemValueMsgBoxLayout));
-    }
-}
-bool IsCorrectShopTitle(const wchar_t* szShopTitle)
-{
-    int j = 0;
-    wchar_t TmpText[2048];
-    for (int i = 0; i < (int)wcslen(szShopTitle); ++i)
-    {
-        if (szShopTitle[i] != 32)
-        {
-            TmpText[j] = szShopTitle[i];
-            j++;
-        }
-    }
-    TmpText[j] = 0;
-
-    for (int i = 0; i < AbuseFilterNumber; i++)
-    {
-        if (FindText(TmpText, AbuseFilter[i]))
-        {
-            return false;
-        }
-    }
-
-    int len = wcslen(szShopTitle);
-    int count = 0;
-
-    for (int i = 0; i < len; i++)
-    {
-        if (szShopTitle[i] == 0x20) {
-            count++;
-            if (i == 1 && count >= 2) return false;
-        }
-        else {
-            count = 0;
-        }
-    }
-    if (count >= 2)
-        return false;
-    return true;
-}
-
 extern DWORD g_dwActiveUIID;
 extern DWORD g_dwMouseUseUIID;
-
-void RenderInventoryInterface(int StartX, int StartY, int Flag)
-{
-    float x, y, Width, Height;
-    Width = 190.f; Height = 256.f; x = (float)StartX; y = (float)StartY;
-
-    RenderBitmap(BITMAP_INVENTORY, x, y, Width, Height, 0.f, 0.f, Width / 256.f, Height / 256.f);
-
-    Width = 190.f; Height = 177.f; x = (float)StartX; y = (float)StartY + 256;
-    RenderBitmap(BITMAP_INVENTORY + 1, x, y, Width, Height, 0.f, 0.f, Width / 256.f, Height / 256.f);
-
-    if (Flag)
-    {
-        Width = 190.f; Height = 10.f; x = (float)StartX; y = (float)StartY + 225;
-        RenderBitmap(BITMAP_INVENTORY + 19, x, y, Width, Height, 0.f, 0.f, Width / 256.f, Height / 16.f);
-    }
-}
 
 bool IsStrifeMap(int nMapIndex)
 {
@@ -11195,6 +7097,11 @@ void CreateGuildMark(int nMarkIndex, bool blend)
     Width = (int)b->Width;
     Height = (int)b->Height;
     BYTE* Buffer = b->Buffer;
+    if (!Buffer || Width == 0 || Height == 0)
+    {
+        mu::log::Get("gameplay")->error("[CreateGuildMark] BITMAP_GUILD not loaded (BitmapIndex={})", b->BitmapIndex);
+        return;
+    }
     int alpha = 128;
     if (blend)
     {
@@ -11206,21 +7113,51 @@ void CreateGuildMark(int nMarkIndex, bool blend)
         switch (i)
         {
         case 0:MarkColor[i] = (alpha << 24) + (0 << 16) + (0 << 8) + (0); break;
-        case 1:MarkColor[i] = (255 << 24) + (0 << 16) + (0 << 8) + (0); break;
-        case 2:MarkColor[i] = (255 << 24) + (128 << 16) + (128 << 8) + (128); break;
-        case 3:MarkColor[i] = (255 << 24) + (255 << 16) + (255 << 8) + (255); break;
-        case 4:MarkColor[i] = (255 << 24) + (0 << 16) + (0 << 8) + (255); break;
-        case 5:MarkColor[i] = (255 << 24) + (0 << 16) + (128 << 8) + (255); break;
-        case 6:MarkColor[i] = (255 << 24) + (0 << 16) + (255 << 8) + (255); break;
-        case 7:MarkColor[i] = (255 << 24) + (0 << 16) + (255 << 8) + (128); break;
-        case 8:MarkColor[i] = (255 << 24) + (0 << 16) + (255 << 8) + (0); break;
-        case 9:MarkColor[i] = (255 << 24) + (128 << 16) + (255 << 8) + (0); break;
-        case 10:MarkColor[i] = (255 << 24) + (255 << 16) + (255 << 8) + (0); break;
-        case 11:MarkColor[i] = (255 << 24) + (255 << 16) + (128 << 8) + (0); break;
-        case 12:MarkColor[i] = (255 << 24) + (255 << 16) + (0 << 8) + (0); break;
-        case 13:MarkColor[i] = (255 << 24) + (255 << 16) + (0 << 8) + (128); break;
-        case 14:MarkColor[i] = (255 << 24) + (255 << 16) + (0 << 8) + (255); break;
-        case 15:MarkColor[i] = (255 << 24) + (128 << 16) + (0 << 8) + (255); break;
+        case 1:
+            MarkColor[i] = (255u << 24) + (0 << 16) + (0 << 8) + (0);
+            break;
+        case 2:
+            MarkColor[i] = (255u << 24) + (128 << 16) + (128 << 8) + (128);
+            break;
+        case 3:
+            MarkColor[i] = (255u << 24) + (255 << 16) + (255 << 8) + (255);
+            break;
+        case 4:
+            MarkColor[i] = (255u << 24) + (0 << 16) + (0 << 8) + (255);
+            break;
+        case 5:
+            MarkColor[i] = (255u << 24) + (0 << 16) + (128 << 8) + (255);
+            break;
+        case 6:
+            MarkColor[i] = (255u << 24) + (0 << 16) + (255 << 8) + (255);
+            break;
+        case 7:
+            MarkColor[i] = (255u << 24) + (0 << 16) + (255 << 8) + (128);
+            break;
+        case 8:
+            MarkColor[i] = (255u << 24) + (0 << 16) + (255 << 8) + (0);
+            break;
+        case 9:
+            MarkColor[i] = (255u << 24) + (128 << 16) + (255 << 8) + (0);
+            break;
+        case 10:
+            MarkColor[i] = (255u << 24) + (255 << 16) + (255 << 8) + (0);
+            break;
+        case 11:
+            MarkColor[i] = (255u << 24) + (255 << 16) + (128 << 8) + (0);
+            break;
+        case 12:
+            MarkColor[i] = (255u << 24) + (255 << 16) + (0 << 8) + (0);
+            break;
+        case 13:
+            MarkColor[i] = (255u << 24) + (255 << 16) + (0 << 8) + (128);
+            break;
+        case 14:
+            MarkColor[i] = (255u << 24) + (255 << 16) + (0 << 8) + (255);
+            break;
+        case 15:
+            MarkColor[i] = (255u << 24) + (128 << 16) + (0 << 8) + (255);
+            break;
         }
     }
     BYTE* MarkBuffer = GuildMark[nMarkIndex].Mark;
@@ -11235,9 +7172,9 @@ void CreateGuildMark(int nMarkIndex, bool blend)
         }
     }
 
-    // DXP-12: repaints an already-created, fixed-size texture in place -- RHI::UpdateTexture's
-    // full-rect form is the sub-image equivalent of the old full glTexImage2D re-specify.
-    RHI::UpdateTexture(RHI::TextureHandle{ b->TextureNumber }, 0, 0, Width, Height, b->Buffer);
+    mu::GetRenderer().QueueTextureUpdate(b->BitmapIndex, b->Buffer, static_cast<std::uint32_t>(Width),
+                                         static_cast<std::uint32_t>(Height));
+    mu::GetRenderer().BindTexture(b->BitmapIndex);
 }
 
 void CreateCastleMark(int Type, BYTE* buffer, bool blend)
@@ -11251,6 +7188,12 @@ void CreateCastleMark(int Type, BYTE* buffer, bool blend)
     Width = (int)b->Width;
     Height = (int)b->Height;
     BYTE* Buffer = b->Buffer;
+    if (!Buffer || Width == 0 || Height == 0)
+    {
+        mu::log::Get("gameplay")
+            ->error("[CreateCastleMark] bitmap {} not loaded (BitmapIndex={})", Type, b->BitmapIndex);
+        return;
+    }
 
     int alpha = 128;
     if (blend)
@@ -11263,21 +7206,51 @@ void CreateCastleMark(int Type, BYTE* buffer, bool blend)
         switch (i)
         {
         case 0:MarkColor[i] = (alpha << 24) + (0 << 16) + (0 << 8) + (0); break;
-        case 1:MarkColor[i] = (255 << 24) + (0 << 16) + (0 << 8) + (0); break;
-        case 2:MarkColor[i] = (255 << 24) + (128 << 16) + (128 << 8) + (128); break;
-        case 3:MarkColor[i] = (255 << 24) + (255 << 16) + (255 << 8) + (255); break;
-        case 4:MarkColor[i] = (255 << 24) + (0 << 16) + (0 << 8) + (255); break;//빨
-        case 5:MarkColor[i] = (255 << 24) + (0 << 16) + (128 << 8) + (255); break;//
-        case 6:MarkColor[i] = (255 << 24) + (0 << 16) + (255 << 8) + (255); break;//노
-        case 7:MarkColor[i] = (255 << 24) + (0 << 16) + (255 << 8) + (128); break;//
-        case 8:MarkColor[i] = (255 << 24) + (0 << 16) + (255 << 8) + (0); break;//초
-        case 9:MarkColor[i] = (255 << 24) + (128 << 16) + (255 << 8) + (0); break;//
-        case 10:MarkColor[i] = (255 << 24) + (255 << 16) + (255 << 8) + (0); break;//청
-        case 11:MarkColor[i] = (255 << 24) + (255 << 16) + (128 << 8) + (0); break;//
-        case 12:MarkColor[i] = (255 << 24) + (255 << 16) + (0 << 8) + (0); break;//파
-        case 13:MarkColor[i] = (255 << 24) + (255 << 16) + (0 << 8) + (128); break;//
-        case 14:MarkColor[i] = (255 << 24) + (255 << 16) + (0 << 8) + (255); break;//보
-        case 15:MarkColor[i] = (255 << 24) + (128 << 16) + (0 << 8) + (255); break;//
+        case 1:
+            MarkColor[i] = (255u << 24) + (0 << 16) + (0 << 8) + (0);
+            break;
+        case 2:
+            MarkColor[i] = (255u << 24) + (128 << 16) + (128 << 8) + (128);
+            break;
+        case 3:
+            MarkColor[i] = (255u << 24) + (255 << 16) + (255 << 8) + (255);
+            break;
+        case 4:
+            MarkColor[i] = (255u << 24) + (0 << 16) + (0 << 8) + (255);
+            break; // 빨
+        case 5:
+            MarkColor[i] = (255u << 24) + (0 << 16) + (128 << 8) + (255);
+            break; //
+        case 6:
+            MarkColor[i] = (255u << 24) + (0 << 16) + (255 << 8) + (255);
+            break; // 노
+        case 7:
+            MarkColor[i] = (255u << 24) + (0 << 16) + (255 << 8) + (128);
+            break; //
+        case 8:
+            MarkColor[i] = (255u << 24) + (0 << 16) + (255 << 8) + (0);
+            break; // 초
+        case 9:
+            MarkColor[i] = (255u << 24) + (128 << 16) + (255 << 8) + (0);
+            break; //
+        case 10:
+            MarkColor[i] = (255u << 24) + (255 << 16) + (255 << 8) + (0);
+            break; // 청
+        case 11:
+            MarkColor[i] = (255u << 24) + (255 << 16) + (128 << 8) + (0);
+            break; //
+        case 12:
+            MarkColor[i] = (255u << 24) + (255 << 16) + (0 << 8) + (0);
+            break; // 파
+        case 13:
+            MarkColor[i] = (255u << 24) + (255 << 16) + (0 << 8) + (128);
+            break; //
+        case 14:
+            MarkColor[i] = (255u << 24) + (255 << 16) + (0 << 8) + (255);
+            break; // 보
+        case 15:
+            MarkColor[i] = (255u << 24) + (128 << 16) + (0 << 8) + (255);
+            break; //
         }
     }
     BYTE MarkBuffer[32 * 32];
@@ -11307,181 +7280,20 @@ void CreateCastleMark(int Type, BYTE* buffer, bool blend)
             }
             else if (j<3 || j>(Width - 4) || i<10 || i>(Height - 10))
             {
-                *((unsigned int*)(Buffer + offset)) = (255 << 24) + (0 << 16) + ((int)(50 + i / 100.f * 160) << 8) + (50 + i / 100.f * 255);
+                *((unsigned int*)(Buffer + offset)) = (255u << 24) + (0u << 16) +
+                                                      ((unsigned int)(50 + i / 100.f * 160) << 8) +
+                                                      (unsigned int)(50 + i / 100.f * 255);
             }
             else
             {
-                *((unsigned int*)(Buffer + offset)) = (255 << 24) + (i << 16) + (i << 8) + (i);
+                *((unsigned int*)(Buffer + offset)) = (255u << 24) + (i << 16) + (i << 8) + (i);
             }
             offset += 4;
         }
     }
-    // DXP-12: same in-place repaint pattern as CreateGuildMark, see its comment.
-    RHI::UpdateTexture(RHI::TextureHandle{ b->TextureNumber }, 0, 0, Width, Height, b->Buffer);
-}
-
-void RenderGuildColor(float x, float y, int SizeX, int SizeY, int Index)
-{
-    RenderBitmap(BITMAP_INVENTORY + 18, x - 1, y - 1, (float)SizeX + 2, (float)SizeY + 2, 0.f, 0.f, SizeX / 32.f, SizeY / 30.f);
-
-    BITMAP_t* b = &Bitmaps[BITMAP_GUILD];
-
-    int Width, Height;
-
-    Width = (int)b->Width;
-    Height = (int)b->Height;
-    BYTE* Buffer = b->Buffer;
-    unsigned int Color = MarkColor[Index];
-
-    if (Index == 0)
-    {
-        for (int i = 0; i < Height; i++)
-        {
-            for (int j = 0; j < Width; j++)
-            {
-                *((unsigned int*)(Buffer)) = 255 << 24;
-                Buffer += 4;
-            }
-        }
-        Color = (255 << 24) + (128 << 16) + (128 << 8) + (128);
-        Buffer = b->Buffer;
-        for (int i = 0; i < 8; i++)
-        {
-            *((unsigned int*)(Buffer)) = Color;
-            Buffer += 8 * 4 + 4;
-        }
-        Buffer = b->Buffer + 7 * 4;
-        for (int i = 0; i < 8; i++)
-        {
-            *((unsigned int*)(Buffer)) = Color;
-            Buffer += 8 * 4 - 4;
-        }
-    }
-    else
-    {
-        for (int i = 0; i < Height; i++)
-        {
-            for (int j = 0; j < Width; j++)
-            {
-                *((unsigned int*)(Buffer)) = Color;
-                Buffer += 4;
-            }
-        }
-    }
-
-    // DXP-12: same in-place repaint pattern as CreateGuildMark, see its comment.
-    RHI::UpdateTexture(RHI::TextureHandle{ b->TextureNumber }, 0, 0, Width, Height, b->Buffer);
-    RenderBitmap(BITMAP_GUILD, x, y, (float)SizeX, (float)SizeY);
-}
-
-void RenderGuildList(int StartX, int StartY)
-{
-    GuildListStartX = StartX;
-    GuildListStartY = StartY;
-
-    glColor3f(1.f, 1.f, 1.f);
-
-    DisableAlphaBlend();
-    float x, y, Width, Height;
-    Width = 190.f; Height = 256.f; x = (float)StartX; y = (float)StartY;
-    RenderBitmap(BITMAP_INVENTORY, x, y, Width, Height, 0.f, 0.f, Width / 256.f, Height / 256.f);
-    Width = 190.f; Height = 177.f; x = (float)StartX; y = (float)StartY + 256;
-    RenderBitmap(BITMAP_INVENTORY + 1, x, y, Width, Height, 0.f, 0.f, Width / 256.f, Height / 256.f);
-
-    EnableAlphaTest();
-
-    g_pRenderText->SetBgColor(20, 20, 20, 255);
-    g_pRenderText->SetTextColor(220, 220, 220, 255);
-    g_pRenderText->SetFont(g_hFontBold);
-
-    wchar_t Text[100];
-    if (Hero->GuildMarkIndex == -1)
-        mu_swprintf(Text, I18N::Game::Guild);
-    else
-        mu_swprintf(Text, L"%ls (Score:%d)", GuildMark[Hero->GuildMarkIndex].GuildName, GuildTotalScore);
-
-    g_pRenderText->RenderText(StartX + 95 - 60, StartY + 12, Text, 120 * WindowWidth / REFERENCE_WIDTH, true, 3);
-
-    g_pRenderText->SetBgColor(0);
-    g_pRenderText->SetTextColor(230, 230, 230, 255);
-    g_pRenderText->SetFont(g_hFont);
-
-    if (g_nGuildMemberCount == 0)
-    {
-        g_pRenderText->RenderText(StartX + 20, StartY + 50, I18N::Game::TypeGuildInFrontOf);
-        g_pRenderText->RenderText(StartX + 20, StartY + 65, I18N::Game::TheGuildMasterYouWantToJoin);
-        g_pRenderText->RenderText(StartX + 20, StartY + 80, I18N::Game::AndYouCanJoinTheGuild);
-    }
-    g_pRenderText->SetBgColor(0, 0, 0, 128);
-    g_pRenderText->SetTextColor(100, 255, 200, 255);
-    g_pRenderText->RenderText(StartX + (int)Width / 2, StartY + 44, g_GuildNotice[0], 0, 0, RT3_WRITE_CENTER);
-    g_pRenderText->RenderText(StartX + (int)Width / 2, StartY + 58, g_GuildNotice[1], 0, 0, RT3_WRITE_CENTER);
-
-    int yGuildStart = 72;
-    int Number = g_nGuildMemberCount;
-
-    if (g_nGuildMemberCount >= MAX_GUILD_LINE)
-        Number = MAX_GUILD_LINE;
-}
-
-//#define MAX_LENGTH_CMB	( 26)
-#define NUM_LINE_CMB	( 7)
-
-void RenderServerDivision()
-{
-    if (!g_pUIManager->IsOpen(INTERFACE_SERVERDIVISION)) return;
-
-    float Width, Height, x, y;
-
-    glColor3f(1.f, 1.f, 1.f);
-    EnableAlphaTest();
-
-    InventoryStartX = REFERENCE_WIDTH - 190;
-    InventoryStartY = 0;
-    Width = 213; Height = 40; x = (float)InventoryStartX; y = (float)InventoryStartY;
-    RenderInventoryInterface((int)x, (int)y, 1);
-
-    g_pRenderText->SetBgColor(0);
-    g_pRenderText->SetTextColor(255, 230, 210, 255);
-
-    g_pRenderText->SetFont(g_hFontBold);
-    x = InventoryStartX + (190 / 2.f);
-    y = 50;
-    for (int i = 462; i < 470; ++i)
-    {
-        g_pRenderText->RenderText(x, y, I18N::Game::Lookup(i), 0, 0, RT3_WRITE_CENTER);
-        y += 20;
-    }
-
-    g_pRenderText->SetFont(g_hFontBold);
-    Width = 16; Height = 16; x = (float)InventoryStartX + 25; y = 240;
-    if (g_bServerDivisionAccept)
-    {
-        g_pRenderText->SetTextColor(212, 150, 0, 255);
-        RenderBitmap(BITMAP_INVENTORY_BUTTON + 11, x, y, Width, Height, 0.f, 0.f, 24 / 32.f, 24 / 32.f);
-    }
-    else
-    {
-        g_pRenderText->SetTextColor(223, 191, 103, 255);
-        RenderBitmap(BITMAP_INVENTORY_BUTTON + 10, x, y, Width, Height, 0.f, 0.f, 24 / 32.f, 24 / 32.f);
-    }
-    g_pRenderText->RenderText((int)(x + Width + 3), (int)(y + 5), I18N::Game::AgreeWithTheAboveAgreement);
-    g_pRenderText->SetFont(g_hFont);
-    g_pRenderText->SetTextColor(255, 230, 210, 255);
-
-    Width = 120; Height = 24; x = (float)InventoryStartX + 35; y = 350;//(Width/2.f); y = 231;
-    RenderBitmap(BITMAP_INTERFACE + 10, (float)x, (float)y, (float)Width, (float)Height, 0.f, 0.f, 213.f / 256.f);
-    g_pRenderText->RenderText((int)(x + (Width / 2)), (int)(y + 5), I18N::Game::Cancel, 0, 0, RT3_WRITE_CENTER);
-
-    Width = 120; Height = 24; x = (float)InventoryStartX + 35; y = 320;//(Width/2.f); y = 231;
-    if (g_bServerDivisionAccept)
-        glColor3f(1.f, 1.f, 1.f);
-    else
-        glColor3f(0.5f, 0.5f, 0.5f);
-    RenderBitmap(BITMAP_INTERFACE + 10, (float)x, (float)y, (float)Width, (float)Height, 0.f, 0.f, 213.f / 256.f);
-    g_pRenderText->RenderText((int)(x + (Width / 2)), (int)(y + 5), I18N::Game::OK, 0, 0, RT3_WRITE_CENTER);
-
-    glColor3f(1.f, 1.f, 1.f);
+    mu::GetRenderer().QueueTextureUpdate(
+        b->BitmapIndex, b->Buffer, static_cast<std::uint32_t>(b->Width), static_cast<std::uint32_t>(b->Height));
+    mu::GetRenderer().BindTexture(b->BitmapIndex);
 }
 
 BYTE CaculateFreeTicketLevel(int iType)

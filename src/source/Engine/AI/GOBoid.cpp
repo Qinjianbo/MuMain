@@ -12,6 +12,7 @@
 #include "Render/Terrain/ZzzLodTerrain.h"
 #include "Render/Textures/ZzzTexture.h"
 #include "Engine/AI/ZzzAI.h"
+#include "Engine/AI/BoidSteering.h"
 #include "Render/Effects/ZzzEffect.h"
 #include "Engine/Object/ZzzOpenData.h"
 #include "GameLogic/Events/CSChaosCastle.h"
@@ -19,8 +20,10 @@
 #include "Audio/DSPlaySound.h"
 #include "World/MapInfra/MapManager.h"
 #include "Camera/CameraMove.h"
-#include "UI/NewUI/NewUISystem.h"
+#include "UI/Core/WindowSystem.h"
 #include "Scenes/MainScene.h"
+#include "GameLogic/Items/ItemCategories.h"
+#include "Render/Renderer/MuRenderer.h"
 
 int EnableEvent = 0;
 
@@ -53,8 +56,7 @@ bool IsMount(ITEM* pItem)
         || pItem->Type == ITEM_IMP
         || pItem->Type == ITEM_HORN_OF_UNIRIA
         || pItem->Type == ITEM_HORN_OF_DINORANT
-        || pItem->Type == ITEM_DARK_HORSE_ITEM
-        || pItem->Type == ITEM_DARK_RAVEN_ITEM
+        || GameLogic::Items::IsDarkLordPet(pItem)
         || pItem->Type == ITEM_HORN_OF_FENRIR
         )
     {
@@ -188,7 +190,10 @@ bool MoveMount(OBJECT* o, bool bForceRender)
 
             if (o->Owner->Teleport == TELEPORT_BEGIN || o->Owner->Teleport == TELEPORT)
             {
-                o->Alpha -= 0.1f;
+                // *FPS_ANIMATION_FACTOR -- was a fixed 0.1/call fade with no time basis, so the
+                // teleport fade-out vanished N times faster at high/uncapped FPS than the ~10
+                // frames it was tuned to take.
+                o->Alpha -= 0.1f * FPS_ANIMATION_FACTOR;
                 if (o->Alpha < 0) o->Alpha = 0.f;
             }
             else
@@ -504,7 +509,10 @@ bool MoveMount(OBJECT* o, bool bForceRender)
 
             if (o->Owner->Teleport == TELEPORT_BEGIN || o->Owner->Teleport == TELEPORT)
             {
-                o->Alpha -= 0.1f;
+                // *FPS_ANIMATION_FACTOR -- was a fixed 0.1/call fade with no time basis, so the
+                // teleport fade-out vanished N times faster at high/uncapped FPS than the ~10
+                // frames it was tuned to take.
+                o->Alpha -= 0.1f * FPS_ANIMATION_FACTOR;
                 if (o->Alpha < 0) o->Alpha = 0.f;
             }
             else
@@ -655,8 +663,10 @@ bool MoveMount(OBJECT* o, bool bForceRender)
                 o->Direction[1] = Speed;
                 o->Direction[2] = (float)(rand() % 64 - 32) * 0.1f;
             }
-            if (o->Position[2] < o->Owner->Position[2] + 100.f) o->Direction[2] += 1.5f;
-            if (o->Position[2] > o->Owner->Position[2] + 200.f) o->Direction[2] -= 1.5f;
+            if (o->Position[2] < o->Owner->Position[2] + 100.f)
+                o->Direction[2] += 1.5f * FPS_ANIMATION_FACTOR;
+            if (o->Position[2] > o->Owner->Position[2] + 200.f)
+                o->Direction[2] -= 1.5f * FPS_ANIMATION_FACTOR;
         }
     }
     return TRUE;
@@ -714,6 +724,8 @@ bool RenderMount(OBJECT* o, bool bForceRender)
 
 void RenderMount()
 {
+    // Like their riders, mounts keep their Classic look: no bloom from them.
+    const mu::ScopedBloomExclusion classicMounts;
     for (int i = 0; i < MAX_MOUNTS; i++)
     {
         OBJECT* o = &Mounts[i];
@@ -731,9 +743,8 @@ void RenderDarkHorseSkill(OBJECT* o, BMD* b)
     if (o == NULL)	return;
     if (b == NULL)	return;
 
-    // The weapon level is misused here to count how many frames have been rendered
-    // for this effect...
-    o->WeaponLevel++;
+    // The weapon level is misused here to count the reference frames of this effect.
+    o->WeaponLevel += REFERENCE_FRAME_STEP;
 
     if (o->LastHorseWaveEffect < WorldTime - HorseEffectInterval)
     {
@@ -743,11 +754,11 @@ void RenderDarkHorseSkill(OBJECT* o, BMD* b)
 
     if (o->AnimationFrame >= 8.f && o->AnimationFrame <= 9.5f)
     {
-        if (rand_fps_check(2))
+        if (REFERENCE_FRAME_STEP > 0 && (o->WeaponLevel % 2) == 1)
         {
             float  Matrix[3][4];
             vec3_t Angle, p, Position;
-            Vector(0.f, 150.f * (o->WeaponLevel / 2) * FPS_ANIMATION_FACTOR, 0.f, p);
+            Vector(0.f, 150.f * (o->WeaponLevel / 2), 0.f, p);
             Vector(0.f, 0.f, (float)(rand() % 360), Angle);
             for (int i = 0; i < 6; ++i)
             {
@@ -759,9 +770,9 @@ void RenderDarkHorseSkill(OBJECT* o, BMD* b)
                 CreateEffect(MODEL_GROUND_STONE + rand() % 2, Position, o->Angle, o->Light);
             }
         }
-        EarthQuake = (rand() % 3 - 3) * 0.7f;
+        SetEarthQuakeAt(o->Position, (rand() % 3 - 3) * 0.7f);
     }
-    else if (o->WeaponLevel == (BYTE)(19.f / FPS_ANIMATION_FACTOR))
+    else if (o->WeaponLevel == 19)
     {
         CreateEffect(MODEL_SKILL_FURY_STRIKE, o->Position, o->Angle, o->Light, 0, o, -1, 0, 2);
         o->WeaponLevel = -3;
@@ -778,6 +789,11 @@ void RenderSkillEarthQuake(CHARACTER* c, OBJECT* o, BMD* b, int iMaxSkill)
     vec3_t Angle, p, Position;
     OBJECT& TargetO = CharactersClient[c->TargetCharacter].Object;
 
+    // The weapon level counts reference frames; each value lasts one of them.
+    if (REFERENCE_FRAME_STEP == 0)
+    {
+        return;
+    }
     o->WeaponLevel++;
 
     //if ( o->WeaponLevel >= 6 && o->WeaponLevel <= 8 )
@@ -785,7 +801,7 @@ void RenderSkillEarthQuake(CHARACTER* c, OBJECT* o, BMD* b, int iMaxSkill)
         o->WeaponLevel == iMaxSkill - 1 ||
         o->WeaponLevel == iMaxSkill - 0)
     {
-        Vector(0.f, 40.f * (o->WeaponLevel / 2) * FPS_ANIMATION_FACTOR, 0.f, p);
+        Vector(0.f, 40.f * (o->WeaponLevel / 2), 0.f, p);
         Vector(0.f, 0.f, (float)(rand() % 360), Angle);
         for (int i = 0; i < 6; ++i)
         {
@@ -802,7 +818,7 @@ void RenderSkillEarthQuake(CHARACTER* c, OBJECT* o, BMD* b, int iMaxSkill)
 
     if (o->WeaponLevel == iMaxSkill - 1)
     {
-        EarthQuake = (rand() % 3 - 3) * 0.7f;
+        SetEarthQuakeAt(o->Position, (rand() % 3 - 3) * 0.7f);
         CreateEffect(MODEL_SKILL_FURY_STRIKE, TargetO.Position, TargetO.Angle, TargetO.Light, 0, o, -1, 0, 2);
     }
 
@@ -1132,9 +1148,11 @@ void MoveBoidGroup(OBJECT* o, int index)
 
     if (o->AI != BOID_GROUND)
     {
-        if (o->Type != MODEL_BUTTERFLY01 || rand_fps_check(4))
+        const float steerFrames =
+            Engine::AI::BoidSteering::SteerFrames(o->Type == MODEL_BUTTERFLY01, FPS_ANIMATION_FACTOR);
+        if (steerFrames > 0.f)
         {
-            MoveBoid(o, index, Boids, MAX_BOIDS);
+            MoveBoid(o, index, Boids, MAX_BOIDS, steerFrames);
         }
 
         AngleMatrix(o->Angle, o->Matrix);
@@ -1586,24 +1604,17 @@ void RenderBoids(bool bAfterCharacter)
                 if (gMapManager.WorldActive != WD_10HEAVEN)
                 {
                     EnableAlphaTest();
-                    if (o->Type == MODEL_EAGLE)
-                    {
-                        if (o->ShadowScale == 0)
-                            glColor4f(0.f, 0.f, 0.f, 0.0f);
-                        else
-                            glColor4f(0.f, 0.f, 0.f, 1.0f);
-                    }
-                    else
-                        glColor4f(0.f, 0.f, 0.f, 0.2f);
-
                     if (gMapManager.WorldActive == WD_51HOME_6TH_CHAR && o->Type == MODEL_MAP_TORNADO);
                     else
                     {
+                        const float shadowAlpha = o->Type == MODEL_EAGLE
+                            ? (o->ShadowScale == 0 ? 0.f : 1.f)
+                            : 0.2f;
                         VectorCopy(o->Position, Position);
                         Position[2] = RequestTerrainHeight(o->Position[0], o->Position[1]);
                         VectorCopy(Position, b->BodyOrigin);
 
-                        b->RenderBodyShadow();
+                        b->RenderBodyShadow(-1, -1, -1, -1, nullptr, 0, shadowAlpha);
                     }
                 }
             }
@@ -1641,13 +1652,12 @@ void RenderFishs()
                     if (gMapManager.WorldActive != WD_10HEAVEN)
                     {
                         EnableAlphaTest();
-                        glColor4f(0.f, 0.f, 0.f, 0.2f);
                         BMD* b = &Models[o->Type];
                         vec3_t Position;
                         VectorCopy(o->Position, Position);
                         Position[2] = RequestTerrainHeight(o->Position[0], o->Position[1]);
                         VectorCopy(Position, b->BodyOrigin);
-                        b->RenderBodyShadow();
+                        b->RenderBodyShadow(-1, -1, -1, -1, nullptr, 0, 0.2f);
                     }
                 }
             }
@@ -1813,7 +1823,7 @@ void MoveFishs()
                     SetAction(o, 1);
                 else
                     SetAction(o, 0);
-                MoveBoid(o, i, Fishs, MAX_FISHS);
+                MoveBoid(o, i, Fishs, MAX_FISHS, FPS_ANIMATION_FACTOR);
                 AngleMatrix(o->Angle, o->Matrix);
                 vec3_t Position, Direction;
                 Vector(o->Velocity * (float)(rand() % 4 + 6), 0.f, 0.f, Position);

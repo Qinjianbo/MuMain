@@ -1,7 +1,4 @@
-﻿// Event.cpp: implementation of the CEvent class.
-//
-//////////////////////////////////////////////////////////////////////
-
+﻿
 // common
 #include "stdafx.h"
 #include "Engine/Object/ZzzInfomation.h"
@@ -14,7 +11,7 @@
 #include "Render/Effects/ZzzEffect.h"
 #include "Render/Terrain/ZzzLodTerrain.h"
 #include "Render/Models/BoneManager.h"
-#include "UI/Legacy/UIManager.h"
+#include "UI/Core/UIManager.h"
 #include "GameLogic/Events/Cinematic/CKANTURUDirection.h"
 #include "GameLogic/Events/Cinematic/CDirection.h"
 #include "UI/Widgets/UIBaseDef.h"
@@ -48,8 +45,7 @@ constexpr std::array<std::array<float, 3>, 3> kSnowBurstOffsets{{
     {50.f, -50.f, 50.f},
 }};
 
-template <std::size_t N>
-void CopyWideString(wchar_t (&destination)[N], const wchar_t* source)
+template <std::size_t N> void CopyWideString(wchar_t (&destination)[N], const wchar_t* source)
 {
     if constexpr (N == 0)
     {
@@ -99,9 +95,7 @@ CXmasEvent::CXmasEvent()
     m_iEffectID = kChristmasEffectIdBase;
 }
 
-CXmasEvent::~CXmasEvent()
-{
-}
+CXmasEvent::~CXmasEvent() {}
 
 void CXmasEvent::LoadXmasEvent()
 {
@@ -140,12 +134,6 @@ void CXmasEvent::LoadXmasEventEffect()
 {
     LoadBitmap(L"Effect\\snowseff01.jpg", BITMAP_SNOW_EFFECT_1, GL_LINEAR, GL_CLAMP);
     LoadBitmap(L"Effect\\snowseff02.jpg", BITMAP_SNOW_EFFECT_2, GL_LINEAR, GL_CLAMP);
-}
-
-void CXmasEvent::LoadXmasEventItem()
-{
-    gLoadData.AccessModel(MODEL_CHRISTMAS_STAR, L"Data\\Item\\", L"MagicBox", 2);
-    gLoadData.OpenTexture(MODEL_CHRISTMAS_STAR, L"Item\\");
 }
 
 void CXmasEvent::LoadXmasEventSound()
@@ -230,13 +218,9 @@ void CXmasEvent::GenID()
     ++m_iEffectID;
 }
 
-CNewYearsDayEvent::CNewYearsDayEvent()
-{
-}
+CNewYearsDayEvent::CNewYearsDayEvent() {}
 
-CNewYearsDayEvent::~CNewYearsDayEvent()
-{
-}
+CNewYearsDayEvent::~CNewYearsDayEvent() {}
 
 void CNewYearsDayEvent::LoadModel()
 {
@@ -313,7 +297,7 @@ bool CNewYearsDayEvent::MoveMonsterVisual(CHARACTER* c, OBJECT* o, BMD* b)
                 Vector(1.0f, 0.4f, 0.0f, vLight);
                 CreateParticle(BITMAP_LIGHT + 2, vWorldPos, o->Angle, vLight, 0, 0.28f);
 
-                if (rand_fps_check(2))
+                if (rand() % 2 == 0)
                 {
                     Vector(0.8f, 0.6f, 0.1f, vLight);
                 }
@@ -337,7 +321,7 @@ bool CNewYearsDayEvent::MoveMonsterVisual(CHARACTER* c, OBJECT* o, BMD* b)
 
                 for (int i = 0; i < 5; ++i)
                 {
-                    if (rand_fps_check(2))
+                    if (rand() % 2 == 0)
                     {
                         Vector(0.8f, 0.6f, 0.1f, vLight);
                     }
@@ -363,7 +347,8 @@ bool CNewYearsDayEvent::MoveMonsterVisual(CHARACTER* c, OBJECT* o, BMD* b)
             {
                 o->m_iAnimation = Random::RangeInt(0, 5) + MODEL_NEWYEARSDAY_EVENT_BEKSULKI;
                 CreateParticleFpsChecked(BITMAP_EXPLOTION, vWorldPos, o->Angle, vLight, 0, 0.5f);
-                if (rand_fps_check(4)) o->m_iAnimation = MODEL_NEWYEARSDAY_EVENT_PIG;
+                if (rand_fps_check(4))
+                    o->m_iAnimation = MODEL_NEWYEARSDAY_EVENT_PIG;
 
                 PlayBuffer(SOUND_NEWYEARSDAY_DIE);
             }
@@ -377,7 +362,7 @@ bool CNewYearsDayEvent::MoveMonsterVisual(CHARACTER* c, OBJECT* o, BMD* b)
             {
                 if (o->AnimationFrame >= 4.5f)
                 {
-                    CreateEffectFpsChecked(o->m_iAnimation, vWorldPos, o->Angle, vLight);
+                    CreateEffect(o->m_iAnimation, vWorldPos, o->Angle, vLight);
                 }
             }
         }
@@ -395,15 +380,14 @@ bool CNewYearsDayEvent::MoveMonsterVisual(CHARACTER* c, OBJECT* o, BMD* b)
 
 const DWORD CBlueLuckyBagEvent::m_dwBlueLuckyBagCheckTime = 600000;
 
+// cppcheck-suppress uninitMemberVar
 CBlueLuckyBagEvent::CBlueLuckyBagEvent()
 {
     m_bBlueLuckyBag = false;
     m_dwBlueLuckyBagTime = 0;
 }
 
-CBlueLuckyBagEvent::~CBlueLuckyBagEvent()
-{
-}
+CBlueLuckyBagEvent::~CBlueLuckyBagEvent() {}
 
 void CBlueLuckyBagEvent::StartBlueLuckyBag()
 {
@@ -429,17 +413,11 @@ bool CBlueLuckyBagEvent::IsEnableBlueLuckyBag()
 }
 #endif // CSK_FIX_BLUELUCKYBAG_MOVECOMMAND
 
-C09SummerEvent::C09SummerEvent()
-{
-}
+C09SummerEvent::C09SummerEvent() {}
 
-C09SummerEvent::~C09SummerEvent()
-{
-}
+C09SummerEvent::~C09SummerEvent() {}
 
-void C09SummerEvent::LoadModel()
-{
-}
+void C09SummerEvent::LoadModel() {}
 
 void C09SummerEvent::LoadSound()
 {
@@ -506,12 +484,14 @@ bool C09SummerEvent::MoveMonsterVisual(CHARACTER* c, OBJECT* o, BMD* b)
                 o->m_iAnimation = 0;
             }
         }
-    }break;
+    }
+    break;
     case MONSTER01_SHOCK:
     {
         if (o->AnimationFrame >= 0.5f && o->AnimationFrame <= 0.8f)
             PlayBuffer(SOUND_UMBRELLA_MONSTER_DAMAGE);
-    }break;
+    }
+    break;
     case MONSTER01_DIE:
     {
         if (o->AnimationFrame > 0.0f && o->AnimationFrame <= 0.3f && rand_fps_check(1))
@@ -534,7 +514,8 @@ bool C09SummerEvent::MoveMonsterVisual(CHARACTER* c, OBJECT* o, BMD* b)
         {
             PlayBuffer(SOUND_UMBRELLA_MONSTER_DEAD);
         }
-    }break;
+    }
+    break;
     }
 
     return true;

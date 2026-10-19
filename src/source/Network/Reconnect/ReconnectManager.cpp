@@ -12,7 +12,7 @@
 #include "Scenes/SceneCommon.h"        // SelectedHero, MAX_CHARACTERS_PER_ACCOUNT
 #include "Scenes/CharacterScene.h"     // StartGame
 #include "Engine/Object/ZzzCharacter.h"// CharactersClient
-#include "UI/Legacy/UIMng.h"           // CUIMng, m_LoginWin
+#include "UI/Windows/LoginWin.h"       // g_LoginWin
 #include "MUHelper/MuHelper.h"         // MUHelper::g_MuHelper
 
 // Timing (milliseconds). WorldTime is the wall-clock ms timer the rest of the
@@ -126,11 +126,8 @@ void ReconnectManager::Begin()
     }
 
     // Point the login scene at the cached game server before tearing down.
-    // ResetClientToLoginScene() switches to LOG_IN_SCENE, and the next frame
-    // NewMoveLogInScene() -> CreateLogInScene() reconnects to
-    // szServerIpAddress/g_ServerPort. Left at the connect-server endpoint that
-    // reconnect hijacks the game-server socket we open below, so the first
-    // attempt connects to the wrong endpoint and only the retry recovers.
+    // ResetClientToLoginScene() switches to LOG_IN_SCENE, and this frame's
+    // NewMoveLogInScene() -> CreateLogInScene() opens the reconnect socket.
     szServerIpAddress = m_serverIp;
     g_ServerPort = m_serverPort;
 
@@ -145,20 +142,7 @@ void ReconnectManager::Begin()
         return;
     }
 
-    // Connect (the probe already confirmed the server is up).
-    DeleteSocket();
-    CreateSocket(m_serverIp, m_serverPort);
-
-    if (IsSocketAlive())
-    {
-        g_bGameServerConnected = TRUE;
-        EnterPhase(Phase::Connecting);
-        return;
-    }
-
-    // Rare: the server went down again between the probe and the connect. Retry
-    // (we've already torn down, so this just re-opens the socket).
-    EnterPhase(Phase::Retrying);
+    EnterPhase(Phase::Connecting);
 }
 
 void ReconnectManager::RequestCancel()
@@ -342,8 +326,7 @@ void ReconnectManager::UpdateConnecting()
     // to 0 by the teardown, so it takes the login branch).
     if (CurrentProtocolState == RECEIVE_JOIN_SERVER_SUCCESS)
     {
-        CUIMng& uiMng = CUIMng::Instance();
-        uiMng.HideWin(&uiMng.m_LoginWin);
+        g_LoginWin.Show(false);
 
         LogIn = 1;
         wcscpy_s(LogInID, _countof(LogInID), m_username);
@@ -493,7 +476,6 @@ void ReconnectManager::Abort()
     SceneFlag = LOG_IN_SCENE;
     LogIn = 0;
     CurrentProtocolState = REQUEST_JOIN_SERVER;
-    CreateSocket(szServerIpAddress, g_ServerPort);
 }
 
 void ReconnectManager::EnterPhase(Phase phase)

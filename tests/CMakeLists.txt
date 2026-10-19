@@ -32,6 +32,11 @@ if(MSVC)
     target_compile_options(mu_test_main PUBLIC /utf-8)
 endif()
 
+# Longest one TEST_CASE may run before ctest stops it and reports it as
+# failed. The slowest case takes about a second; without a limit, a case that
+# hangs holds its CI job until the runner gives up hours later.
+set(MU_TEST_CASE_TIMEOUT_SECONDS 120)
+
 # Helper for module CMakeLists. Usage:
 #   mu_add_test(NAME <test_name> SOURCES a.cpp b.cpp LINK_LIBS lib1 lib2)
 # Registers each TEST_CASE inside the binary as its own CTest entry, so
@@ -47,12 +52,33 @@ function(mu_add_test)
     if(MSVC)
         target_compile_options(${MAT_NAME} PRIVATE /utf-8)
     endif()
-    doctest_discover_tests(${MAT_NAME})
+    doctest_discover_tests(${MAT_NAME} PROPERTIES TIMEOUT ${MU_TEST_CASE_TIMEOUT_SECONDS})
 endfunction()
 
-add_subdirectory(text)
+find_package(Python3 COMPONENTS Interpreter REQUIRED)
+add_test(
+    NAME windows_workflow_contract
+    COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/test_windows_workflow_contract.py"
+            "${CMAKE_SOURCE_DIR}"
+)
+add_subdirectory(benchmark)
 
+add_subdirectory(text)
 add_subdirectory(effects)
-add_subdirectory(terrain)
+
+add_subdirectory(ui)
 
 add_subdirectory(editor)
+
+add_subdirectory(render)
+
+add_subdirectory(network)
+
+add_subdirectory(platform)
+
+add_subdirectory(core)
+
+add_subdirectory(data)
+
+add_subdirectory(gamelogic)

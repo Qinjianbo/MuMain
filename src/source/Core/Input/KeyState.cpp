@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Core/Input/KeyState.h"
+#include "Core/Input/SyntheticInput.h"
 
 #include <SDL3/SDL.h>
 
@@ -7,6 +8,14 @@ namespace Core::Input
 {
     namespace
     {
+        bool g_leftMouseButtonPressEdge = false;
+
+#ifdef _EDITOR
+        OtherWindowQuery g_otherWindowQuery = nullptr;
+#endif
+
+        } // namespace
+
         // Map a Win32 virtual-key code (or ASCII letter/digit) to an SDL
         // scancode. Returns SDL_SCANCODE_UNKNOWN for keys we don't translate.
         SDL_Scancode VkToScancode(int vk)
@@ -49,20 +58,43 @@ namespace Core::Input
             default:         return SDL_SCANCODE_UNKNOWN;
             }
         }
+
+    void RecordLeftMouseButtonPressEdge()
+    {
+        g_leftMouseButtonPressEdge = true;
+    }
+
+    void ClearLeftMouseButtonPressEdge()
+    {
+        g_leftMouseButtonPressEdge = false;
     }
 
     bool IsKeyDown(int virtualKey)
     {
+        // A scripted press (control socket) counts as down for the frame it
+        // is injected, ahead of the device state below.
+        if (Synthetic::IsKeyHeld(virtualKey))
+        {
+            return true;
+        }
+#ifdef _EDITOR
+        if (g_otherWindowQuery != nullptr && g_otherWindowQuery(virtualKey))
+        {
+            return false;
+        }
+#endif
+
         // Poll live input from SDL on every platform. The Win32 path used
         // GetAsyncKeyState because the old child EDIT controls stole keyboard
         // focus from the SDL window; they were replaced by the portable text
         // field (#447), so SDL input state is authoritative here too. The main
         // loop pumps SDL_PollEvent each frame, so this state stays current.
-
         // Mouse buttons and modifiers come from the SDL mouse / mod state.
         switch (virtualKey)
         {
-        case VK_LBUTTON: return (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON_MASK(SDL_BUTTON_LEFT)) != 0;
+        case VK_LBUTTON:
+            return g_leftMouseButtonPressEdge
+                || (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON_MASK(SDL_BUTTON_LEFT)) != 0;
         case VK_RBUTTON: return (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON_MASK(SDL_BUTTON_RIGHT)) != 0;
         case VK_MBUTTON: return (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON_MASK(SDL_BUTTON_MIDDLE)) != 0;
         case VK_SHIFT:   return (SDL_GetModState() & SDL_KMOD_SHIFT) != 0;
@@ -77,4 +109,11 @@ namespace Core::Input
         const bool* state = SDL_GetKeyboardState(nullptr);
         return state != nullptr && state[sc];
     }
+
+#ifdef _EDITOR
+    void SetOtherWindowQuery(OtherWindowQuery query)
+    {
+        g_otherWindowQuery = query;
+    }
+#endif
 }

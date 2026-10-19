@@ -1,16 +1,16 @@
 #ifndef _GMCRYWOLF1ST_H_
 #define _GMCRYWOLF1ST_H_
 
-namespace M34CryWolf1st {		//. Å©¶óÀÌ¿ïÇÁ Á¡·ÉÁö
+namespace M34CryWolf1st {		//. í¬ë¼ì´ìš¸í”„ ì ë ¹ì§€
     bool IsCyrWolf1st();
 
-    //. ¿ÀºêÁ§Æ®
+    //. ì˜¤ë¸Œì íŠ¸
     bool CreateCryWolf1stObject(OBJECT* o);
     bool MoveCryWolf1stObject(OBJECT* o);
     bool RenderCryWolf1stObjectVisual(OBJECT* o, BMD* b);
     bool RenderCryWolf1stObjectMesh(OBJECT* o, BMD* b, int ExtraMon);
 
-    //. ¸ó½ºÅÍ
+    //. ëª¬ìŠ¤í„°
     CHARACTER* CreateCryWolf1stMonster(int iType, int PosX, int PosY, int Key);
 
     bool MoveCryWolf1stMonsterVisual(CHARACTER* c, OBJECT* o, BMD* b);
@@ -22,24 +22,23 @@ namespace M34CryWolf1st {		//. Å©¶óÀÌ¿ïÇÁ Á¡·ÉÁö
     bool CreateMist(PARTICLE* pParticleObj);
     void RenderBaseSmoke(void);
 
-    //. Å©¶óÀÌ¿ïÇÁ ·¹ÀÌµå °ü·Ã MVP
+    //. í¬ë¼ì´ìš¸í”„ ë ˆì´ë“œ ê´€ë ¨ MVP
     void ChangeBackGroundMusic(int World);
     void RenderNoticesCryWolf();
+    // The ready-state notice's four lines (the page turns every ten seconds); false outside the
+    // ready state. Advances the page timer, so call it once per frame.
+    bool AdvanceNoticeTexts(std::wstring (&texts)[4]);
     void CryWolfMVPInit();
     int IsCryWolf1stMVPStart();
     bool IsCryWolf1stMVPStatePeace();
     void CheckCryWolf1stMVPAltarfInfo(int StatueHP, BYTE AltarState1, BYTE AltarState2, BYTE AltarState3, BYTE AltarState4, BYTE AltarState5);
     void CheckCryWolf1stMVP(BYTE btOccupationState, BYTE btCrywolfState);
-    bool Render_Mvp_Interface();
     void DisableCryWolfNPC();
     void EnableCryWolfNPC();
     void DoTankerFireFixStartPosition(int SourceX, int SourceY, int PositionX, int PositionY);
 
     void Check_AltarState(int Num, int State);
     void Set_Message_Box(int Str, int Num, int Key, int ObjNum = -1);
-    void Sub_Interface();
-    void MoveMvp_Interface();
-    void Set_Hp(int State);
     void Set_Val_Hp(int State);
     void Set_BossMonster(int Val_Hp, int Dl_Num);
     void SetTime(BYTE byHour, BYTE byMinute);

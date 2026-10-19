@@ -5,10 +5,13 @@
 #include "MuItemEditorUI.h"
 #include "ItemEditorTable.h"
 #include "ItemEditorActions.h"
+#include "ItemEditorLooks.h"
 #include "ItemEditorPopups.h"
 #include "Data/GameData/ItemData/ItemFieldMetadata.h"
 #include "../MuEditor/Config/MuEditorConfig.h"
 #include "../MuEditor/Core/MuEditorCore.h"
+#include "../MuEditor/UI/Common/MuEditorWindowIds.h"
+#include "../MuEditor/UI/Common/MuEditorLayout.h"
 #include "I18N/All.h"
 #include "imgui.h"
 #include <algorithm>
@@ -89,62 +92,34 @@ void CMuItemEditorUI::Render(bool& showEditor)
     if (!ItemAttribute)
         return;
 
-    // Constants for layout
-    constexpr float TOOLBAR_HEIGHT = 40.0f;
-    constexpr float CONSOLE_HEIGHT = 200.0f;
-
-    ImGuiIO& io = ImGui::GetIO();
-
-    // Calculate available space between toolbar and console
-    float availableTop = TOOLBAR_HEIGHT;
-    float availableBottom = io.DisplaySize.y - CONSOLE_HEIGHT;
-    float availableHeight = availableBottom - availableTop;
-
-    // Set initial window size and constraints
-    ImGui::SetNextWindowSizeConstraints(
-        ImVec2(400, 300),  // Min size
-        ImVec2(io.DisplaySize.x, availableHeight)  // Max size
-    );
+    // The size it first floats at; once docked (as a tool window always is,
+    // also when floating) its dock node sizes it
+    ImGui::SetNextWindowSizeConstraints(ImVec2(400, 300), // Min size
+                                        ImVec2(FLT_MAX, FLT_MAX));
 
     ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse;
-    if (ImGui::Begin(I18N::Editor::ItemEditor, &showEditor, flags))
+    char title[MuEditor::WindowIds::TitleCapacity];
+    MuEditor::Layout::PrepareToolWindow();
+    if (ImGui::Begin(MuEditor::WindowIds::Title(title, I18N::Editor::ItemEditor, MuEditor::WindowIds::ItemEditor),
+                     &showEditor, flags))
     {
-        // Clamp window position to stay within bounds
-        ImVec2 windowPos = ImGui::GetWindowPos();
-        ImVec2 windowSize = ImGui::GetWindowSize();
-
-        // Clamp to keep window between toolbar and console
-        if (windowPos.y < availableTop)
-        {
-            ImGui::SetWindowPos(ImVec2(windowPos.x, availableTop));
-        }
-        if (windowPos.y + windowSize.y > availableBottom)
-        {
-            ImGui::SetWindowPos(ImVec2(windowPos.x, availableBottom - windowSize.y));
-        }
-
-        // Clamp horizontally to stay within screen bounds
-        if (windowPos.x < 0)
-        {
-            ImGui::SetWindowPos(ImVec2(0, windowPos.y));
-        }
-        if (windowPos.x + windowSize.x > io.DisplaySize.x)
-        {
-            ImGui::SetWindowPos(ImVec2(io.DisplaySize.x - windowSize.x, windowPos.y));
-        }
-
-        // Check if hovering this window OR any popup
-        bool isHovering = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows | ImGuiHoveredFlags_AllowWhenBlockedByPopup) ||
-                         ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
-                         ImGui::IsPopupOpen("", ImGuiPopupFlags_AnyPopupId);
+        // Check if hovering this window OR any popup, also while a scrollbar or
+        // slider of it is held
+        bool isHovering =
+            ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows | ImGuiHoveredFlags_AllowWhenBlockedByPopup |
+                                   ImGuiHoveredFlags_AllowWhenBlockedByActiveItem) ||
+            ImGui::IsPopupOpen("", ImGuiPopupFlags_AnyPopupId);
 
         if (isHovering)
         {
             g_MuEditorCore.SetHoveringUI(true);
         }
 
-        // Render action buttons (Save, Export S6E3, Export CSV)
-        CItemEditorActions::RenderAllButtons();;
+        // Render action buttons (Save, Import/Export bmd, Export S6E3, Export CSV)
+        if (CItemEditorActions::RenderAllButtons() && m_pTable)
+        {
+            m_pTable->InvalidateFilter();
+        }
         ImGui::Separator();
         
         RenderSearchBar();
@@ -153,6 +128,14 @@ void CMuItemEditorUI::Render(bool& showEditor)
         ImGui::SameLine();
         ImGui::Checkbox(I18N::Editor::FreezeIndexName, &m_bFreezeColumns);
         ImGui::Separator();
+
+        // The looks of the selected item (read only); clicking an item there
+        // selects it.
+        const int clickedItem = CItemEditorLooks::Render(m_selectedRow);
+        if (clickedItem >= 0)
+        {
+            SelectItem(clickedItem);
+        }
 
         // Convert search to lowercase for case-insensitive search
         std::string searchLower = m_szItemSearchBuffer;
@@ -168,6 +151,17 @@ void CMuItemEditorUI::Render(bool& showEditor)
         CItemEditorPopups::RenderAll();
     }
     ImGui::End();
+}
+
+void CMuItemEditorUI::SelectItem(int itemIndex)
+{
+    std::string searchLower = m_szItemSearchBuffer;
+    std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(), ::tolower);
+    if (!CItemEditorTable::IsListed(itemIndex, searchLower) && CItemEditorTable::IsListed(itemIndex, ""))
+    {
+        m_szItemSearchBuffer[0] = '\0';
+    }
+    CItemEditorTable::RequestScrollToIndex(itemIndex);
 }
 
 void CMuItemEditorUI::RenderSearchBar()

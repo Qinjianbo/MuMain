@@ -3,12 +3,14 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include "App/Control/ControlTaps.h"
 #include "Engine/Object/EditObjects.h"
 #include "UI/Chat/Chat.h"
 #include "MainScene.h"
 #include "SceneCommon.h"
 #include "Camera/CameraUtility.h"
 #include "Render/Textures/ZzzOpenglUtil.h"
+#include "Render/Renderer/MuRenderer.h"
 #include "Engine/Object/ZzzObject.h"
 #include "Engine/Object/ZzzCharacter.h"
 #include "Render/Terrain/ZzzLodTerrain.h"
@@ -16,28 +18,31 @@
 #include "Input/Selection.h"
 #include "Render/Effects/ZzzEffect.h"
 #include "World/MapInfra/MapManager.h"
-#include "UI/Legacy/UIMng.h"
-#include "UI/NewUI/NewUISystem.h"
+#include "UI/Core/SceneUICoordinator.h"
+#include "UI/Core/WindowSystem.h"
 #include "GameLogic/Social/PartyManager.h"
 #include "GameLogic/Events/Cinematic/CDirection.h"
 #include "GameLogic/Pets/w_PetProcess.h"
 #include "Core/Utilities/Log/muConsoleDebug.h"
+#include "Core/Utilities/Log/MuLogger.h"
 #include "Core/Utilities/FrameProfiler.h"
-#include "Render/Core/ImmediateRenderer.h"
-#include "Render/Shaders/PassthroughShader.h"
-#include "Render/Core/RenderConfig.h"
 #include "Network/Server/WSclient.h"
 #include "Network/Reconnect/ReconnectManager.h"
 #include "Engine/AI/GOBoid.h"
 #include "GameLogic/Items/PersonalShopTitleImp.h"
-#include "UI/Legacy/UIManager.h"
+#include "UI/Core/UIManager.h"
 #include "Engine/Object/ZzzInventory.h"
 #include "World/MapInfra/PortalMgr.h"
 #include "Guild/GuildCache.h"
-#include "UI/Legacy/UIMapName.h"
+#include "UI/HUD/UIMapName.h"
+#include "UI/Scaling/UITransform.h"
 #include "Camera/CameraProjection.h"
+#include "Scenes/SceneLightingSetup.h"
+#include "Scenes/ScenePostProcessing.h"
+#include "Render/Lighting/DynamicLightHistory.h"
 #include "Camera/CameraManager.h"
 #include "Camera/CameraMode.h"
+#include "Core/Input/ImeInput.h"
 #ifdef _EDITOR
 #include "Camera/FrustumRenderer.h"
 #include "Camera/CameraDebugLog.h"
@@ -65,6 +70,9 @@ extern float EarthQuake;
 extern int CheckSkill;
 extern int MouseY;
 extern int LoadingWorld;
+// LoadingScene.cpp -- closes the RmlUi loading-screen wallpaper it keeps open past its own
+// one-frame flash. Called below once LoadingWorld drops below the "world ready" threshold.
+extern void HideLoadingSceneOverlay();
 extern DWORD g_dwKeyFocusUIID;
 extern int ErrorMessage;
 extern int HeroTile;
@@ -130,20 +138,19 @@ static void InitializeMainScene()
 {
     g_pMainFrame->ResetSkillHotKey();
 
-    g_ConsoleDebug->Write(MCD_NORMAL, L"Join the game with the following character: %ls", CharactersClient[SelectedHero].ID);
-    g_ErrorReport.Write(L"> Character selected <%d> \"%ls\"\r\n", SelectedHero + 1, CharactersClient[SelectedHero].ID);
+    MU_LOG_INFO(mu::log::Get("scenes"), "Character selected: slot {}", SelectedHero + 1);
 
     InitMainScene = true;
 
-    g_ConsoleDebug->Write(MCD_SEND, L"SendRequestJoinMapServer");
+    MU_LOG_DEBUG(mu::log::Get("network"), "SendRequestJoinMapServer");
 
     CurrentProtocolState = REQUEST_JOIN_MAP_SERVER;
-    SocketClient->ToGameServer()->SendSelectCharacter(CharactersClient[SelectedHero].ID);
+    SocketClient->ToGameServer()->SendSelectCharacter(MU_C16(CharactersClient[SelectedHero].ID));
 
     // Remember which character is in play so auto-reconnect can re-select it.
     ReconnectManager::Instance().CacheCharacter(CharactersClient[SelectedHero].ID);
 
-    CUIMng::Instance().CreateMainScene();
+    CSceneUICoordinator::Instance().CreateMainScene();
 
     g_Camera.Angle[2] = -45.f;
 
@@ -156,7 +163,7 @@ static void InitializeMainScene()
     InputNumber = 2;
     for (int i = 0; i < MAX_WHISPER; i++)
     {
-        g_pChatListBox->AddText(L"", L"", SEASON3B::TYPE_WHISPER_MESSAGE);
+        g_pChatListBox->AddText(L"", L"", mu::ui::window::TYPE_WHISPER_MESSAGE);
     }
 
     g_GuildNotice[0][0] = '\0';
@@ -169,7 +176,7 @@ static void InitializeMainScene()
 
     g_pSlideHelpMgr->Init();
     g_pUIMapName->Init();
-    g_pNewUIMuHelper->Reset();
+    g_pMuHelperConfig->Reset();
 
     g_GuildCache.Reset();
     g_PortalMgr.Reset();
@@ -196,7 +203,11 @@ static void InitializeMainScene()
  */
 static void InitializeSceneFrame()
 {
-    EarthQuake *= 0.2f;
+    // Decays per reference frame, like DefaultCamera samples it.
+    if (REFERENCE_FRAME_STEP > 0)
+    {
+        EarthQuake *= 0.2f;
+    }
     InitTerrainLight();
 
     CheckInventory = NULL;
@@ -219,10 +230,11 @@ static void InitializeSceneFrame()
  */
 static void UpdateUIAndInput()
 {
+    FRAME_PROFILE(UIUpdate);
     if (g_Camera.TopViewEnable || LoadingWorld >= 30)
         return;
 
-    if (MouseY >= (int)(REFERENCE_HEIGHT - 48))
+    if (g_pMainFrame != nullptr && g_pMainFrame->IsMouseOverHud())
         MouseOnWindow = true;
 
     g_pPartyManager->Update();
@@ -231,10 +243,9 @@ static void UpdateUIAndInput()
     if (MouseLButton == true &&
         false == g_pNewUISystem->CheckMouseUse() &&
         g_dwMouseUseUIID == 0 &&
-        g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_CHATINPUTBOX) == false)
+        g_pNewUISystem->IsVisible(mu::ui::window::INTERFACE_CHATINPUTBOX) == false)
     {
         g_pWindowMgr->SetWindowsEnable(FALSE);
-        g_pFriendMenu->HideMenu();
         g_dwKeyFocusUIID = 0;
         if (GetFocus() != g_hWnd)
         {
@@ -244,7 +255,7 @@ static void UpdateUIAndInput()
     }
 
     MoveInterface();
-    MoveTournamentInterface();
+    MoveBattleSoccerGoalEffect();
 
     if (ErrorMessage != MESSAGE_LOG_OUT)
         g_pUIManager->UpdateInput();
@@ -267,7 +278,10 @@ static void UpdateUIAndInput()
  */
 static void UpdateGameEntities()
 {
-    MoveObjects();
+    {
+        Render::Lighting::LightSourceScope mapLights(Render::Lighting::LightSource::Map);
+        MoveObjects();
+    }
 
     if (!g_Camera.TopViewEnable)
         MoveItems();
@@ -281,14 +295,23 @@ static void UpdateGameEntities()
     MoveFishs();
     UI::Chat::MoveChat();
     UpdatePersonalShopTitleImp();
-    MoveHero();
-    MoveCharactersClient();
+    {
+        Render::Lighting::LightSourceScope characterLights(Render::Lighting::LightSource::Character);
+        MoveHero();
+        MoveCharactersClient();
+    }
     MoveMounts();
     ThePetProcess().UpdatePets();
     MovePoints();
-    { FRAME_PROFILE(MoveEffects); MoveEffects(); }
+    {
+        FRAME_PROFILE(MoveEffects);
+        MoveEffects();
+    }
     MoveJoints();
-    { FRAME_PROFILE(MoveParticles); MoveParticles(); }
+    {
+        FRAME_PROFILE(MoveParticles);
+        MoveParticles();
+    }
     MovePointers();
 
     g_Direction.CheckDirection();
@@ -357,24 +380,16 @@ static void SetupMainSceneViewport(int& outWidth, int& outHeight, BYTE& outByWat
 {
     outByWaterMap = 0;
 
-    if (g_Camera.TopViewEnable == false)
-    {
-        // Use hardcoded value from original game (in 640×480 reference coordinates)
-        // This is then scaled by BeginOpengl() to actual window size
-        outHeight = REFERENCE_HEIGHT - 48;
-    }
-    else
-    {
-        outHeight = REFERENCE_HEIGHT;
-    }
-
-    outWidth = GetScreenWidth();
+    const auto viewport = UI::Scaling::WorldViewport(WindowWidth, WindowHeight, g_Camera.TopViewEnable);
+    outWidth = viewport.width;
+    outHeight = viewport.height;
 
     // NOTE: Clear color is set by SceneManager::SetWorldClearColor() before this function is called
     // All background colors are now centralized in SceneManager.cpp
 
-    BeginOpengl(0, 0, outWidth, outHeight);
-    CreateFrustrum((float)outWidth / (float)REFERENCE_WIDTH, (float)outHeight / (float)REFERENCE_HEIGHT, cameraPos);
+    BeginOpenglPhysical(viewport.x, viewport.y, viewport.width, viewport.height);
+    CreateFrustrum(static_cast<float>(viewport.width) / WindowWidth,
+                   static_cast<float>(viewport.height) / WindowHeight, cameraPos);
 
     // Setup fog for battle castle
     if (gMapManager.InBattleCastle())
@@ -386,10 +401,12 @@ static void SetupMainSceneViewport(int& outWidth, int& outHeight, BYTE& outByWat
         }
         // Don't disable fog - let BeginOpengl() handle it based on FogEnable
     }
+    Scenes::Lighting::SubmitSceneLighting();
     CameraProjection::ScreenToWorldRay(g_Camera, MouseX, MouseY, MouseTarget);
+    App::Control::Frames::RecordWorldCamera();
 }
 
-// DXP-23 diagnostic toggle -- see MainScene.h's SetDisableEffects() doc comment.
+// Diagnostic toggle -- see MainScene.h's SetDisableEffects() doc comment.
 static bool g_bDisableEffectsDebug = false;
 
 void SetDisableEffects(bool disabled)
@@ -397,32 +414,99 @@ void SetDisableEffects(bool disabled)
     g_bDisableEffectsDebug = disabled;
 }
 
-// DXP-23 diagnostic toggles, finer-grained bisection -- see MainScene.h doc comments.
+bool IsEffectsDisabledDebug()
+{
+    return g_bDisableEffectsDebug;
+}
+
+// Diagnostic toggles, finer-grained bisection -- see MainScene.h doc comments.
 static bool g_bDisableSpritesDebug = false;
 static bool g_bDisableParticlesDebug = false;
 static bool g_bDisableSkillEffectModelsDebug = false;
 static bool g_bDisableBoidsDebug = false;
 
-void SetDisableSprites(bool disabled) { g_bDisableSpritesDebug = disabled; }
-void SetDisableParticles(bool disabled) { g_bDisableParticlesDebug = disabled; }
-void SetDisableSkillEffectModels(bool disabled) { g_bDisableSkillEffectModelsDebug = disabled; }
-void SetDisableBoids(bool disabled) { g_bDisableBoidsDebug = disabled; }
-bool IsSpritesDisabledDebug() { return g_bDisableSpritesDebug; }
-bool IsParticlesDisabledDebug() { return g_bDisableParticlesDebug; }
-bool IsSkillEffectModelsDisabledDebug() { return g_bDisableSkillEffectModelsDebug; }
-bool IsBoidsDisabledDebug() { return g_bDisableBoidsDebug; }
+void SetDisableSprites(bool disabled)
+{
+    g_bDisableSpritesDebug = disabled;
+}
+void SetDisableParticles(bool disabled)
+{
+    g_bDisableParticlesDebug = disabled;
+}
+void SetDisableSkillEffectModels(bool disabled)
+{
+    g_bDisableSkillEffectModelsDebug = disabled;
+}
+void SetDisableBoids(bool disabled)
+{
+    g_bDisableBoidsDebug = disabled;
+}
+bool IsSpritesDisabledDebug()
+{
+    return g_bDisableSpritesDebug;
+}
+bool IsParticlesDisabledDebug()
+{
+    return g_bDisableParticlesDebug;
+}
+bool IsSkillEffectModelsDisabledDebug()
+{
+    return g_bDisableSkillEffectModelsDebug;
+}
+bool IsBoidsDisabledDebug()
+{
+    return g_bDisableBoidsDebug;
+}
 
 static bool g_bDisableWingShadowDebug = false;
-void SetDisableWingShadow(bool disabled) { g_bDisableWingShadowDebug = disabled; }
-bool IsWingShadowDisabledDebug() { return g_bDisableWingShadowDebug; }
+void SetDisableWingShadow(bool disabled)
+{
+    g_bDisableWingShadowDebug = disabled;
+}
+bool IsWingShadowDisabledDebug()
+{
+    return g_bDisableWingShadowDebug;
+}
+
+static bool g_bDisableBodyShadowsDebug = false;
+void SetDisableBodyShadows(bool disabled)
+{
+    g_bDisableBodyShadowsDebug = disabled;
+}
+bool IsBodyShadowsDisabledDebug()
+{
+    return g_bDisableBodyShadowsDebug;
+}
 
 static bool g_bDisableJointsDebug = false;
-void SetDisableJoints(bool disabled) { g_bDisableJointsDebug = disabled; }
-bool IsJointsDisabledDebug() { return g_bDisableJointsDebug; }
+void SetDisableJoints(bool disabled)
+{
+    g_bDisableJointsDebug = disabled;
+}
+bool IsJointsDisabledDebug()
+{
+    return g_bDisableJointsDebug;
+}
+
+static bool g_bDisableEffectCullingDebug = false;
+void SetDisableEffectCulling(bool disabled)
+{
+    g_bDisableEffectCullingDebug = disabled;
+}
+bool IsEffectCullingDisabledDebug()
+{
+    return g_bDisableEffectCullingDebug;
+}
 
 static bool g_bDisableWingExtraLayersDebug = false;
-void SetDisableWingExtraLayers(bool disabled) { g_bDisableWingExtraLayersDebug = disabled; }
-bool IsWingExtraLayersDisabledDebug() { return g_bDisableWingExtraLayersDebug; }
+void SetDisableWingExtraLayers(bool disabled)
+{
+    g_bDisableWingExtraLayersDebug = disabled;
+}
+bool IsWingExtraLayersDisabledDebug()
+{
+    return g_bDisableWingExtraLayersDebug;
+}
 
 /**
  * @brief Renders all 3D game entities (terrain, objects, characters, effects).
@@ -453,25 +537,29 @@ static void RenderGameWorld(BYTE& byWaterMap, int width, int height)
         if (gMapManager.WorldActive == WD_39KANTURU_3RD)
         {
             if (!g_Direction.m_CKanturu.IsMayaScene())
-                // GLP-16 GPU-ms investigation: CPU-only scope -- GpuTimerBegin/End for this pass
-                // are now called manually, tightly around the real draw submission inside
-                // ZzzLodTerrain.cpp's FlushTerrainBuckets(), not around this whole CPU-heavy
-                // gather+sort+flush call. See FrameProfiler.h's Scope class comment for why.
-                { FRAME_PROFILE_CPU_ONLY(Terrain); RenderTerrain(false); }
+                { FRAME_PROFILE(Terrain); RenderTerrain(false); }
         }
         else
             if (gMapManager.WorldActive != WD_10HEAVEN && gMapManager.WorldActive != -1)
             {
                 if ((gMapManager.IsPKField() || IsDoppelGanger2()) && renderStatic)
                 {
-                    FRAME_PROFILE(Objects); RenderObjects();
+                    FRAME_PROFILE(Objects);
+                    Render::Lighting::LightSourceScope mapLights(Render::Lighting::LightSource::Map);
+                    mu::ScopedReorderableDraws reorderable;
+                    RenderObjects();
                 }
-                { FRAME_PROFILE_CPU_ONLY(Terrain); RenderTerrain(false); }
+                { FRAME_PROFILE(Terrain); RenderTerrain(false); }
             }
     }
 
     if (!gMapManager.IsPKField() && !IsDoppelGanger2() && renderStatic)
-        { FRAME_PROFILE(Objects); RenderObjects(); }
+    {
+        FRAME_PROFILE(Objects);
+        Render::Lighting::LightSourceScope mapLights(Render::Lighting::LightSource::Map);
+        mu::ScopedReorderableDraws reorderable;
+        RenderObjects();
+    }
 
     if (renderEffects)
     {
@@ -483,10 +571,7 @@ static void RenderGameWorld(BYTE& byWaterMap, int width, int height)
 
     if (EditFlag != EDIT_NONE && renderTerrain)
     {
-        // Dev-editor path: takes the non-shader (IR-based) fallback, which never reaches
-        // FlushTerrainBuckets()'s manual GpuTimerBegin/End -- Terrain GPU ms will read stale/0 in
-        // this mode, CPU ms is unaffected. Not worth instrumenting a debug-only path for.
-        FRAME_PROFILE_CPU_ONLY(Terrain); RenderTerrain(true);
+        FRAME_PROFILE(Terrain); RenderTerrain(true);
     }
     if (!g_Camera.TopViewEnable && renderDroppedItems)
         { FRAME_PROFILE(Items); RenderItems(); }
@@ -498,13 +583,17 @@ static void RenderGameWorld(BYTE& byWaterMap, int width, int height)
         RenderLeaves();
 
     if (!gMapManager.InChaosCastle())
-        ThePetProcess().RenderPets();
+        Scenes::PostProcessing::RenderPetsWithoutBloom();
 
     if (renderEffects)
         RenderBoids(true);
 
     if (renderStatic)
-        { FRAME_PROFILE(Objects); RenderObjects_AfterCharacter(); }
+    {
+        FRAME_PROFILE(Objects);
+        mu::ScopedReorderableDraws reorderable;
+        RenderObjects_AfterCharacter();
+    }
 
     { FRAME_PROFILE(Joints); RenderJoints(byWaterMap); }
 
@@ -522,9 +611,6 @@ static void RenderGameWorld(BYTE& byWaterMap, int width, int height)
         RenderLeaves();
     }
 
-    // GLP-24: these two were the frame's largest GL producers and fell outside every FRAME_PROFILE
-    // scope (the Effects scope closes above), so they were attributed to Other, which the $glstats
-    // overlay never printed.
     { FRAME_PROFILE(Sprites); RenderSprites(); }
     { FRAME_PROFILE(Particles); RenderParticles(); }
 
@@ -542,11 +628,8 @@ static void RenderGameWorld(BYTE& byWaterMap, int width, int height)
         byWaterMap = 2;
 
         EndOpengl();
-        BeginOpengl(0, 0, width, height);
+        BeginOpenglPhysical(0, 0, width, height);
         RenderWaterTerrain();
-        // Water maps run a full second pass, so Joints/Effects/Sprites/Particles are each entered
-        // twice per frame here. CPU ms accumulates across entries; GPU ms needs FrameProfiler's
-        // multi-entry query pairs (GLP-24) to do the same rather than reporting only this one.
         { FRAME_PROFILE(Joints); RenderJoints(byWaterMap); }
         { FRAME_PROFILE(Effects); RenderEffects(true); RenderBlurs(); }
         CheckSprites();
@@ -562,7 +645,7 @@ static void RenderGameWorld(BYTE& byWaterMap, int width, int height)
         EndSprite();
         EndOpengl();
 
-        BeginOpengl(0, 0, width, height);
+        BeginOpenglPhysical(0, 0, width, height);
     }
 
     if (gMapManager.InBattleCastle())
@@ -581,13 +664,14 @@ static void RenderMainSceneUI()
 {
     Input::Selection::SelectObjects();
     BeginBitmap();
-    RenderObjectDescription();
+    // Recorded into the world-label layer instead when it is available (CNameWindow).
+    if (g_pNameWindow == nullptr || !g_pNameWindow->RecordsInterfaceOverlays())
+        RenderObjectDescription();
 
     if (g_Camera.TopViewEnable == false)
     {
         RenderInterface(true);
     }
-    RenderTournamentInterface();
     EndBitmap();
 
     g_pPartyManager->Render();
@@ -601,11 +685,14 @@ static void RenderMainSceneUI()
 #endif //ENABLE_EDIT
 
     EndBitmap();
-    BeginBitmap();
 
-    RenderCursor();
-
-    EndBitmap();
+    // RenderCursor() used to be called here directly, but that runs as part of this function's
+    // normal legacy-2D pass -- earlier in the frame than RmlUi's own render pass (RmlUi always
+    // renders last in the frame), so any RmlUi
+    // content on screen during gameplay (the ESC menu, and this scene's own RmlUi HUD pilot)
+    // would paint over the cursor. Now drawn from Winmain.cpp's SetPostRmlUiCallback instead,
+    // which fires after RmlUi's pass and covers MAIN_SCENE too -- same fix
+    // already applied to LOG_IN_SCENE/CHARACTER_SCENE when their own RmlUi content first shipped.
 }
 
 /**
@@ -628,8 +715,24 @@ bool RenderMainScene()
 
     if ((LoadingWorld) > 30)
     {
+        // Keep something on screen every frame while the world/hero data isn't back from the
+        // server yet. LoadingScene.cpp's own flash only drew one frame (SceneFlag flips to
+        // MAIN_SCENE immediately after it, well before LoadingWorld actually drops below 30) --
+        // without a fresh clear here each of the frames in between, the swapchain just kept
+        // presenting whatever stale buffer content was left, seen as flicker between black and
+        // that one flash frame. The RmlUi loading wallpaper (kept Shown by LoadingScene(), not
+        // closed after its flash) renders on top of this clear automatically, same as any other
+        // persistent RmlUi document.
+        BeginOpengl();
+        mu::GetRenderer().ClearScreen();
+        EndOpengl();
         return false;
     }
+
+    // World is ready this frame -- close the loading wallpaper now, before it (or the mainframe
+    // HUD it was gating alongside, see CSystem::SyncMainSceneHudVisibility) would otherwise
+    // sit on top of the real scene about to render below.
+    HideLoadingSceneOverlay();
 
     // Per-camera fog default: Orbital uses fog (noticeable at longer view distances),
     // Default camera's fog zone sits at/beyond its far clip and reads as visual noise,
@@ -671,73 +774,28 @@ bool RenderMainScene()
     }
 
     SetupMainSceneViewport(width, height, byWaterMap, cameraPos);
+    AddFrameHistoryLights();
     RenderGameWorld(byWaterMap, width, height);
 
 #ifdef _EDITOR
-    // Render spectated camera frustum wireframe when in FreeFly mode
+    // Render spectated camera frustum wireframe when in FreeFly mode - but not
+    // during the map editor's top-down minimap capture, which wants a clean shot.
+    extern bool g_bMapEditorFullTerrain;
     CameraMode cameraMode = CameraManager::Instance().GetCurrentMode();
-    if (cameraMode == CameraMode::FreeFly)
+    if (cameraMode == CameraMode::FreeFly && !g_bMapEditorFullTerrain)
     {
         ICamera* spectated = CameraManager::Instance().GetSpectatedCamera();
         if (spectated)
             RenderFrustumWireframe(spectated->GetFrustum());
     }
-
-    // DEBUG: Render mouse ray as a visible line (magenta) from MousePosition to MouseTarget
-    {
-        GLboolean depthTest = glIsEnabled(GL_DEPTH_TEST);
-        GLboolean tex2d = GL_FALSE;
-        glDisable(GL_DEPTH_TEST);
-        if (!g_CoreProfile) { tex2d = glIsEnabled(GL_TEXTURE_2D); glDisable(GL_TEXTURE_2D); }
-        glLineWidth(2.0f);
-
-        IR::Begin(GL_LINES);
-        PassthroughShader::Instance().SetUseTexture(false);
-        IR::Color4f(1.0f, 0.0f, 1.0f, 1.0f);
-        IR::Vertex3fv(MousePosition);
-        IR::Vertex3fv(MouseTarget);
-        IR::End();
-
-        constexpr float S = 30.0f;
-        IR::Begin(GL_LINES);
-        PassthroughShader::Instance().SetUseTexture(false);
-        IR::Color4f(0.0f, 1.0f, 0.0f, 1.0f);
-        IR::Vertex3f(MousePosition[0] - S, MousePosition[1], MousePosition[2]);
-        IR::Vertex3f(MousePosition[0] + S, MousePosition[1], MousePosition[2]);
-        IR::Vertex3f(MousePosition[0], MousePosition[1] - S, MousePosition[2]);
-        IR::Vertex3f(MousePosition[0], MousePosition[1] + S, MousePosition[2]);
-        IR::End();
-
-        glLineWidth(1.0f);
-        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-        if (depthTest) glEnable(GL_DEPTH_TEST);
-        if (!g_CoreProfile && tex2d) glEnable(GL_TEXTURE_2D);
-    }
-
-    // DEBUG: Log ray state on left click (debounced to one log per click)
-    {
-        extern bool MouseLButtonPush;
-        static bool wasPressed = false;
-        if (MouseLButtonPush && !wasPressed)
-        {
-            wasPressed = true;
-            extern int MouseX, MouseY;
-            CAMERA_LOG("[RAY] Click: Mouse=(%d,%d) Pos=(%.0f,%.0f,%.0f) Target=(%.0f,%.0f,%.0f) "
-                       "CamPos=(%.0f,%.0f,%.0f) PerspX=%.6f PerspY=%.6f CenterX=%d CenterY=%d FOV=%.1f ViewFar=%.0f",
-                       MouseX, MouseY,
-                       MousePosition[0], MousePosition[1], MousePosition[2],
-                       MouseTarget[0], MouseTarget[1], MouseTarget[2],
-                       g_Camera.Position[0], g_Camera.Position[1], g_Camera.Position[2],
-                       g_Camera.PerspectiveX, g_Camera.PerspectiveY,
-                       g_Camera.ScreenCenterX, g_Camera.ScreenCenterY,
-                       g_Camera.FOV, g_Camera.ViewFar);
-        }
-        if (!MouseLButtonPush)
-            wasPressed = false;
-    }
 #endif
 
-    { FRAME_PROFILE(UI); RenderMainSceneUI(); }
+    Scenes::PostProcessing::EndSceneGeometry();
+
+    {
+        FRAME_PROFILE(UI);
+        RenderMainSceneUI();
+    }
 
     EndOpengl();
 

@@ -6,7 +6,9 @@
 #ifdef KJH_ADD_INGAMESHOP_UI_SYSTEM
 #include "InGameShopSystem.h"
 #include "Engine/Object/ZzzInventory.h"
-#include "MsgBoxIGSCommon.h"
+#include "Network/Server/WSclient.h" // SocketClient
+#include "UI/Core/WindowCommon.h"
+#include <filesystem>
 
 #ifdef CONSOLE_DEBUG
 
@@ -27,7 +29,10 @@ CInGameShopSystem::CInGameShopSystem()
     m_bIsShopOpenLock = true; //louis
     m_bIsBanner = false;
     m_bIsRequestEventPackage = false;
-    m_plistSelectPackage = NULL;
+    // Initalize() points this at the normal package list, but GetTotalPages() runs from
+    // RenderTexts() on every frame the shop is visible, which does not require Initalize() to
+    // have run. Start it where Initalize() leaves it so size() reads an empty list, not null.
+    m_plistSelectPackage = &m_listNormalPackage;
     m_bFirstScriptDownloaded = false;
     m_bFirstBannerDownloaded = false;
 }
@@ -107,20 +112,10 @@ bool CInGameShopSystem::ScriptDownload()
     wcscpy(szScriptRemotePathforDMZ, L"/Global/Payment/DevScriptGB/ProductTransfer");
 
 #ifdef FOR_WORK
-    HANDLE hFile;
-    hFile = CreateFile(L"dmz.ini",     // file to create
-        GENERIC_READ,			// open for reading
-        0,						// do not share
-        NULL,                   // default security
-        OPEN_EXISTING,          // existing file only
-        FILE_ATTRIBUTE_NORMAL,  // normal file
-        NULL);                  // no template
-
-    if (hFile != INVALID_HANDLE_VALUE)
+    if (std::filesystem::exists("dmz.ini"))
     {
         wcscpy(m_szScriptRemotePath, szScriptRemotePathforDMZ);
     }
-    CloseHandle(hFile);
 #endif // FOR_WORK
     m_ShopManager.SetListManagerInfo(HTTP, m_szScriptIPAddress,
         L"",
@@ -142,9 +137,7 @@ bool CInGameShopSystem::ScriptDownload()
 
         wchar_t szText[MAX_TEXT_LENGTH] = { '\0', };
         mu_swprintf(szText, I18N::Game::MUItemShopInformationDownloadFailed, m_ScriptVerInfo.Zone, m_ScriptVerInfo.year, m_ScriptVerInfo.yearId, res.GetErrorMessage());
-        CMsgBoxIGSCommon* pMsgBox = NULL;
-        CreateMessageBox(MSGBOX_LAYOUT_CLASS(CMsgBoxIGSCommonLayout), &pMsgBox);
-        pMsgBox->Initialize(I18N::Game::Error, szText);
+        mu::ui::window::CreateOkMessageBoxWithTitle(I18N::Game::Error, szText);
         return false;
     }
 
@@ -179,20 +172,10 @@ bool CInGameShopSystem::BannerDownload()
     wcscpy(szBannerRemotePathforDMZ, L"/Global/Payment/DevScriptGB/BannerTransfer");
 
 #ifdef FOR_WORK
-    HANDLE hFile;
-    hFile = CreateFile(L"dmz.ini",     // file to create
-        GENERIC_READ,			// open for reading
-        0,						// do not share
-        NULL,                   // default security
-        OPEN_EXISTING,          // existing file only
-        FILE_ATTRIBUTE_NORMAL,  // normal file
-        NULL);                  // no template
-
-    if (hFile != INVALID_HANDLE_VALUE)
+    if (std::filesystem::exists("dmz.ini"))
     {
         wcscpy(m_szBannerRemotePath, szBannerRemotePathforDMZ);
     }
-    CloseHandle(hFile);
 #endif // FOR_WORK
 
 #ifdef KJH_MOD_SHOP_SCRIPT_DOWNLOAD
@@ -224,9 +207,7 @@ bool CInGameShopSystem::BannerDownload()
         // MessageBox
         wchar_t szText[MAX_TEXT_LENGTH] = { '\0', };
         mu_swprintf(szText, I18N::Game::BannerDownloadFailedVersionDDDS, m_BannerVerInfo.Zone, m_BannerVerInfo.year, m_BannerVerInfo.yearId, res.GetErrorMessage());
-        CMsgBoxIGSCommon* pMsgBox = NULL;
-        CreateMessageBox(MSGBOX_LAYOUT_CLASS(CMsgBoxIGSCommonLayout), &pMsgBox);
-        pMsgBox->Initialize(I18N::Game::Error, szText);
+        mu::ui::window::CreateOkMessageBoxWithTitle(I18N::Game::Error, szText);
 
         return false;
     }
@@ -791,6 +772,12 @@ void CInGameShopSystem::InitZoneInfo()
 {
     m_mapZoneSeqIndex.clear();
     m_listZoneName.clear();
+
+    // Null until a shop script arrives from the server, and NULL again after Release(). Every
+    // other reader reaches this pointer only through the zone map this fills, so this is the one
+    // place that has to check it.
+    if (m_pCategoryList == NULL)
+        return;
 
     m_pCategoryList->SetFirst();
     CShopCategory Zone;

@@ -13,37 +13,81 @@ mu_ensure_submodule("ThirdParty/SDL"
   INDICATOR "CMakeLists.txt"
   URL "https://github.com/libsdl-org/SDL.git")
 
-mu_ensure_submodule("ThirdParty/SDL_mixer"
-  INDICATOR "CMakeLists.txt"
-  URL "https://github.com/libsdl-org/SDL_mixer.git")
-
 # SDL3 — static link, no tests, no install
 set(SDL_SHARED OFF CACHE BOOL "" FORCE)
 set(SDL_STATIC ON CACHE BOOL "" FORCE)
 set(SDL_TEST_LIBRARY OFF CACHE BOOL "" FORCE)
 set(SDL_TESTS OFF CACHE BOOL "" FORCE)
 set(SDL_INSTALL OFF CACHE BOOL "" FORCE)
-add_subdirectory(ThirdParty/SDL EXCLUDE_FROM_ALL)
+option(MU_LINK_SDL_PLATFORM_BACKENDS
+  "Linux: make SDL link its video backend libraries and the Vulkan loader at build time instead of loading them at run time" OFF)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  # By default SDL dlopen()s libX11, libwayland-client, libdecor and libdrm/libgbm at run time,
+  # which needs them on a global library path. A packaged runtime may not have one; with the
+  # option ON they become DT_NEEDED entries with a recorded RUNPATH instead. Both branches FORCE
+  # the cache so toggling the option in an existing build directory is symmetric.
+  if(MU_LINK_SDL_PLATFORM_BACKENDS)
+    set(SDL_X11_SHARED OFF CACHE BOOL "" FORCE)
+    set(SDL_WAYLAND_SHARED OFF CACHE BOOL "" FORCE)
+    set(SDL_WAYLAND_LIBDECOR_SHARED OFF CACHE BOOL "" FORCE)
+    set(SDL_KMSDRM_SHARED OFF CACHE BOOL "" FORCE)
+  else()
+    set(SDL_X11_SHARED ON CACHE BOOL "" FORCE)
+    set(SDL_WAYLAND_SHARED ON CACHE BOOL "" FORCE)
+    set(SDL_WAYLAND_LIBDECOR_SHARED ON CACHE BOOL "" FORCE)
+    set(SDL_KMSDRM_SHARED ON CACHE BOOL "" FORCE)
+  endif()
+endif()
 
-# SDL3_mixer — static link, MP3 + Ogg Vorbis only (matches our music assets)
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-set(SDLMIXER_INSTALL OFF CACHE BOOL "" FORCE)
-set(SDLMIXER_VENDORED ON CACHE BOOL "" FORCE)
-set(SDLMIXER_SAMPLES OFF CACHE BOOL "" FORCE)
-set(SDLMIXER_MP3 ON CACHE BOOL "" FORCE)
-set(SDLMIXER_MP3_DRMP3 ON CACHE BOOL "" FORCE)
-# mpg123 is built as a dynamically loaded library — drmp3 alone is enough
-# for the assets we ship and keeps everything statically linked.
-set(SDLMIXER_MP3_MPG123 OFF CACHE BOOL "" FORCE)
-set(SDLMIXER_VORBIS_STB ON CACHE BOOL "" FORCE)
-set(SDLMIXER_VORBIS_VORBISFILE OFF CACHE BOOL "" FORCE)
-set(SDLMIXER_FLAC OFF CACHE BOOL "" FORCE)
-set(SDLMIXER_OPUS OFF CACHE BOOL "" FORCE)
-set(SDLMIXER_WAVPACK OFF CACHE BOOL "" FORCE)
-set(SDLMIXER_MOD OFF CACHE BOOL "" FORCE)
-set(SDLMIXER_MIDI OFF CACHE BOOL "" FORCE)
-set(SDLMIXER_GME OFF CACHE BOOL "" FORCE)
-add_subdirectory(ThirdParty/SDL_mixer EXCLUDE_FROM_ALL)
+add_subdirectory(ThirdParty/SDL EXCLUDE_FROM_ALL)
+set(_saved_BUILD_SHARED_LIBS "${BUILD_SHARED_LIBS}")
+set(BUILD_SHARED_LIBS OFF)
+FetchContent_MakeAvailable(SDL3_ttf)
+if(NOT TARGET SDL3_ttf::SDL3_ttf OR NOT TARGET Freetype::Freetype)
+  message(FATAL_ERROR
+    "SDL3_ttf did not provide its SDL3_ttf::SDL3_ttf and Freetype::Freetype targets. "
+    "Its cached sources may be missing while FetchContent is disconnected. "
+    "Reconfigure with -DFETCHCONTENT_FULLY_DISCONNECTED=OFF to restore SDL3_ttf "
+    "and its vendored FreeType before building RmlUi.")
+endif()
+FetchContent_MakeAvailable(SDL3_image)
+set(BUILD_SHARED_LIBS "${_saved_BUILD_SHARED_LIBS}")
+
+# FreeType -- RmlUi's default font engine (below) requires a Freetype::Freetype target.
+# Not vendored separately, and no alias needed here either: SDL3_ttf's own CMakeLists.txt
+# (FetchContent'd above) already does `if(NOT TARGET Freetype::Freetype)
+# add_library(Freetype::Freetype ALIAS freetype)` for its own vendored copy -- confirmed in
+# _deps/sdl3_ttf-src/CMakeLists.txt. RmlUi's own Dependencies.cmake only checks
+# `if(NOT TARGET Freetype::Freetype)` (CMake/Utilities.cmake's
+# report_dependency_found_or_error), so it picks up SDL3_ttf's alias for free. A second
+# `add_library(... ALIAS ...)` here collided with it under vcpkg's `_add_library` override
+# (CMake error: "cannot create ALIAS target 'Freetype::Freetype' because another target
+# with the same name already exists") -- don't re-add it.
+
+mu_ensure_submodule("ThirdParty/RmlUi"
+  INDICATOR "CMakeLists.txt"
+  URL "https://github.com/nitoygo/RmlUi.git")
+
+# RmlUi -- static link, no bundled samples/Lua bindings. We supply our own
+# Rml::RenderInterface/SystemInterface (source/Render/RmlUi/) targeting this branch's
+# IMuRenderer/SDL_GPU renderer instead of one of RmlUi's stock backends -- except for the
+# renderer, which (unlike on feature/rmlui-migration, where RHI:: was a closer match than
+# any of RmlUi's own backends) reuses RmlUi's own vendored RenderInterface_SDL_GPU
+# (Backends/RmlUi_Renderer_SDL_GPU.cpp, compiled explicitly below) rather than a hand-rolled
+# bridge -- see the rmlui-on-sdl-gpu port plan for why. RMLUI_BACKEND only selects which
+# backend the SAMPLES build against (RmlUi's own CMakeLists.txt validates it unconditionally
+# regardless of RMLUI_SAMPLES though, so it must still be left at a valid value from
+# CMake/OptionsLists.cmake; "auto" is a no-op here since RMLUI_SAMPLES is OFF). Font engine
+# left at RmlUi's own default (freetype, vendored above) rather than building a custom bridge
+# to this engine's text rendering. Not gated behind ENABLE_EDITOR (unlike imgui above): this
+# ships in the real game, not just admin/editor builds.
+set(RMLUI_SAMPLES OFF CACHE BOOL "" FORCE)
+set(RMLUI_BACKEND "auto" CACHE STRING "" FORCE)
+set(RMLUI_LUA_BINDINGS OFF CACHE BOOL "" FORCE)
+set(RMLUI_INSTALL OFF CACHE BOOL "" FORCE)
+# calc(), min(), max() and clamp(): the themes size the item grids from their --item-cell pitch.
+set(RMLUI_MATH_EXPRESSIONS ON CACHE BOOL "" FORCE)
+add_subdirectory(ThirdParty/RmlUi EXCLUDE_FROM_ALL)
 
 # Determine architecture if CMAKE_SIZEOF_VOID_P isn't set
 if (NOT DEFINED CMAKE_SIZEOF_VOID_P OR CMAKE_SIZEOF_VOID_P EQUAL 0)
@@ -78,6 +122,20 @@ endif()
 # Editor mode option (for admin builds)
 option(ENABLE_EDITOR "Enable editor features for admin builds" OFF)
 
+# Developer control socket: a local socket through which test scripts drive
+# the client (login, move, attack, state, events). Never for player builds:
+# when OFF, none of its sources are compiled and the activation variable does
+# not exist in the binary (enforced by the control_socket_leak test).
+option(ENABLE_CONTROL_SOCKET "Developer control socket for scripted clients (never for player builds)" OFF)
+
+# In-game tests (docs/in-game-tests.md): publishes the tester, which plays test
+# scenarios with the client through the control socket, next to Main, and adds
+# the InGameTests / InGameTestsGui targets. Developers only, like the socket.
+option(ENABLE_IN_GAME_TESTS "Publish the in-game tester next to Main (developer builds with the control socket)" OFF)
+if(ENABLE_IN_GAME_TESTS AND NOT ENABLE_CONTROL_SOCKET)
+  message(FATAL_ERROR "ENABLE_IN_GAME_TESTS needs ENABLE_CONTROL_SOCKET: the tester drives the client through it")
+endif()
+
 # ---------------------------------------------------------------------------
 # Engine/game code -> static library (libMuClient); MuMain -> thin executable.
 #
@@ -108,14 +166,46 @@ file(GLOB_RECURSE MU_CLIENT_SOURCES
 list(FILTER MU_CLIENT_SOURCES EXCLUDE REGEX "[/\\]Platform[/\\][^/\\]+[/\\][Ww]in[Mm]ain\\.[Cc]pp$")
 list(FILTER MU_CLIENT_SOURCES EXCLUDE REGEX "[/\\]Platform[/\\][^/\\]+[/\\]main\\.(cpp|mm)$")
 
-# The in-game shop's catalog downloader is a WinINet/urlmon HTTP+FTP stack on
-# Windows (FileDownloader/FTPConnecter/HTTPConnecter/DownloadInfo). Off Windows
-# it is replaced by a libcurl implementation (CurlFileDownloader, issue #462).
-# Keep only the transport that fits the platform in the build.
+# The in-game shop uses one libcurl transport on every platform. Keep the
+# legacy WinINet implementation out of the build.
+list(FILTER MU_CLIENT_SOURCES EXCLUDE REGEX "[/\\]GameShop[/\\]FileDownloader[/\\](FileDownloader|FTPConnecter|HTTPConnecter|DownloadInfo)\\.cpp$")
+
 if(WIN32)
-  list(FILTER MU_CLIENT_SOURCES EXCLUDE REGEX "[/\\]GameShop[/\\]FileDownloader[/\\]CurlFileDownloader\\.cpp$")
+  list(FILTER MU_CLIENT_SOURCES EXCLUDE REGEX "[/\\]Core[/\\]Platform[/\\]posix[/\\]")
 else()
-  list(FILTER MU_CLIENT_SOURCES EXCLUDE REGEX "[/\\]GameShop[/\\]FileDownloader[/\\](FileDownloader|FTPConnecter|HTTPConnecter|DownloadInfo)\\.cpp$")
+  list(FILTER MU_CLIENT_SOURCES EXCLUDE REGEX "[/\\]Core[/\\]Platform[/\\]win32[/\\]")
+endif()
+
+list(FILTER MU_CLIENT_SOURCES EXCLUDE REGEX "[/\\]Render[/\\]Renderer[/\\]MuRenderer\\.cpp$")
+
+# The downstream renderer is SDL GPU-only. Upstream's retired OpenGL Core
+# Profile backend is preserved through the existing Render/Renderer API, not
+# compiled as a second backend.
+list(FILTER MU_CLIENT_SOURCES EXCLUDE REGEX "[/\\]Render[/\\](Core|RHI|Shaders)[/\\]")
+
+# RmlUi's official SDL input-event backend (RmlSDL::InputEventHandler/ConvertKey/
+# ConvertMouseButton/GetKeyModifierState) and SDL_GPU renderer backend
+# (RenderInterface_SDL_GPU) -- neither is part of RmlUi::Core itself (RMLUI_SAMPLES=OFF
+# above skips building any of RmlUi's bundled renderer/platform backends). Only these two
+# files are compiled, not the rest of ThirdParty/RmlUi/Backends/ (which also contains
+# GL2/GL3/Vulkan renderer backends and a SystemInterface_SDL class this project doesn't
+# need -- see RmlUiSystemInterface). Not picked up by the GLOB_RECURSE above since it globs
+# "source/*.cpp", not ThirdParty/.
+list(APPEND MU_CLIENT_SOURCES
+  "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/RmlUi/Backends/RmlUi_Platform_SDL.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/RmlUi/Backends/RmlUi_Renderer_SDL_GPU.cpp"
+)
+
+# The control socket and its local-socket transport exist only in developer
+# builds. The two headers that the rest of the client includes
+# (App/Control/ControlTaps.h, ControlServer.h) compile to no-ops without
+# MU_ENABLE_CONTROL_SOCKET, so the call sites need no conditionals.
+if(NOT ENABLE_CONTROL_SOCKET)
+  list(FILTER MU_CLIENT_SOURCES EXCLUDE REGEX "[/\\]App[/\\]Control[/\\]")
+  list(FILTER MU_CLIENT_SOURCES EXCLUDE REGEX "[/\\]Core[/\\]Platform[/\\]LocalSocket\\.cpp$")
+  # The injector is the control socket's hands; its header leaves no-op
+  # call sites for ordinary player builds.
+  list(FILTER MU_CLIENT_SOURCES EXCLUDE REGEX "[/\\]Core[/\\]Input[/\\]SyntheticInput\\.cpp$")
 endif()
 
 # Add MuEditor sources when editor is enabled
@@ -139,7 +229,7 @@ if(ENABLE_EDITOR)
     "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/imgui/imgui_tables.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/imgui/imgui_widgets.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/imgui/backends/imgui_impl_sdl3.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/imgui/backends/imgui_impl_opengl2.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/imgui/backends/imgui_impl_sdlgpu3.cpp"
   )
 
   target_include_directories(imgui PUBLIC
@@ -151,16 +241,6 @@ if(ENABLE_EDITOR)
   # target so its include dirs propagate (issue #442).
   target_link_libraries(imgui PUBLIC SDL3::SDL3)
 
-  # The Win32 + OpenGL2 backends call straight into opengl32 (glOrtho,
-  # glShadeModel, ...) and dwmapi. Declaring them as PUBLIC dependencies of
-  # imgui lets CMake place these libraries *after* libimgui.a on the final
-  # link line, which MinGW's order-sensitive linker requires. Restrict to
-  # Windows non-MSVC (MinGW): these are Windows-only libraries, and MSVC links
-  # them elsewhere and ignores order anyway.
-  if (WIN32 AND NOT MSVC)
-    target_link_libraries(imgui PUBLIC opengl32 dwmapi)
-  endif()
-
   # <-- Force C++20 for ImGui here
   target_compile_features(imgui PUBLIC cxx_std_20)
 endif()
@@ -170,14 +250,70 @@ endif()
 # attached PUBLIC below so both the Main executable and any test binary that
 # links MuClient inherit them automatically.
 add_library(MuClient STATIC ${MU_CLIENT_SOURCES})
-target_compile_features(MuClient PUBLIC cxx_std_20)
 
-# The in-game shop downloader uses libcurl off Windows (issue #462); on Windows
-# it uses the OS WinINet/urlmon stack and needs no extra dependency here.
-if(NOT WIN32)
-  find_package(CURL REQUIRED)
-  target_link_libraries(MuClient PUBLIC CURL::libcurl)
+# The control socket's `ping` names the git commit the client was built from,
+# so a test report says which client it tested (cmake/WriteGitCommit.cmake).
+# Checked on every build; the header only changes with the commit.
+if(ENABLE_CONTROL_SOCKET)
+  set(MU_GIT_COMMIT_HEADER "${CMAKE_BINARY_DIR}/Generated/MuGitCommit.h")
+  add_custom_target(GitCommitHeader
+    COMMAND "${CMAKE_COMMAND}" "-DSOURCE_DIR=${CMAKE_SOURCE_DIR}" "-DOUTPUT=${MU_GIT_COMMIT_HEADER}"
+            -P "${CMAKE_SOURCE_DIR}/cmake/WriteGitCommit.cmake"
+    BYPRODUCTS "${MU_GIT_COMMIT_HEADER}"
+    COMMENT "Recording the git commit for the control socket"
+    VERBATIM)
+  add_dependencies(MuClient GitCommitHeader)
+  target_include_directories(MuClient PRIVATE "${CMAKE_BINARY_DIR}/Generated")
 endif()
+target_compile_features(MuClient PUBLIC cxx_std_20)
+if(MSVC)
+  target_compile_options(MuClient PRIVATE /utf-8 /we4828)
+  # Release normally ships with no debug info at all, so a WER/minidump crash
+  # from a Release build can't be symbolized. /Z7 embeds debug info directly
+  # in each .obj (unlike /Zi, it needs no shared .pdb write-lock, so it's safe
+  # under Ninja's parallel compilation) without touching optimization.
+  target_compile_options(MuClient PRIVATE $<$<CONFIG:Release>:/Z7>)
+endif()
+target_compile_definitions(MuClient PUBLIC GLM_FORCE_DEPTH_ZERO_TO_ONE)
+target_link_libraries(MuClient PUBLIC SDL3::SDL3 glm::glm spdlog::spdlog)
+find_package(OpenSSL REQUIRED COMPONENTS Crypto)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND MU_LINK_SDL_PLATFORM_BACKENDS)
+  # SDL also dlopen()s libvulkan.so.1; the same option makes it a DT_NEEDED entry of Main
+  # (linked below) so the loader resolves through the RUNPATH.
+  find_package(Vulkan REQUIRED)
+endif()
+target_link_libraries(MuClient PUBLIC OpenSSL::Crypto)
+if(TARGET SDL3_ttf::SDL3_ttf)
+  target_link_libraries(MuClient PUBLIC SDL3_ttf::SDL3_ttf)
+endif()
+if(TARGET SDL3_image::SDL3_image)
+  target_link_libraries(MuClient PUBLIC SDL3_image::SDL3_image)
+endif()
+
+# RmlUi (game UI middleware). The real target is rmlui_core, aliased as RmlUi::Core
+# (Source/Core/CMakeLists.txt).
+target_link_libraries(MuClient PUBLIC RmlUi::Core)
+target_include_directories(MuClient PUBLIC
+  "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/RmlUi/Backends"
+)
+# RmlUi_Platform_SDL.h's SDL2-vs-SDL3 API switch -- this project is SDL3-only.
+target_compile_definitions(MuClient PUBLIC RMLUI_SDL_VERSION_MAJOR=3)
+
+# Multisampled RmlUi layers trigger device loss on reported NVIDIA/Vulkan runs.
+# Use single-sampled UI by default on every driver; keep MSAA opt-in for diagnosis.
+set(RMLUI_SDL_GPU_NUM_MSAA_SAMPLES "1" CACHE STRING "RmlUi layer samples (1 disables MSAA)")
+set(MU_RMLUI_MSAA_SAMPLE_COUNTS 1 2 4 8)
+set_property(CACHE RMLUI_SDL_GPU_NUM_MSAA_SAMPLES PROPERTY STRINGS ${MU_RMLUI_MSAA_SAMPLE_COUNTS})
+if(NOT RMLUI_SDL_GPU_NUM_MSAA_SAMPLES IN_LIST MU_RMLUI_MSAA_SAMPLE_COUNTS)
+  message(FATAL_ERROR "RMLUI_SDL_GPU_NUM_MSAA_SAMPLES must be 1, 2, 4, or 8")
+endif()
+target_compile_definitions(MuClient PUBLIC
+  RMLUI_SDL_GPU_NUM_MSAA_SAMPLES=${RMLUI_SDL_GPU_NUM_MSAA_SAMPLES}
+)
+
+# The in-game shop downloader uses libcurl on every platform.
+find_package(CURL REQUIRED)
+target_link_libraries(MuClient PUBLIC CURL::libcurl)
 
 # The engine relies on self-registering globals whose constructors get
 # silently dropped if the linker only pulls archive members on demand, so
@@ -211,7 +347,9 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "iOS")
     "Store restricted. When that work starts, add source/App/Platform/iOS/ "
     "and replace this branch.")
 elseif (APPLE)
-  set(MU_APP_ENTRY "source/App/Platform/macOS/main.mm")
+  set(MU_APP_ENTRY
+    "source/App/Platform/macOS/main.mm"
+    "source/App/Platform/Windows/Winmain.cpp")
 elseif (ANDROID)
   message(FATAL_ERROR "Android is not a supported build target yet: it needs "
     "an OpenGL ES renderer port, and its entry point is android_main via "
@@ -229,15 +367,73 @@ else()
     "and a branch above.")
 endif()
 
-add_executable(Main
-  "${CMAKE_CURRENT_SOURCE_DIR}/${MU_APP_ENTRY}"
-)
+if (APPLE)
+  set(MU_MACOS_ICON "${CMAKE_CURRENT_SOURCE_DIR}/source/App/Platform/macOS/MuMain.icns")
+  add_executable(Main MACOSX_BUNDLE
+    "${CMAKE_CURRENT_SOURCE_DIR}/${MU_APP_ENTRY}"
+    "${MU_MACOS_ICON}"
+  )
+  set_source_files_properties("${MU_MACOS_ICON}" PROPERTIES
+    MACOSX_PACKAGE_LOCATION Resources
+  )
+  set_target_properties(Main PROPERTIES
+    MACOSX_BUNDLE_BUNDLE_NAME "MU Online"
+    MACOSX_BUNDLE_GUI_IDENTIFIER "org.openmu.mumain"
+    MACOSX_BUNDLE_ICON_FILE "MuMain.icns"
+    MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/source/App/Platform/macOS/Info.plist.in"
+  )
+else()
+  add_executable(Main
+    "${CMAKE_CURRENT_SOURCE_DIR}/${MU_APP_ENTRY}"
+  )
+endif()
 target_compile_features(Main PUBLIC cxx_std_20)
 target_link_libraries(Main PRIVATE MuClient::MuClient)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND MU_LINK_SDL_PLATFORM_BACKENDS)
+  target_link_libraries(Main PRIVATE Vulkan::Vulkan)
+endif()
+
+if (MSVC)
+  # Pairs with MuClient's /Z7 above: link the embedded debug info into
+  # Main.pdb so a Release crash dump can be symbolized (see there for why).
+  # /MAP also emits a plain-text RVA-to-function listing, much faster to grep
+  # for a WER crash offset than pulling symbols out of the PDB.
+  target_link_options(Main PRIVATE
+    $<$<CONFIG:Release>:/DEBUG>
+    $<$<CONFIG:Release>:/MAP:$<TARGET_FILE_DIR:Main>/Main.map>
+  )
+endif()
+
+# Dead-code evidence from the real build: /OPT:REF discards every COMDAT nothing
+# references, and /MAP then lists exactly what survived. A function defined in
+# MuClient.lib but absent from Main.map had no caller. Off by default -- it
+# forces /INCREMENTAL:NO (mutually exclusive with /OPT:REF), so it's a
+# deliberate investigation pass, not normal iteration.
+#
+# Deliberately not /VERBOSE:REF, which names each discarded COMDAT directly but
+# writes to the linker's stdout -- CMake wraps MSVC links in `cmake -E
+# vs_link_exe` (manifest handling) and that wrapper swallows it, so the report
+# never reaches the build log. The map file survives the wrapper.
+#
+# Reads as evidence only at COMDAT granularity: a function reachable solely
+# through a vtable slot still counts as referenced, so a discarded symbol is
+# proof of death while a surviving one is not proof of life.
+option(MU_REPORT_DEAD_SYMBOLS "Link with /OPT:REF + /MAP to expose unreferenced functions" OFF)
+if (MSVC AND MU_REPORT_DEAD_SYMBOLS)
+  target_link_options(Main PRIVATE
+    /INCREMENTAL:NO
+    /OPT:REF
+    $<$<NOT:$<CONFIG:Release>>:/MAP:$<TARGET_FILE_DIR:Main>/Main.map>
+  )
+endif()
 
 if (NOT MSVC)
   set(MU_MAIN_MAP_FILE "${CMAKE_CURRENT_BINARY_DIR}/Main.map")
-  target_link_options(Main PRIVATE "-Wl,-Map,${MU_MAIN_MAP_FILE}")
+  if (APPLE)
+    target_link_options(Main PRIVATE "-Wl,-map,${MU_MAIN_MAP_FILE}")
+  else()
+    target_link_options(Main PRIVATE "-Wl,-Map,${MU_MAIN_MAP_FILE}")
+  endif()
 endif()
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
@@ -260,15 +456,22 @@ endif()
 
 # Copy assets directory next to executable. Platform-agnostic: any build
 # that produces the Main executable needs the assets alongside it.
-# The custom command's stamp file depends on every file under
-# ${ASSETS_DIR}, so the copy only runs when at least one asset is newer
-# than the stamp -- unchanged builds skip the copy entirely, edited
-# assets re-trigger it. CONFIGURE_DEPENDS makes CMake re-evaluate the
-# glob at build time so newly-added asset files are picked up without a
-# manual reconfigure.
+# The custom command's stamp file depends on the selected files under
+# ${ASSETS_DIR}, so unchanged builds skip the copy. CONFIGURE_DEPENDS
+# makes CMake re-evaluate the glob at build time when files are added.
 set(ASSETS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 message(STATUS "=== DEBUG: Assets directory: ${ASSETS_DIR}")
-file(GLOB_RECURSE ASSET_FILES CONFIGURE_DEPENDS "${ASSETS_DIR}/*")
+option(MU_COPY_RUNTIME_ASSETS "Copy Data and fonts beside Main" ON)
+if(MU_COPY_RUNTIME_ASSETS)
+  set(ASSETS_MODE "with-data")
+  file(GLOB_RECURSE ASSET_FILES CONFIGURE_DEPENDS "${ASSETS_DIR}/*")
+else()
+  set(ASSETS_MODE "no-data")
+  file(GLOB ASSET_FILES LIST_DIRECTORIES FALSE CONFIGURE_DEPENDS "${ASSETS_DIR}/*")
+endif()
+message(STATUS "=== DEBUG: Runtime asset mode: ${ASSETS_MODE}")
+set(ASSETS_MODE_FILE "${CMAKE_CURRENT_BINARY_DIR}/.assets_mode")
+file(GENERATE OUTPUT "${ASSETS_MODE_FILE}" CONTENT "${ASSETS_MODE}\n")
 # $<CONFIG> in the stamp name keeps multi-config generators (Visual
 # Studio, Xcode) honest: each configuration's output directory needs
 # its own stamp, otherwise switching from Debug to Release would see
@@ -277,11 +480,13 @@ set(ASSETS_STAMP "${CMAKE_CURRENT_BINARY_DIR}/.assets_copied_$<CONFIG>.stamp")
 add_custom_command(
   OUTPUT "${ASSETS_STAMP}"
   COMMAND ${CMAKE_COMMAND} -E echo "=== Copying assets from ${ASSETS_DIR} to $<TARGET_FILE_DIR:Main>"
-  COMMAND ${CMAKE_COMMAND} -E copy_directory
-          "${ASSETS_DIR}"
-          "$<TARGET_FILE_DIR:Main>"
+  COMMAND "${CMAKE_COMMAND}"
+          "-DMU_ASSET_SOURCE=${ASSETS_DIR}"
+          "-DMU_ASSET_OUTPUT=$<TARGET_FILE_DIR:Main>"
+          "-DMU_COPY_RUNTIME_ASSETS=${MU_COPY_RUNTIME_ASSETS}"
+          "-P" "${REPO_ROOT}/cmake/CopyRuntimeAssets.cmake"
   COMMAND ${CMAKE_COMMAND} -E touch "${ASSETS_STAMP}"
-  DEPENDS ${ASSET_FILES}
+  DEPENDS ${ASSET_FILES} "${ASSETS_MODE_FILE}"
   COMMENT "Copying game assets (sources changed)"
   VERBATIM
 )
@@ -297,6 +502,9 @@ add_custom_command(TARGET Main POST_BUILD
     "-DINPUT=${ASSETS_DIR}/config.ini.template"
     "-DOUTPUT=$<TARGET_FILE_DIR:Main>/config.ini"
     "-P" "${REPO_ROOT}/cmake/SeedConfigIfMissing.cmake"
+  COMMAND "${CMAKE_COMMAND}" -E copy_directory
+    "${MU_SHADER_OUTPUT_DIR}"
+    "$<TARGET_FILE_DIR:Main>/shaders"
   VERBATIM
 )
 
@@ -304,18 +512,23 @@ add_custom_command(TARGET Main POST_BUILD
 # ubiquitous system libraries so we can focus on getting the project to
 # compile; more platform-specific adjustments will follow as we iterate.
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-  # The engine uses fixed-function desktop OpenGL via GLEW; link the system GL
-  # and GLEW so the gl*/glew* symbols resolve in the Linux executable.
-  find_package(OpenGL REQUIRED)
-  find_library(GLEW_LIBRARY NAMES GLEW glew32 REQUIRED)
   find_library(TURBOJPEG_LIBRARY NAMES turbojpeg REQUIRED)
   target_link_libraries(MuClient PUBLIC
     pthread
     dl
     m
-    OpenGL::GL
-    OpenGL::GLU
-    ${GLEW_LIBRARY}
+    ${TURBOJPEG_LIBRARY}
+  )
+endif()
+
+if (APPLE)
+  find_library(TURBOJPEG_LIBRARY NAMES turbojpeg
+    PATHS
+      "/opt/homebrew/lib"
+      "/usr/local/lib"
+    REQUIRED
+  )
+  target_link_libraries(MuClient PUBLIC
     ${TURBOJPEG_LIBRARY}
   )
 endif()
@@ -373,7 +586,7 @@ file(MAKE_DIRECTORY "${MU_NUGET_CACHE_DIR}")
 # same package the .NET ClientLibrary consumes (see MUnique.Client.Library.csproj).
 # Sourcing from NuGet means a single versioned dependency instead of vendoring
 # the entire OpenMU repository as a submodule.
-set(OPENMU_PACKETS_VERSION "0.9.10" CACHE STRING
+set(OPENMU_PACKETS_VERSION "0.9.11" CACHE STRING
     "Version of MUnique.OpenMU.Network.Packets to source packet XML from")
 set(OPENMU_PACKETS_XML
     "${MU_NUGET_CACHE_DIR}/munique.openmu.network.packets/${OPENMU_PACKETS_VERSION}/contentFiles/any/net10.0/ServerToClient/ServerToClientPackets.xml")
@@ -439,11 +652,23 @@ target_include_directories(MuClient PUBLIC
   # after the bootstrap files moved out of source/ (issue #346).
   "${CMAKE_CURRENT_SOURCE_DIR}/source/App"
   "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/include"
+  "${miniaudio_SOURCE_DIR}"
+  "${miniaudio_SOURCE_DIR}/extras"
   "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/netcore/includes"
   "${CMAKE_BINARY_DIR}/generated"
   # stb_truetype backs the portable GDI text rasterizer (issue #462).
   "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/stb"
+  # nlohmann/json (json.hpp) reads the item data files (Data/Items) in every
+  # build and backs the control socket's request/response encoding.
+  "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty"
   $<$<BOOL:${ENABLE_EDITOR}>:${CMAKE_CURRENT_SOURCE_DIR}/MuEditor>
+)
+
+set_source_files_properties(
+  "${CMAKE_CURRENT_SOURCE_DIR}/source/Core/Platform/Audio/MiniAudioImpl.cpp"
+  PROPERTIES
+    SKIP_PRECOMPILE_HEADERS ON
+    COMPILE_OPTIONS "$<$<COMPILE_LANG_AND_ID:CXX,AppleClang,Clang,GNU>:-Wno-error=tautological-compare>"
 )
 
 # Basic compile definitions, roughly mirroring the original MSVC project
@@ -452,11 +677,24 @@ target_compile_definitions(MuClient PUBLIC
   _LANGUAGE_FOREIGN
   _LANGUAGE_ENG
   UNICODE
+  "MU_DOTNET_LIB_EXT=\"${CMAKE_SHARED_LIBRARY_SUFFIX}\""
   $<$<EQUAL:${CMAKE_SIZEOF_VOID_P},4>:_USE_32BIT_TIME_T>  # Use 32-bit time_t only for 32-bit builds
   $<$<CONFIG:Debug>:_DEBUG;_FOREIGN_DEBUG>
   $<$<CONFIG:Release>:NDEBUG;_FOREIGN_NDEBUG;LDS_PATCH_GLOBAL_100520>
   $<$<BOOL:${ENABLE_EDITOR}>:_EDITOR>  # Editor features for admin builds
+  $<$<BOOL:${ENABLE_CONTROL_SOCKET}>:MU_ENABLE_CONTROL_SOCKET>  # Developer control socket
 )
+
+# The effect browser lists the game's create calls of a type, read from the
+# sources the editor was built from. Only its view reads the folder, from a
+# generated header, so the flags of the other files do not hold the path.
+if(ENABLE_EDITOR)
+  set(MU_EDITOR_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/source")
+  file(CONFIGURE OUTPUT "${CMAKE_BINARY_DIR}/Generated/MuEditorSourceDir.h"
+       CONTENT "#pragma once\n\n// Generated by CMake: the sources the editor was built from, as UTF-8.\n#define MU_EDITOR_SOURCE_DIR u8\"@MU_EDITOR_SOURCE_DIR@\"\n"
+       @ONLY)
+  target_include_directories(MuClient PRIVATE "${CMAKE_BINARY_DIR}/Generated")
+endif()
 
 if (MSVC)
   target_compile_definitions(MuClient PUBLIC
@@ -480,7 +718,6 @@ if (MSVC)
   target_link_libraries(MuClient PUBLIC
     imm32
     vfw32
-    dsound
     dxguid
     opengl32
     glu32
@@ -493,29 +730,18 @@ if (MSVC)
     urlmon
     turbojpeg-static
   )
+endif()
 
-  # Locate required DLLs in bin directory
-  set(DLL_SEARCH_PATH "${CMAKE_CURRENT_SOURCE_DIR}/bin")
-  set(REQUIRED_DLL_NAMES glew32 ogg vorbisfile)
-  set(REQUIRED_DLLS)
-
-  foreach(DLL_NAME IN LISTS REQUIRED_DLL_NAMES)
-    find_file(${DLL_NAME}_DLL
-      NAMES "${DLL_NAME}.dll"
-      PATHS "${DLL_SEARCH_PATH}"
-      NO_DEFAULT_PATH
-      REQUIRED
-    )
-    list(APPEND REQUIRED_DLLS "${${DLL_NAME}_DLL}")
-  endforeach()
-
-  # Copy required DLLs to build directory for MSVC builds
+if (MSVC)
+  # ponytail: native CI uses dynamic vcpkg triplets; guard an empty runtime
+  # DLL list if static triplets are added.
   add_custom_command(TARGET Main POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E echo "=== DEBUG: Copying DLLs to: $<TARGET_FILE_DIR:Main>"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      ${REQUIRED_DLLS}
-      $<TARGET_FILE_DIR:Main>
-    COMMENT "Copying required DLLs to build directory"
+    COMMAND "${CMAKE_COMMAND}" -E "$<IF:$<BOOL:$<TARGET_RUNTIME_DLLS:Main>>,copy_if_different,true>"
+      $<TARGET_RUNTIME_DLLS:Main>
+      "$<TARGET_FILE_DIR:Main>"
+    COMMAND_EXPAND_LISTS
+    COMMENT "Staging linked-target runtime DLLs"
+    VERBATIM
   )
 endif()
 
@@ -544,22 +770,12 @@ if (DOTNET_EXECUTABLE)
   # this name).
   if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set(DOTNET_LIB_NAME "MUnique.Client.Library.so")
+  elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    set(DOTNET_LIB_NAME "MUnique.Client.Library.dylib")
   else()
     set(DOTNET_LIB_NAME "MUnique.Client.Library.dll")
   endif()
-  # DXP: $<CONFIG>-suffixed, not shared between Debug/Release. It used to be one shared path
-  # with -c $<CONFIG> in the publish command below -- same bug class as ResxGen's fix just above
-  # (Ninja Multi-Config generates a separate rule per config for whatever command produces a given
-  # OUTPUT; a shared path with a config-dependent command makes every config flip look like "the
-  # command that produced this output changed," forcing a full ClientLibrary republish on every
-  # single Debug<->Release switch). Here it's worse than ResxGen's case: Debug and Release
-  # legitimately SHOULD produce different DLLs (different optimization/debug info), so the fix is
-  # to give each config its own path end-to-end, not pin to one fixed config. The republish
-  # ping-pong was also the proximate cause of a real build failure (2026-08-03): it kept
-  # re-triggering ClientLibrary's own XSLT-based PacketFunctions_ClientToServer.cpp regeneration
-  # step in parallel with the main C++ build's compile of that same (checked-in source) file,
-  # racing on Windows' exclusive file lock.
-  set(DOTNET_DLL_PATH "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/${DOTNET_LIB_NAME}")
+  set(DOTNET_DLL_PATH "${CMAKE_CURRENT_BINARY_DIR}/${DOTNET_LIB_NAME}")
   set(DOTNET_PROJ "${CMAKE_CURRENT_SOURCE_DIR}/../ClientLibrary/MUnique.Client.Library.csproj")
 
   # Create temp directories for Native AOT build.
@@ -590,28 +806,75 @@ if (DOTNET_EXECUTABLE)
     # skip it (ci=true) and use the checked-in output.
     set(DOTNET_EXTRA_ARGS "-p:ci=true")
     message(STATUS ".NET Client Library will build for linux-x64")
+  elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    if (CMAKE_OSX_ARCHITECTURES MATCHES "(^|;)arm64($|;)" OR CMAKE_SYSTEM_PROCESSOR MATCHES "^(arm64|aarch64)$")
+      set(DOTNET_RID "osx-arm64")
+      set(DOTNET_PLATFORM "arm64")
+    else()
+      set(DOTNET_RID "osx-x64")
+      set(DOTNET_PLATFORM "x64")
+    endif()
+    set(DOTNET_EXTRA_ARGS "-p:ci=true")
+    message(STATUS ".NET Client Library will build for ${DOTNET_RID}")
   elseif (CMAKE_SIZEOF_VOID_P EQUAL 8)
     set(DOTNET_RID "win-x64")
     set(DOTNET_PLATFORM "x64")
-    set(DOTNET_EXTRA_ARGS "-p:IlcUseEnvironmentalTools=true")
+    set(DOTNET_EXTRA_ARGS "")
     message(STATUS ".NET Client Library will build for win-x64 (CMAKE_SIZEOF_VOID_P=${CMAKE_SIZEOF_VOID_P})")
   else()
     set(DOTNET_RID "win-x86")
     set(DOTNET_PLATFORM "x86")
-    set(DOTNET_EXTRA_ARGS "-p:IlcUseEnvironmentalTools=true")
+    set(DOTNET_EXTRA_ARGS "")
     message(STATUS ".NET Client Library will build for win-x86 (CMAKE_SIZEOF_VOID_P=${CMAKE_SIZEOF_VOID_P})")
   endif()
 
   if (DOTNET_CAN_BUILD_CLIENT_LIBRARY)
+    target_compile_definitions(MuClient PRIVATE MU_HAS_DOTNET_AOT)
+
+    set(DOTNET_PUBLISH_ENV
+      "NUGET_PACKAGES=${DOTNET_NUGET_DIR_NATIVE}"
+      "DOTNET_CLI_HOME=${DOTNET_TEMP_DIR_NATIVE}"
+      "TEMP=${DOTNET_TEMP_DIR_NATIVE}"
+      "TMP=${DOTNET_TEMP_DIR_NATIVE}"
+    )
+
+    if (UNIX)
+      set(MU_NATIVE_AOT_LIBRARY_PATH "" CACHE STRING
+        "Additional Native AOT linker search directories")
+      set(MU_NATIVE_AOT_LIBRARY_DIRS ${MU_NATIVE_AOT_LIBRARY_PATH})
+
+      if (OPENSSL_CRYPTO_LIBRARY)
+        get_filename_component(MU_OPENSSL_LIBRARY_DIR "${OPENSSL_CRYPTO_LIBRARY}" DIRECTORY)
+        list(APPEND MU_NATIVE_AOT_LIBRARY_DIRS "${MU_OPENSSL_LIBRARY_DIR}")
+      endif()
+
+      if (APPLE)
+        find_package(PkgConfig QUIET)
+        if (PkgConfig_FOUND)
+          pkg_check_modules(MU_BROTLI QUIET libbrotlienc libbrotlidec libbrotlicommon)
+          list(APPEND MU_NATIVE_AOT_LIBRARY_DIRS ${MU_BROTLI_LIBRARY_DIRS})
+        endif()
+        if (NOT MU_BROTLI_FOUND AND NOT MU_NATIVE_AOT_LIBRARY_PATH)
+          message(FATAL_ERROR
+            "Native AOT requires Brotli libraries. Install Brotli or set "
+            "MU_NATIVE_AOT_LIBRARY_PATH to its library directory.")
+        endif()
+      endif()
+
+      if (DEFINED ENV{LIBRARY_PATH} AND NOT "$ENV{LIBRARY_PATH}" STREQUAL "")
+        string(REPLACE ":" ";" MU_ENV_LIBRARY_DIRS "$ENV{LIBRARY_PATH}")
+        list(APPEND MU_NATIVE_AOT_LIBRARY_DIRS ${MU_ENV_LIBRARY_DIRS})
+      endif()
+      list(REMOVE_DUPLICATES MU_NATIVE_AOT_LIBRARY_DIRS)
+      list(JOIN MU_NATIVE_AOT_LIBRARY_DIRS ":" MU_NATIVE_AOT_LIBRARY_PATH_VALUE)
+      list(APPEND DOTNET_PUBLISH_ENV "LIBRARY_PATH=${MU_NATIVE_AOT_LIBRARY_PATH_VALUE}")
+    endif()
+
     add_custom_command(
             OUTPUT "${DOTNET_DLL_PATH}"
             COMMAND ${CMAKE_COMMAND} -E echo "--- C# Changes Detected: Rebuilding Client Library ---"
-            COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>"
             COMMAND ${CMAKE_COMMAND} -E env
-                    "NUGET_PACKAGES=${DOTNET_NUGET_DIR_NATIVE}"
-                    "DOTNET_CLI_HOME=${DOTNET_TEMP_DIR_NATIVE}"
-                    "TEMP=${DOTNET_TEMP_DIR_NATIVE}"
-                    "TMP=${DOTNET_TEMP_DIR_NATIVE}"
+                    ${DOTNET_PUBLISH_ENV}
                     "${DOTNET_EXECUTABLE}" publish "${DOTNET_PROJ_NATIVE}" -c $<CONFIG> -r ${DOTNET_RID} -p:PlatformTarget=${DOTNET_PLATFORM} ${DOTNET_EXTRA_ARGS} -o "${DOTNET_TEMP_OUTPUT_NATIVE}" --nologo
             COMMAND ${CMAKE_COMMAND} -E copy_if_different "${DOTNET_TEMP_OUTPUT}/${DOTNET_LIB_NAME}" "${DOTNET_DLL_PATH}"
             DEPENDS "${DOTNET_PROJ}" ${DOTNET_SOURCES}
@@ -619,29 +882,19 @@ if (DOTNET_EXECUTABLE)
             VERBATIM
     )
 
-    # 4. Create a target for the DLL and link it to Main
-    add_custom_target(ClientLibrary DEPENDS "${DOTNET_DLL_PATH}")
-    add_dependencies(Main ClientLibrary)
-    # MuClient too, not just Main: MUnique.Client.Library.csproj's PreBuild target regenerates
-    # ..\src\source\Dotnet\PacketFunctions_*.cpp/.h (checked-in C++ sources MuClient compiles) as
-    # a side effect of `dotnet publish`. Without this, Ninja has no edge between "ClientLibrary
-    # publish" and "compile PacketFunctions_ClientToServer.cpp" -- both are prerequisites of Main
-    # but siblings to each other, so they can run concurrently and race on Windows' exclusive file
-    # lock (confirmed 2026-08-03, MSB3703 IOException). Main-only ordering wasn't enough: MuClient's
-    # objects compile before Main links, not after ClientLibrary finishes.
-    add_dependencies(MuClient ClientLibrary)
-    set_target_properties(ClientLibrary PROPERTIES EXCLUDE_FROM_ALL TRUE)
-
-    # Copy ClientLibrary DLL to the executable's output directory
-    add_custom_command(TARGET Main POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E echo "=== DEBUG: Copying ClientLibrary DLL from: ${DOTNET_DLL_PATH}"
-      COMMAND ${CMAKE_COMMAND} -E echo "=== DEBUG: Copying ClientLibrary DLL to: $<TARGET_FILE_DIR:Main>"
+    # 4. Build and stage the library whenever Main's dependency is evaluated.
+    # Main may not relink after a C#-only change, so TARGET Main POST_BUILD is
+    # not sufficient to keep the runtime copy current.
+    add_custom_target(ClientLibrary
       COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${DOTNET_DLL_PATH}"
-        $<TARGET_FILE_DIR:Main>
-      COMMAND ${CMAKE_COMMAND} -E echo "=== DEBUG: ClientLibrary DLL copy complete"
-      COMMENT "Copying ClientLibrary DLL to build directory"
+        "$<TARGET_FILE_DIR:Main>/${DOTNET_LIB_NAME}"
+      DEPENDS "${DOTNET_DLL_PATH}"
+      COMMENT "Staging ClientLibrary in the Main runtime directory"
+      VERBATIM
     )
+    add_dependencies(Main ClientLibrary)
+    set_target_properties(ClientLibrary PROPERTIES EXCLUDE_FROM_ALL TRUE)
   endif()
 
   # ConstantsReplacer build target
@@ -709,6 +962,7 @@ if (DOTNET_EXECUTABLE)
       # pinning it to one fixed config removes the config-dependence entirely instead of fixing it
       # per-config (which would just duplicate identical output under Debug/Release subdirs).
       COMMAND ${CMAKE_COMMAND} -E env
+              --unset=Platform
               "NUGET_PACKAGES=${DOTNET_NUGET_DIR_NATIVE}"
               "DOTNET_CLI_HOME=${DOTNET_TEMP_DIR_NATIVE}"
               "${DOTNET_EXECUTABLE}" run --project "${RESXGEN_PROJ_NATIVE}" -c Release
@@ -723,6 +977,106 @@ if (DOTNET_EXECUTABLE)
     add_dependencies(MuClient ResxGen)
     target_sources(MuClient PRIVATE ${RESX_GEN_SOURCES})
     target_include_directories(MuClient PUBLIC "${CMAKE_BINARY_DIR}/Generated")
+  endif()
+
+  # The in-game tester (docs/in-game-tests.md): published as one file next to
+  # Main (next to Main.app on macOS), so it finds the client without being told.
+  # It needs the .NET runtime, which building the client needs anyway. The
+  # InGameTests target plays the scenarios, InGameTestsGui opens its window:
+  #   cmake --build <build dir> --config Release --target InGameTests
+  if (ENABLE_IN_GAME_TESTS)
+    set(MU_IN_GAME_TEST_SERVER "127.0.0.1:56901" CACHE STRING
+      "Game server the InGameTests target logs the clients in to, host:port; default the test server")
+    option(MU_IN_GAME_TEST_FRESH_SERVER
+      "Recreate the test server (tools/InGameTests/docker-compose.yml) before every InGameTests run, so it starts from fresh test data"
+      ON)
+    set(MU_IN_GAME_TEST_SCENARIOS "" CACHE STRING
+      "In-game test scenarios the InGameTests target runs, e.g. trade;icarus-flying-item-take-off; empty runs all")
+    set(MU_IN_GAME_TEST_STEP_DELAY "0" CACHE STRING
+      "Milliseconds the InGameTests target pauses after every client action, to watch a run; 0 runs at full speed")
+    set(MU_IN_GAME_TEST_JPEG_QUALITY "70" CACHE STRING
+      "JPEG quality (1 to 100) of the InGameTests target's step screenshots; lower makes the report smaller")
+
+    set(IN_GAME_TESTS_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../tools/InGameTests")
+    # Next to Main, which lands in the default runtime folder (next to Main.app
+    # on macOS): known without the target, so the file itself is the output and
+    # a deleted tester is published again.
+    get_property(IN_GAME_TESTS_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+    if (IN_GAME_TESTS_MULTI_CONFIG)
+      set(IN_GAME_TESTS_DIR "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>")
+    else()
+      set(IN_GAME_TESTS_DIR "${CMAKE_CURRENT_BINARY_DIR}")
+    endif()
+    # The tester runs on the machine that runs dotnet, on its runtime
+    # (--use-current-runtime): an x86 client needs no x86 .NET for it.
+    if (DOTNET_EXECUTABLE MATCHES "\\.exe$")
+      set(IN_GAME_TESTS_NAME "InGameTests.exe")
+    else()
+      set(IN_GAME_TESTS_NAME "InGameTests")
+    endif()
+    set(IN_GAME_TESTS_EXE "${IN_GAME_TESTS_DIR}/${IN_GAME_TESTS_NAME}")
+    set(IN_GAME_TESTS_PUBLISH "${CMAKE_BINARY_DIR}/in-game-tests-publish")
+    file(GLOB_RECURSE IN_GAME_TESTS_SOURCES CONFIGURE_DEPENDS
+      "${IN_GAME_TESTS_ROOT}/*.cs" "${IN_GAME_TESTS_ROOT}/*.axaml")
+    list(FILTER IN_GAME_TESTS_SOURCES EXCLUDE REGEX "[/\\](bin|obj)[/\\]")
+    mu_native_path("${IN_GAME_TESTS_ROOT}/InGameTests.csproj" IN_GAME_TESTS_PROJ_NATIVE)
+    mu_native_path("${IN_GAME_TESTS_PUBLISH}" IN_GAME_TESTS_PUBLISH_NATIVE)
+
+    # Only when the tester's sources change; a client build alone does not
+    # publish it again. Published into the build folder first, whose path
+    # dotnet.exe understands under WSL too, then copied next to Main.
+    add_custom_command(
+      OUTPUT "${IN_GAME_TESTS_EXE}"
+      COMMAND ${CMAKE_COMMAND} -E env
+              --unset=Platform
+              "NUGET_PACKAGES=${DOTNET_NUGET_DIR_NATIVE}"
+              "DOTNET_CLI_HOME=${DOTNET_TEMP_DIR_NATIVE}"
+              "${DOTNET_EXECUTABLE}" publish "${IN_GAME_TESTS_PROJ_NATIVE}" -c Release --use-current-runtime
+              -o "${IN_GAME_TESTS_PUBLISH_NATIVE}" --nologo
+      COMMAND ${CMAKE_COMMAND} -E copy "${IN_GAME_TESTS_PUBLISH}/${IN_GAME_TESTS_NAME}" "${IN_GAME_TESTS_EXE}"
+      DEPENDS ${IN_GAME_TESTS_SOURCES} "${IN_GAME_TESTS_ROOT}/InGameTests.csproj" "${IN_GAME_TESTS_ROOT}/docker-compose.yml"
+      COMMENT "Publishing the in-game tester next to Main"
+      VERBATIM
+    )
+    add_custom_target(InGameTestsTool ALL DEPENDS "${IN_GAME_TESTS_EXE}")
+    add_dependencies(InGameTestsTool Main)
+
+    # A framework-dependent tester looks for .NET in the usual places; one
+    # installed elsewhere (dotnet-install.sh) is where CMake found dotnet.
+    set(IN_GAME_TESTS_ENV "")
+    if (NOT DOTNET_EXECUTABLE MATCHES "\\.exe$")
+      get_filename_component(IN_GAME_TESTS_DOTNET "${DOTNET_EXECUTABLE}" REALPATH)
+      get_filename_component(IN_GAME_TESTS_DOTNET_ROOT "${IN_GAME_TESTS_DOTNET}" DIRECTORY)
+      # Only a folder that holds a .NET: a snap's dotnet resolves to /usr/bin/snap.
+      if (EXISTS "${IN_GAME_TESTS_DOTNET_ROOT}/host/fxr")
+        set(IN_GAME_TESTS_ENV ${CMAKE_COMMAND} -E env "DOTNET_ROOT=${IN_GAME_TESTS_DOTNET_ROOT}")
+      endif()
+    endif()
+
+    set(IN_GAME_TESTS_SERVER_ARGS --server "${MU_IN_GAME_TEST_SERVER}")
+    if (MU_IN_GAME_TEST_FRESH_SERVER)
+      list(APPEND IN_GAME_TESTS_SERVER_ARGS --fresh-server)
+    endif()
+    set(IN_GAME_TESTS_ARGS -t "${MU_IN_GAME_TEST_STEP_DELAY}" -q "${MU_IN_GAME_TEST_JPEG_QUALITY}" ${IN_GAME_TESTS_SERVER_ARGS})
+    foreach(scenario IN LISTS MU_IN_GAME_TEST_SCENARIOS)
+      list(APPEND IN_GAME_TESTS_ARGS --scenario "${scenario}")
+    endforeach()
+
+    add_custom_target(InGameTests
+      COMMAND ${IN_GAME_TESTS_ENV} "${IN_GAME_TESTS_EXE}" --client "$<TARGET_FILE:Main>" ${IN_GAME_TESTS_ARGS}
+      COMMENT "In-game tests against ${MU_IN_GAME_TEST_SERVER}"
+      USES_TERMINAL
+      VERBATIM
+    )
+    add_dependencies(InGameTests InGameTestsTool)
+
+    add_custom_target(InGameTestsGui
+      COMMAND ${IN_GAME_TESTS_ENV} "${IN_GAME_TESTS_EXE}" --gui --client "$<TARGET_FILE:Main>" ${IN_GAME_TESTS_SERVER_ARGS}
+      COMMENT "In-game test window"
+      USES_TERMINAL
+      VERBATIM
+    )
+    add_dependencies(InGameTestsGui InGameTestsTool)
   endif()
 else()
   message(WARNING ".NET SDK not found. MUnique.Client.Library.dll will NOT be built. "
@@ -741,6 +1095,47 @@ add_custom_target(CheckGLWrapperMonopoly ALL
   VERBATIM
 )
 add_dependencies(MuClient CheckGLWrapperMonopoly)
+
+# No OUTPUT means this target is always considered out-of-date and re-runs every build. See
+# tools/check_rml_rcss_syntax.py's own docstring for what it does and doesn't check.
+add_custom_target(CheckRmlRcssSyntax ALL
+  COMMAND "${Python3_EXECUTABLE}" "${REPO_ROOT}/tools/check_rml_rcss_syntax.py"
+          --asset-root "${ASSETS_DIR}/Data/Interface/RmlUi"
+  COMMENT "Checking RML/RCSS syntax (comment nesting, brace balance)"
+  VERBATIM
+)
+add_dependencies(Main CheckRmlRcssSyntax)
+
+# No OUTPUT means this target is always considered out-of-date and re-runs every build. See
+# tools/check_rml_rcss_drift.py's own docstring for what it does and doesn't check.
+add_custom_target(CheckRmlRcssDrift ALL
+  COMMAND "${Python3_EXECUTABLE}" "${REPO_ROOT}/tools/check_rml_rcss_drift.py"
+          --source-root "${CMAKE_CURRENT_SOURCE_DIR}/source"
+          --asset-root "${ASSETS_DIR}/Data/Interface/RmlUi"
+  COMMENT "Checking RML/RCSS theme-fork drift (every theme copy still satisfies its C++ contract)"
+  VERBATIM
+)
+add_dependencies(Main CheckRmlRcssDrift)
+
+# No OUTPUT means this target is always considered out-of-date and re-runs every build. See
+# tools/check_rml_bound_geometry.py's own docstring for why a bound coordinate is worth a guard.
+add_custom_target(CheckRmlBoundGeometry ALL
+  COMMAND "${Python3_EXECUTABLE}" "${REPO_ROOT}/tools/check_rml_bound_geometry.py"
+          --asset-root "${ASSETS_DIR}/Data/Interface/RmlUi"
+  COMMENT "Checking RML bound-geometry ownership (layout a theme cannot override)"
+  VERBATIM
+)
+add_dependencies(Main CheckRmlBoundGeometry)
+
+# No OUTPUT means this target is always considered out-of-date and re-runs every build. See
+# tools/check_layout_transform_users.py's own docstring for what it counts and why.
+add_custom_target(CheckLayoutTransformUsers ALL
+  COMMAND "${Python3_EXECUTABLE}" "${REPO_ROOT}/tools/check_layout_transform_users.py"
+          --source-root "${CMAKE_CURRENT_SOURCE_DIR}/source"
+  COMMENT "Checking active UI transform users (only the infrastructure may use it)"
+  VERBATIM
+)
+add_dependencies(Main CheckLayoutTransformUsers)
 
 # MinGW (32-bit or 64-bit) cross-toolchains: link against the Windows/OpenGL
 # system libraries so that gl*, wgl*, Imm*, timeGetTime, etc. resolve.
@@ -788,7 +1183,6 @@ if (CMAKE_CXX_COMPILER MATCHES "mingw32" OR CMAKE_CXX_COMPILER MATCHES "w64-ming
   target_link_libraries(MuClient PUBLIC
     imm32
     vfw32
-    dsound
     dxguid
     opengl32
     glu32
@@ -810,15 +1204,17 @@ if (CMAKE_CXX_COMPILER MATCHES "mingw32" OR CMAKE_CXX_COMPILER MATCHES "w64-ming
   )
 endif()
 
-# Link SDL3 + SDL3_mixer (audio) on all platforms.
-target_link_libraries(MuClient PUBLIC
-  SDL3::SDL3
-  SDL3_mixer::SDL3_mixer
-)
+if(APPLE)
+  target_link_libraries(MuClient PUBLIC
+    "-framework AudioToolbox"
+    "-framework AudioUnit"
+    "-framework CoreAudio"
+    "-framework CoreFoundation"
+  )
+endif()
 
-# Link ImGui for all platforms when editor is enabled. imgui carries its own
-# opengl32/dwmapi link dependencies (see its definition above), so the engine
-# only needs to link the imgui target itself.
+# Link ImGui for all platforms when editor is enabled. Untouched compatibility
+# code retains its existing OpenGL system-library links above.
 if(ENABLE_EDITOR)
   target_link_libraries(MuClient PUBLIC imgui)
 endif()

@@ -4,7 +4,11 @@
 #pragma once
 
 #include "Dotnet/Connection.h"
+#include "Dotnet/PacketFunctions_ChatServer.h"
+#include "Dotnet/PacketFunctions_ClientToServer.h"
+#include "Dotnet/PacketFunctions_ConnectServer.h"
 #include "Network/Server/CSMapServer.h"
+#include "UI/Combat/CastleSiegePhase.h"
 #include <span>
 #include <typeinfo>
 
@@ -80,6 +84,13 @@
 #define PACKET_ATTACK       0x11
 
 extern int CurrentProtocolState;
+// Account the last login request was sent for.
+extern wchar_t LogInID[MAX_USERNAME_SIZE + 1];
+
+inline uint16_t ntoh16(uint16_t value)
+{
+    return static_cast<uint16_t>(((value & 0x00FFU) << 8) | ((value & 0xFF00U) >> 8));
+}
 
 inline uint64_t ntoh64(uint64_t value)
 {
@@ -1718,11 +1729,20 @@ typedef struct tagGETPSHOPITEMLIST_HEADER {
 #pragma pack(push, 1) // just to get the actual length by sizeof...
 typedef struct tagGETPSHOPITEM_DATA {
     INT		MoneyPrice;
-    WORD    PriceItemType; // not yet used
-    WORD    RequiredItemAmount; // not yet used
+    WORD PriceItemType;
+    WORD RequiredItemAmount;
     BYTE	ItemSlot;
     BYTE	Item[PACKET_ITEM_LENGTH_EXTENDED_MIN];
 } GETPSHOPITEM_DATAINFO, * LPGETPSHOPITEM_DATAINFO;
+
+// The price types which the server allows for prices in personal shops, in
+// addition to zen (C1 3F 0A). The price item types (WORD) follow it.
+typedef struct tagPSHOP_PRICETYPES_HEADER
+{
+    PBMSG_HEADER Header;
+    BYTE bySubcode;
+    BYTE Count;
+} PSHOP_PRICETYPES_HEADERINFO, *LPPSHOP_PRICETYPES_HEADERINFO;
 #pragma pack(pop)
 
 typedef struct tagCLOSEPSHOP_RESULT {
@@ -1745,6 +1765,7 @@ typedef struct tagPURCHASEITEM_RESULT {
         LackOfMoney = 7,
         MoneyOverflowOrNotEnoughSpace = 8,
         ItemBlock = 9,
+        LackOfPriceCurrency = 10,
     };
 
     PBMSG_HEADER	Header;
@@ -2005,21 +2026,6 @@ typedef struct
     PBMSG_HEADER    m_Header;
     MServerInfo     m_vSvrInfo;
 }PHEADER_MAP_CHANGESERVER_INFO, * LPPHEADER_MAP_CHANGESERVER_INFO;
-
-enum CASTLESIEGE_STATE
-{
-    CASTLESIEGE_STATE_NONE = -1,
-    CASTLESIEGE_STATE_IDLE_1 = 0,
-    CASTLESIEGE_STATE_REGSIEGE = 1,
-    CASTLESIEGE_STATE_IDLE_2 = 2,
-    CASTLESIEGE_STATE_REGMARK = 3,
-    CASTLESIEGE_STATE_IDLE_3 = 4,
-    CASTLESIEGE_STATE_NOTIFY = 5,
-    CASTLESIEGE_STATE_READYSIEGE = 6,
-    CASTLESIEGE_STATE_STARTSIEGE = 7,
-    CASTLESIEGE_STATE_ENDSIEGE = 8,
-    CASTLESIEGE_STATE_ENDCYCLE = 9,
-};
 
 //----------------------------------------------------------------------------
 // GC [0xB2][0x00]
@@ -3592,7 +3598,11 @@ void ReceiveMovePosition(const BYTE* ReceiveBuffer);
 struct PacketInfo
 {
     std::unique_ptr<BYTE[]> ReceiveBuffer;
+    int32_t ConnectionHandle = 0;
     int32_t Size;
+    std::chrono::steady_clock::time_point EnqueuedAt;
+    bool Superseded = false;
+    bool SuppressOptionalPresentation = false;
 };
 void ProcessPacketCallback(const PacketInfo* Packet);
 

@@ -57,7 +57,7 @@ public:
     /// Is sent by the client when: A player sends a public chat message.
     /// Causes reaction on server side: The message is forwarded to all surrounding players, including the sender.
     /// </remarks>
-    void SendPublicChatMessage(const wchar_t* character, const wchar_t* message);
+    void SendPublicChatMessage(const char16_t* character, const char16_t* message);
 
     /// <summary>
     /// Sends a WhisperMessage to this connection.
@@ -68,7 +68,7 @@ public:
     /// Is sent by the client when: A player sends a private chat message to a specific target player.
     /// Causes reaction on server side: The message is forwarded to the target player.
     /// </remarks>
-    void SendWhisperMessage(const wchar_t* receiverName, const wchar_t* message);
+    void SendWhisperMessage(const char16_t* receiverName, const char16_t* message);
 
     /// <summary>
     /// Sends a LoginLongPassword to this connection.
@@ -173,7 +173,7 @@ public:
     /// Is sent by the client when: The player wants to open his personal item shop.
     /// Causes reaction on server side: The personal item shop is opened and the surrounding players are informed about it, including the own player.
     /// </remarks>
-    void SendPlayerShopOpen(const wchar_t* storeName);
+    void SendPlayerShopOpen(const char16_t* storeName);
 
     /// <summary>
     /// Sends a PlayerShopClose to this connection.
@@ -193,7 +193,7 @@ public:
     /// Is sent by the client when: A player opens a shop of another player.
     /// Causes reaction on server side: The list of items is sent back, if the shop of the player is currently open.
     /// </remarks>
-    void SendPlayerShopItemListRequest(uint16_t playerId, const wchar_t* playerName);
+    void SendPlayerShopItemListRequest(uint16_t playerId, const char16_t* playerName);
 
     /// <summary>
     /// Sends a PlayerShopItemBuyRequest to this connection.
@@ -205,7 +205,7 @@ public:
     /// Is sent by the client when: A player wants to buy the item of another players shop.
     /// Causes reaction on server side: If the buyer has enough money, the item is sold to the player. Both players will get notifications about that.
     /// </remarks>
-    void SendPlayerShopItemBuyRequest(uint16_t playerId, const wchar_t* playerName, BYTE itemSlot);
+    void SendPlayerShopItemBuyRequest(uint16_t playerId, const char16_t* playerName, BYTE itemSlot);
 
     /// <summary>
     /// Sends a PlayerShopCloseOther to this connection.
@@ -216,7 +216,20 @@ public:
     /// Is sent by the client when: A player closes the dialog of another players shop.
     /// Causes reaction on server side: The server handles that by unsubscribing the player from changes of the shop.
     /// </remarks>
-    void SendPlayerShopCloseOther(uint16_t playerId, const wchar_t* playerName);
+    void SendPlayerShopCloseOther(uint16_t playerId, const char16_t* playerName);
+
+    /// <summary>
+    /// Sends a PlayerShopSetItemPriceExtended to this connection.
+    /// </summary>
+    /// <param name="moneyPrice">The price in zen, or in account coins when PriceItemType is one of the account coin values. Encoded like the price of PlayerShopItemExtended.</param>
+    /// <param name="priceItemType">The item (group in the highest 4 bits, number in the remaining ones) with which the price is paid, when RequiredItemAmount is greater than 0. Otherwise, 0xFFF0 = WCoin (C), 0xFFF1 = WCoin (P) and 0xFFF2 = Goblin Points define an account coin price; any other value a zen price. Encoded like the price of PlayerShopItemExtended.</param>
+    /// <param name="requiredItemAmount">The number of pieces of the item which is defined by PriceItemType; 0, if the price is not paid with items. Encoded like the price of PlayerShopItemExtended.</param>
+    /// <param name="itemSlot">The item slot.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to set a price of an item which is inside his personal item shop, in zen or in one of the price types which are allowed by the server (see PlayerShopPriceTypesExtended).
+    /// Causes reaction on server side: The price is set for the specified item, if its price type is allowed and the amount is within the configured limits. Works only if the shop is currently closed. The server responds with a PlayerShopSetItemPriceResponse.
+    /// </remarks>
+    void SendPlayerShopSetItemPriceExtended(uint32_t moneyPrice, uint16_t priceItemType, uint16_t requiredItemAmount, BYTE itemSlot);
 
     /// <summary>
     /// Sends a PickupItemRequest to this connection.
@@ -514,13 +527,13 @@ public:
     /// <summary>
     /// Sends a CastleSiegeTaxChangeRequest to this connection.
     /// </summary>
-    /// <param name="taxType">0=Undefined, 1=ChaosMachine, 2 = Normal, 3 = EntranceFeeLandOfTrials</param>
-    /// <param name="taxRate">The tax rate.</param>
+    /// <param name="taxType">The tax type.</param>
+    /// <param name="taxValue">The percentage rate for shop and Chaos Machine taxes, or the entrance fee amount for the hunting zone.</param>
     /// <remarks>
     /// Is sent by the client when: The guild master wants to change the tax rate in the castle npc.
     /// Causes reaction on server side: The server changes the tax rates accordingly.
     /// </remarks>
-    void SendCastleSiegeTaxChangeRequest(BYTE taxType, uint32_t taxRate);
+    void SendCastleSiegeTaxChangeRequest(CastleSiegeTaxType taxType, uint32_t taxValue);
 
     /// <summary>
     /// Sends a CastleSiegeTaxMoneyWithdraw to this connection.
@@ -535,13 +548,13 @@ public:
     /// <summary>
     /// Sends a ToggleCastleGateRequest to this connection.
     /// </summary>
-    /// <param name="closeState">The close state.</param>
+    /// <param name="isOpen">The is open.</param>
     /// <param name="gateId">The gate id.</param>
     /// <remarks>
     /// Is sent by the client when: The guild member of the castle owner wants to toggle the gate switch.
     /// Causes reaction on server side: The castle gate is getting opened or closed.
     /// </remarks>
-    void SendToggleCastleGateRequest(BYTE closeState, uint16_t gateId);
+    void SendToggleCastleGateRequest(BYTE isOpen, uint16_t gateId);
 
     /// <summary>
     /// Sends a CastleGuildCommand to this connection.
@@ -549,12 +562,12 @@ public:
     /// <param name="team">Team Number 0 to 7.</param>
     /// <param name="positionX">The position x.</param>
     /// <param name="positionY">The position y.</param>
-    /// <param name="command">0 = Attack, 1 = Defend, 2 = Wait</param>
+    /// <param name="command">The command.</param>
     /// <remarks>
     /// Is sent by the client when: The guild master sent a command to his guild during the castle siege event.
     /// Causes reaction on server side: The command is shown on the mini map of the guild members.
     /// </remarks>
-    void SendCastleGuildCommand(BYTE team, BYTE positionX, BYTE positionY, BYTE command);
+    void SendCastleGuildCommand(BYTE team, BYTE positionX, BYTE positionY, CastleSiegeGuildCommandType command);
 
     /// <summary>
     /// Sends a CastleSiegeHuntingZoneEntranceSetting to this connection.
@@ -800,7 +813,7 @@ public:
     /// Is sent by the client when: The player wants to send a gift to another player.
     /// Causes reaction on server side: The server buys the item with the credits of the player and sends it as gift to the other player.
     /// </remarks>
-    void SendCashShopItemGiftRequest(uint32_t packageMainIndex, uint32_t category, uint32_t productMainIndex, uint16_t itemIndex, uint32_t coinIndex, BYTE mileageFlag, const wchar_t* giftReceiverName, const wchar_t* giftText);
+    void SendCashShopItemGiftRequest(uint32_t packageMainIndex, uint32_t category, uint32_t productMainIndex, uint16_t itemIndex, uint32_t coinIndex, BYTE mileageFlag, const char16_t* giftReceiverName, const char16_t* giftText);
 
     /// <summary>
     /// Sends a CashShopStorageListRequest to this connection.
@@ -867,7 +880,7 @@ public:
     /// Is sent by the client when: The player wants to set a new pin for the vault when it's in unlocked state.
     /// Causes reaction on server side: The vault pin is set. VaultProtectionInformation is sent as response.
     /// </remarks>
-    void SendSetVaultPin(uint16_t pin, const wchar_t* password);
+    void SendSetVaultPin(uint16_t pin, const char16_t* password);
 
     /// <summary>
     /// Sends a RemoveVaultPin to this connection.
@@ -877,7 +890,7 @@ public:
     /// Is sent by the client when: The player wants to remove the pin for the vault when it's in unlocked state.
     /// Causes reaction on server side: The vault pin is removed. VaultProtectionInformation is sent as response.
     /// </remarks>
-    void SendRemoveVaultPin(const wchar_t* password);
+    void SendRemoveVaultPin(const char16_t* password);
 
     /// <summary>
     /// Sends a VaultClosed to this connection.
@@ -1023,7 +1036,7 @@ public:
     /// Is sent by the client when: The game client is at the character selection screen and the player requests to add a new character.
     /// Causes reaction on server side: The server checks if the player is allowed to create the character and sends a response back.
     /// </remarks>
-    void SendCreateCharacter(const wchar_t* name, CharacterClassNumber class_);
+    void SendCreateCharacter(const char16_t* name, CharacterClassNumber class_);
 
     /// <summary>
     /// Sends a DeleteCharacter to this connection.
@@ -1034,7 +1047,7 @@ public:
     /// Is sent by the client when: The game client is at the character selection screen and the player requests to delete an existing character.
     /// Causes reaction on server side: The server checks if the player transmitted the correct security code and if the character actually exists. If all is valid, it deletes the character from the account. It then sends a response with a result code back to the game client.
     /// </remarks>
-    void SendDeleteCharacter(const wchar_t* name, const wchar_t* securityCode);
+    void SendDeleteCharacter(const char16_t* name, const char16_t* securityCode);
 
     /// <summary>
     /// Sends a SelectCharacter to this connection.
@@ -1044,7 +1057,7 @@ public:
     /// Is sent by the client when: The player selects a character to enter the game world on the character selection screen.
     /// Causes reaction on server side: The player joins the game world with the specified character.
     /// </remarks>
-    void SendSelectCharacter(const wchar_t* name);
+    void SendSelectCharacter(const char16_t* name);
 
     /// <summary>
     /// Sends a FocusCharacter to this connection.
@@ -1054,7 +1067,7 @@ public:
     /// Is sent by the client when: The player focuses (clicks on it) a character with which he plans to enter the game world on the character selection screen.
     /// Causes reaction on server side: The server checks if this character exists and sends a response back. If successful, the game client highlights the focused character.
     /// </remarks>
-    void SendFocusCharacter(const wchar_t* name);
+    void SendFocusCharacter(const char16_t* name);
 
     /// <summary>
     /// Sends a IncreaseCharacterStatPoint to this connection.
@@ -1306,7 +1319,7 @@ public:
     /// Is sent by the client when: A player wants to send a letter to another players character.
     /// Causes reaction on server side: The letter is sent to the other character, if it exists and the player has the required money.
     /// </remarks>
-    void SendLetterSendRequest(uint32_t letterId, const wchar_t* receiver, const wchar_t* title, BYTE rotation, BYTE animation, uint16_t messageLength, const wchar_t* message);
+    void SendLetterSendRequest(uint32_t letterId, const char16_t* receiver, const char16_t* title, BYTE rotation, BYTE animation, uint16_t messageLength, const char16_t* message);
 
     /// <summary>
     /// Sends a LetterReadRequest to this connection.
@@ -1327,7 +1340,7 @@ public:
     /// Is sent by the client when: A guild member wants to kick himself or a guild master wants to kick another player from its guild.
     /// Causes reaction on server side: If the player is allowed to kick the player, it's removed from the guild. If the guild master kicks himself, the guild is disbanded. Corresponding responses are sent to all involved players.
     /// </remarks>
-    void SendGuildKickPlayerRequest(const wchar_t* playerName, const wchar_t* securityCode);
+    void SendGuildKickPlayerRequest(const char16_t* playerName, const char16_t* securityCode);
 
     /// <summary>
     /// Sends a GuildJoinRequest to this connection.
@@ -1369,7 +1382,7 @@ public:
     /// Is sent by the client when: When a player wants to create a guild.
     /// Causes reaction on server side: The guild is created and the player is set as the new guild master of the guild.
     /// </remarks>
-    void SendGuildCreateRequest(const wchar_t* guildName, const BYTE* guildEmblem, uint32_t guildEmblemByteLength);
+    void SendGuildCreateRequest(const char16_t* guildName, const BYTE* guildEmblem, uint32_t guildEmblemByteLength);
 
     /// <summary>
     /// Sends a GuildCreateRequest075 to this connection.
@@ -1381,7 +1394,7 @@ public:
     /// Is sent by the client when: When a player wants to create a guild.
     /// Causes reaction on server side: The guild is created and the player is set as the new guild master of the guild.
     /// </remarks>
-    void SendGuildCreateRequest075(const wchar_t* guildName, const BYTE* guildEmblem, uint32_t guildEmblemByteLength);
+    void SendGuildCreateRequest075(const char16_t* guildName, const BYTE* guildEmblem, uint32_t guildEmblemByteLength);
 
     /// <summary>
     /// Sends a GuildMasterAnswer to this connection.
@@ -1432,7 +1445,7 @@ public:
     /// Is sent by the client when: A guild master wants to change the role of a guild member.
     /// Causes reaction on server side: The server changes the role of the guild member.
     /// </remarks>
-    void SendGuildRoleAssignRequest(uint32_t role, const wchar_t* playerName, BYTE type = 1);
+    void SendGuildRoleAssignRequest(uint32_t role, const char16_t* playerName, BYTE type = 1);
 
     /// <summary>
     /// Sends a GuildTypeChangeRequest to this connection.
@@ -1486,7 +1499,7 @@ public:
     /// Is sent by the client when: An alliance guild master wants to remove a guild from the alliance.
     /// Causes reaction on server side: The server removes the guild from the alliance.
     /// </remarks>
-    void SendRemoveAllianceGuildRequest(const wchar_t* guildName);
+    void SendRemoveAllianceGuildRequest(const char16_t* guildName);
 
     /// <summary>
     /// Sends a PingResponse to this connection.
@@ -1544,7 +1557,7 @@ public:
     /// Is sent by the client when: A player wants to add another players character into his friend list of the messenger.
     /// Causes reaction on server side: A request is sent to the other player. If the player is currently offline, the request will be sent as soon as he is online again.
     /// </remarks>
-    void SendFriendAddRequest(const wchar_t* friendName);
+    void SendFriendAddRequest(const char16_t* friendName);
 
     /// <summary>
     /// Sends a FriendDelete to this connection.
@@ -1554,7 +1567,7 @@ public:
     /// Is sent by the client when: A player wants to delete another players character from his friend list of the messenger.
     /// Causes reaction on server side: The entry in the friend list is removed. The player is shown as offline in the other players friends list.
     /// </remarks>
-    void SendFriendDelete(const wchar_t* friendName);
+    void SendFriendDelete(const char16_t* friendName);
 
     /// <summary>
     /// Sends a ChatRoomCreateRequest to this connection.
@@ -1564,7 +1577,7 @@ public:
     /// Is sent by the client when: A player wants to open a chat with another player of his friend list.
     /// Causes reaction on server side: If both players are online, a chat room is created on the chat server. Authentication data is sent to both game clients, which will then try to connect to the chat server using this data.
     /// </remarks>
-    void SendChatRoomCreateRequest(const wchar_t* friendName);
+    void SendChatRoomCreateRequest(const char16_t* friendName);
 
     /// <summary>
     /// Sends a FriendAddResponse to this connection.
@@ -1575,7 +1588,7 @@ public:
     /// Is sent by the client when: A player received a friend request from another player and responded to it.
     /// Causes reaction on server side: If the player accepted, the friend is added to the players friend list and both players get subscribed about each others online status.
     /// </remarks>
-    void SendFriendAddResponse(BYTE accepted, const wchar_t* friendRequesterName);
+    void SendFriendAddResponse(BYTE accepted, const char16_t* friendRequesterName);
 
     /// <summary>
     /// Sends a SetFriendOnlineState to this connection.
@@ -1597,7 +1610,7 @@ public:
     /// Is sent by the client when: A player wants to invite additional players from his friend list to an existing chat room.
     /// Causes reaction on server side: The player additional gets authentication data sent to his game client. It then connects to the chat server and joins the chat room.
     /// </remarks>
-    void SendChatRoomInvitationRequest(const wchar_t* friendName, uint16_t roomId, uint32_t requestId);
+    void SendChatRoomInvitationRequest(const char16_t* friendName, uint16_t roomId, uint32_t requestId);
 
     /// <summary>
     /// Sends a LegacyQuestStateRequest to this connection.
@@ -1964,7 +1977,7 @@ public:
     /// Is sent by the client when: Unknown?
     /// Causes reaction on server side: Unknown?
     /// </remarks>
-    void SendServerImmigrationRequest(const wchar_t* securityCode);
+    void SendServerImmigrationRequest(const char16_t* securityCode);
 
     /// <summary>
     /// Sends a LuckyNumberRequest to this connection.
@@ -1976,7 +1989,7 @@ public:
     /// Is sent by the client when: The player requests to redeem a coupon code (lucky number) which is 12 alphanumeric digits long.
     /// Causes reaction on server side: A response is sent back to the client with the result. An item could be rewarded to the inventory.
     /// </remarks>
-    void SendLuckyNumberRequest(const wchar_t* serial1, const wchar_t* serial2, const wchar_t* serial3);
+    void SendLuckyNumberRequest(const char16_t* serial1, const char16_t* serial2, const char16_t* serial3);
 
     /// <summary>
     /// Sends a BloodCastleEnterRequest to this connection.
@@ -2030,7 +2043,7 @@ public:
     /// Is sent by the client when: The player requests to start a duel with another player.
     /// Causes reaction on server side: The server sends a request to the other player.
     /// </remarks>
-    void SendDuelStartRequest(uint16_t playerId, const wchar_t* playerName);
+    void SendDuelStartRequest(uint16_t playerId, const char16_t* playerName);
 
     /// <summary>
     /// Sends a DuelStartResponse to this connection.
@@ -2042,7 +2055,7 @@ public:
     /// Is sent by the client when: A player requested to start a duel with the sending player.
     /// Causes reaction on server side: Depending on the response, the server starts the duel, or not.
     /// </remarks>
-    void SendDuelStartResponse(BYTE response, uint16_t playerId, const wchar_t* playerName);
+    void SendDuelStartResponse(BYTE response, uint16_t playerId, const char16_t* playerName);
 
     /// <summary>
     /// Sends a DuelStopRequest to this connection.

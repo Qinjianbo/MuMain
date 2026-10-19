@@ -15,7 +15,8 @@ DWORD GetGuildRelationShipBGColor(BYTE GuildRelationShip);
 CHARACTER* FindCharacterByID(wchar_t* szName);
 CHARACTER* FindCharacterByKey(int Key);
 
-void RenderLinkObject(float x, float y, float z, CHARACTER* c, PART_t* f, int Type, int Level, int Option1, bool Link, bool Translate, int RenderType = 0, bool bRightHandItem = true);
+void RenderLinkObject(float x, float y, float z, CHARACTER* c, PART_t* f, int Type, int Level, int Option1, bool Link,
+                      bool Translate, int RenderType = 0, bool bRightHandItem = true);
 void RenderCharacter(CHARACTER* c, OBJECT* o, int Select = 0);
 void RenderCharactersClient();
 
@@ -31,6 +32,27 @@ void MoveCharacterClient(CHARACTER* cc);
 void MoveCharactersClient();
 void UpdateCharactersAnimationParallel(std::span<CHARACTER> characters);
 void WaitCharactersAnimation();
+void AnimateCharacterBones(OBJECT* o);
+
+extern size_t g_LastActiveCharacterCount;
+extern bool g_LastAnimationWasParallel;
+
+#ifdef MU_ENABLE_CONTROL_SOCKET
+// Render's recompute against the pre-pass bones of each drawn client character, while enabled.
+struct PrepassBoneCheck
+{
+    bool enabled = false;
+    int checked = 0;
+    int players = 0;
+    int mismatched = 0;
+    float maxDelta = 0.f;
+};
+extern PrepassBoneCheck g_PrepassBoneCheck;
+void RecordPrepassBones(const float (*prepass)[3][4], const float (*rendered)[3][4], int numBones, bool player);
+// Around render's Animation() call: Begin keeps the pre-pass bones, End compares render's with them.
+bool BeginPrepassBoneCheck(const OBJECT* o, int numBones);
+void EndPrepassBoneCheck(const OBJECT* o, int numBones);
+#endif
 
 void MoveEye(OBJECT* o, BMD* b, int Right, int Left, int Right2 = -1, int Left2 = -1, int Right3 = -1, int Left3 = -1);
 void DeleteCloth(CHARACTER* c, OBJECT* o = NULL, PART_t* p2 = NULL);
@@ -39,7 +61,8 @@ bool CheckFullSet(CHARACTER* c);
 
 void MoveCharacterPosition(CHARACTER* c);
 void ChangeCharacterExt(int Key, BYTE* Equipment, CHARACTER* pCharacter = NULL, OBJECT* pHelper = NULL);
-void ReadEquipmentExtended(int Key, BYTE flags, BYTE* Equipment, CHARACTER* pCharacter = nullptr, OBJECT* pHelper = nullptr);
+void ReadEquipmentExtended(int Key, BYTE flags, BYTE* Equipment, CHARACTER* pCharacter = nullptr,
+                           OBJECT* pHelper = nullptr);
 void ClearCharacters(int Key = -1);
 void DeleteCharacter(int Key);
 void DeleteCharacter(CHARACTER* c, OBJECT* o);
@@ -48,11 +71,12 @@ int FindCharacterIndexByMonsterIndex(int Type);
 
 void DeadCharacterBuff(OBJECT* o);
 
-int  HangerBloodCastleQuestItem(int Key);
+int HangerBloodCastleQuestItem(int Key);
 void SetAllAction(int Action);
 
 void ReleaseCharacters(void);
-void CreateCharacterPointer(CHARACTER* c, int Type, unsigned char PositionX, unsigned char PositionY, float Rotation = 0.f);
+void CreateCharacterPointer(CHARACTER* c, int Type, unsigned char PositionX, unsigned char PositionY,
+                            float Rotation = 0.f);
 CHARACTER* CreateCharacter(int Key, int Type, unsigned char PositionX, unsigned char PositionY, float Rotation = 0.f);
 CHARACTER* CreateHero(int Key, CLASS_TYPE Class, int Skin = 0, float x = 0.f, float y = 0.f, float Rotation = 0.f);
 CHARACTER* CreateMonster(EMonsterType Type, int PositionX, int PositionY, int Key = 0);
@@ -85,11 +109,16 @@ void RenderProtectGuildMark(CHARACTER* c);
 void MakeElfHelper(CHARACTER* c);
 int GetFenrirType(CHARACTER* c);
 
-extern int       EquipmentLevelSet;
-extern bool      g_bAddDefense;
+extern int EquipmentLevelSet;
+extern bool g_bAddDefense;
 
-void CreateJoint(int Type, vec3_t Position, vec3_t TargetPosition, vec3_t Angle, int SubType = 0, OBJECT* Target = NULL, float Scale = 10.f, short PK = -1, WORD SkillIndex = 0, WORD SkillSerialNum = 0, int iChaIndex = -1, const float* vColor = NULL, short int sTargetIndex = -1);
-void CreateJointFpsChecked(int Type, vec3_t Position, vec3_t TargetPosition, vec3_t Angle, int SubType = 0, OBJECT* Target = NULL, float Scale = 10.f, short PK = -1, WORD SkillIndex = 0, WORD SkillSerialNum = 0, int iChaIndex = -1, const float* vColor = NULL, short int sTargetIndex = -1);
+void CreateJoint(int Type, vec3_t Position, vec3_t TargetPosition, vec3_t Angle, int SubType = 0, OBJECT* Target = NULL,
+                 float Scale = 10.f, short PK = -1, WORD SkillIndex = 0, WORD SkillSerialNum = 0, int iChaIndex = -1,
+                 const float* vColor = NULL, short int sTargetIndex = -1);
+void CreateJointFpsChecked(int Type, vec3_t Position, vec3_t TargetPosition, vec3_t Angle, int SubType = 0,
+                           OBJECT* Target = NULL, float Scale = 10.f, short PK = -1, WORD SkillIndex = 0,
+                           WORD SkillSerialNum = 0, int iChaIndex = -1, const float* vColor = NULL,
+                           short int sTargetIndex = -1);
 bool RenderCharacterBackItem(CHARACTER* c, OBJECT* o, bool bTranslate);
 bool IsBackItem(CHARACTER* c, int iType);
 

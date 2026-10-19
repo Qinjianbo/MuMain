@@ -3,12 +3,17 @@
 How to build the MU client on each platform, with one file per setup (terminal,
 WSL, and the common IDEs). Pick the guide that matches your environment.
 
+Desktop rendering uses SDL GPU: Metal on macOS, Vulkan on Linux, D3D12 on
+Windows. The application policy is shared; see the
+[rendering parity guide](rendering-parity.md) for diagnostics and native
+verification requirements.
+
 ## Pick your setup
 
 ### Linux (native)
 
 A native Linux build produces a real, playable client: the engine plus the
-`linux-x64` network library, rendered through SDL/OpenGL.
+`linux-x64` network library, rendered through SDL GPU/Vulkan.
 
 | Setup | Guide |
 |-------|-------|
@@ -45,8 +50,9 @@ buildable for them. See the per-platform notes when that work lands.
 | Windows | x86 | on / off | `MUnique.Client.Library.dll` (win-x86 AOT) | Full client |
 | Linux | x86 | - | none | Not supported (see below) |
 
-CI builds every supported row: see [windows-build.yml](../../.github/workflows/windows-build.yml)
-and [linux-build.yml](../../.github/workflows/linux-build.yml).
+Actions validate Windows native x64 Release, Linux x64 Release, and macOS arm64
+Release, all with the editor OFF, and upload one no-data runtime artifact per OS.
+Build every other supported row locally using the setup guides above.
 
 > **Why no 32-bit Linux?** .NET has no 32-bit Linux runtime at all - `dotnet
 > publish -r linux-x86` fails with `NETSDK1203` ("AOT is not supported"). A
@@ -58,13 +64,49 @@ and [linux-build.yml](../../.github/workflows/linux-build.yml).
 
 These apply to every setup; the per-setup guides only cover what differs.
 
+### Dependencies and first configuration
+
+Use CMake 3.25 or newer, the .NET 10 SDK, and the compiler and system packages listed
+in your platform guide. Windows presets also require vcpkg with `VCPKG_ROOT` set.
+Initial configuration needs network access unless dependency sources are already cached.
+
+CMake initializes missing Git submodules under `src/ThirdParty/`: SDL3 and RmlUi for
+all builds, and ImGui when `ENABLE_EDITOR=ON`. RmlUi uses the
+[nitoygo/RmlUi fork](https://github.com/nitoygo/RmlUi), with the revision pinned by
+the repository's submodule entry, for the SDL GPU renderer integration.
+
+If automatic initialization fails, run from the repository root:
+
+```sh
+git submodule update --init -- src/ThirdParty/SDL src/ThirdParty/RmlUi
+
+# For editor builds:
+git submodule update --init -- src/ThirdParty/imgui
+```
+
+CMake downloads miniaudio, GLM, spdlog, SDL3_ttf and SDL3_image through `FetchContent`.
+Audio uses miniaudio. SDL3_ttf supplies the vendored FreeType used by RmlUi; neither
+SDL_mixer nor a separate FreeType submodule is required.
+
 ### Build options
 
 | CMake option | Values | Meaning |
 |--------------|--------|---------|
-| `CMAKE_BUILD_TYPE` | `Release` / `Debug` | Optimized vs. debuggable. |
+| `CMAKE_BUILD_TYPE` | `Release` / `Debug` / `RelWithDebInfo` | Build configuration for single-config generators. With Ninja Multi-Config, select it through a build preset or `--config` instead. |
 | `ENABLE_EDITOR` | `ON` / `OFF` | Builds the in-app ImGui editor (admin tooling). When `OFF`, nothing under `src/MuEditor/` is compiled in - enforced by the `editor_leak` test. |
+| `ENABLE_CONTROL_SOCKET` | `ON` / `OFF` | Builds the developer control socket that lets test scripts drive the client (see [`control-socket.md`](../control-socket.md)). Default `OFF`; never for player builds. When `OFF`, nothing under `src/source/App/Control/` and no local-socket transport is compiled in, and the `MU_CONTROL_SOCKET` variable is ignored - enforced by the `control_socket_leak` test. The `-mueditor` presets turn it `ON`. |
 | `BUILD_TESTING` | `ON` / `OFF` | Builds and registers the unit tests (run with `ctest`). |
+| `RMLUI_SDL_GPU_NUM_MSAA_SAMPLES` | `1` / `2` / `4` / `8` | RmlUi UI-layer sample count. Default `1` disables MSAA to avoid reported NVIDIA/Vulkan device loss. Higher values are opt-in for diagnostics; see [rendering parity](rendering-parity.md#rmlui-multisampling). |
+| `MU_COPY_RUNTIME_ASSETS` | `ON` / `OFF` | Copies `Data/` and `fonts/` beside the executable. Defaults to `ON` for local runnable builds. |
+| `MU_LINK_SDL_PLATFORM_BACKENDS` | `ON` / `OFF` | Linux only: makes SDL link its video-backend libraries (X11, Wayland, libdecor, KMS/DRM) and the Vulkan loader at build time instead of loading them at run time, so a packaged runtime resolves them through the recorded `RUNPATH` without a global library path. Defaults to `OFF`. |
+
+For Linux Wayland reports, run [`scripts/wayland-diag.sh`](../../scripts/wayland-diag.sh) and attach its sanitized `summary.txt`.
+
+If configuration reports that SDL_ttf or RmlUi cannot find FreeType after removing
+cached dependencies, reconfigure the same build directory with
+`-DFETCHCONTENT_FULLY_DISCONNECTED=OFF`. SDL_ttf supplies the vendored FreeType;
+disconnected mode requires its sources to already exist. Let configuration finish
+successfully before building or running the tests.
 
 ### The network library
 
@@ -78,8 +120,8 @@ The build produces it automatically and copies it next to `Main`:
 - Windows target -> `MUnique.Client.Library.dll`
 
 Native AOT cannot cross-compile across OS boundaries: a Linux-hosted SDK cannot
-produce a Windows `.dll`, and vice versa. So a MinGW-on-Linux build (and CI)
-compiles and links the client but does **not** produce the `.dll`; build the
+produce a Windows `.dll`, and vice versa. A MinGW-on-Linux build compiles and
+links the client but does **not** produce the `.dll`; build the
 Windows client on Windows to get a connectable one.
 
 ### Output layout
@@ -96,6 +138,85 @@ library next to the executable, so the build output directory is runnable:
 ```
 
 Run the client from that directory so it finds its assets and the library.
+
+## Hosted releases
+
+Actions expose builds through CI artifacts and two coordinated release streams:
+
+- Semantic Release publishes these no-data runtime archives:
+  `MuMain-windows-native-x64-release-editor-off-no-data.tar.gz`,
+  `MuMain-linux-native-x64-release-editor-off-no-data.tar.gz`, and
+  `MuMain-macos-native-arm64-release-editor-off-no-data.tar.gz`.
+- Each main-branch CI run also uploads
+  `mu-client-windows-native-x64-release-editor-off-no-data-main`,
+  `mu-client-linux-native-x64-release-editor-off-no-data-main`, and
+  `mu-client-macos-native-arm64-release-editor-off-no-data-main` artifacts;
+  each contains its corresponding compressed runtime archive.
+- The data workflow publishes `MuMain-data-<id>.tar.gz` and its
+  `.sha256` file under tag `data-<id>`. The identifier is derived from the Git
+  trees for `src/bin/Data/` and `src/bin/fonts/`, so unchanged data is reused
+  across code releases.
+- Each client release includes a **Compatible game data** link to its exact
+  `data-<id>` release.
+
+Windows x86, Debug, editor-ON, MinGW, and other configurations are not built by
+Actions; build locally when one is required.
+
+### Assemble a release
+
+Download the no-data runtime for your OS plus the linked `data-<id>` archive and
+checksum into one working directory. On Windows through Git Bash:
+
+```bash
+mkdir MuMain-runtime
+tar -xzf MuMain-windows-native-x64-release-editor-off-no-data.tar.gz -C MuMain-runtime
+sha256sum --check MuMain-data-<id>.tar.gz.sha256
+tar -xzf MuMain-data-<id>.tar.gz -C MuMain-runtime
+```
+
+For Linux, use the same commands with
+`MuMain-linux-native-x64-release-editor-off-no-data.tar.gz`.
+
+On macOS, place the data beside the executable inside the application bundle:
+
+```bash
+mkdir MuMain-runtime
+tar -xzf MuMain-macos-native-arm64-release-editor-off-no-data.tar.gz -C MuMain-runtime
+sha256sum --check MuMain-data-<id>.tar.gz.sha256
+tar -xzf MuMain-data-<id>.tar.gz -C MuMain-runtime/Main.app/Contents/MacOS
+```
+
+On Windows PowerShell:
+
+```powershell
+New-Item -ItemType Directory MuMain-runtime
+tar -xzf MuMain-windows-native-x64-release-editor-off-no-data.tar.gz -C MuMain-runtime
+$expected = (Get-Content MuMain-data-<id>.tar.gz.sha256).Split()[0].ToUpperInvariant()
+$actual = (Get-FileHash MuMain-data-<id>.tar.gz -Algorithm SHA256).Hash
+if ($actual -ne $expected) { throw "Data archive checksum mismatch." }
+tar -xzf MuMain-data-<id>.tar.gz -C MuMain-runtime
+```
+
+The assembled directory contains `Main.exe`, the network and runtime DLLs,
+configuration, shaders, `Data/`, and `fonts/`.
+
+If a music file is missing or cannot be decoded, the client logs the failure and leaves
+that track silent for the rest of the audio session. Scene changes do not repeatedly
+retry it. After restoring or replacing a file under `Data/Music/`, restart the client
+to load it again.
+
+### Build without copying data
+
+Local builds copy `Data/` and `fonts/` by default. Packaging or compile-only
+builds can skip them:
+
+```bash
+cmake --preset windows-x64 -DMU_COPY_RUNTIME_ASSETS=OFF
+cmake --build --preset windows-x64-release
+```
+
+Switching the option to `OFF` also removes stale `Data/` and `fonts/` from
+the selected build output.
 
 ## Reference
 

@@ -1,17 +1,25 @@
 ﻿#include "stdafx.h"
 #include "MixMgr.h"
 #include "I18N/All.h"
+#include "Core/Text/WideFormat.h"
 
-#include "UI/Legacy/UIManager.h"
+#include "UI/Core/UIManager.h"
 #include "Engine/Object/ZzzInventory.h"
 #include "GameLogic/Items/CSItemOption.h"
-#include "UI/Legacy/UIJewelHarmony.h"
+#include "UI/Inventory/UIJewelHarmony.h"
 #include "Network/Server/SocketSystem.h"
 #include "GameLogic/Skills/SkillManager.h"
+#include "GameLogic/Items/ItemCategories.h"
+#include "Data/GameData/ItemData/ItemDatabase.h"
 
 using namespace SEASON3A;
 
 CMixRecipeMgr g_MixRecipeMgr;
+
+void CMixRecipeMgr::LoadData()
+{
+    OpenRecipeFile(L"Data\\Local\\Mix.bmd");
+}
 
 void CMixItem::Reset()
 {
@@ -82,10 +90,10 @@ void CMixItem::SetItem(ITEM* pItem, DWORD dwMixValue)
     if (pItem->Type == ITEM_HORN_OF_FENRIR && pItem->ExcellentFlags != 0)
         m_bFenrirAddedItem = TRUE;
 
-    if (pItem->Type == ITEM_POTION + 53)
+    if (pItem->Type == ITEM_TALISMAN_OF_LUCK)
         m_bIsCharmItem = TRUE;
 
-    if (pItem->Type == ITEM_POTION + 96)
+    if (pItem->Type == ITEM_TALISMAN_OF_CHAOS_ASSEMBLY)
         m_bIsChaosCharmItem = TRUE;
 
     if (pItem->Type == ITEM_JEWEL_OF_CHAOS
@@ -120,46 +128,15 @@ void CMixItem::SetItem(ITEM* pItem, DWORD dwMixValue)
         m_wHarmonyOptionLevel = pItem->Jewel_Of_Harmony_OptionLevel;
     }
 
-    switch (pItem->Type)
-    {
-    case ITEM_WING:
-    case ITEM_WINGS_OF_HEAVEN:
-    case ITEM_WINGS_OF_SATAN:
-    case ITEM_WING_OF_CURSE:
-        m_bIsWing = TRUE;
-        break;
-    case ITEM_WINGS_OF_SPIRITS:
-    case ITEM_WINGS_OF_SOUL:
-    case ITEM_WINGS_OF_DRAGON:
-    case ITEM_WINGS_OF_DARKNESS:
-    case ITEM_CAPE_OF_LORD:
-    case ITEM_WINGS_OF_DESPAIR:
-    case ITEM_CAPE_OF_FIGHTER:
-        m_bIsUpgradedWing = TRUE;
-        break;
-    case ITEM_WING_OF_STORM:
-    case ITEM_WING_OF_ETERNAL:
-    case ITEM_WING_OF_ILLUSION:
-    case ITEM_WING_OF_RUIN:
-    case ITEM_CAPE_OF_EMPEROR:
-    case ITEM_WING_OF_DIMENSION:
-    case ITEM_CAPE_OF_OVERRULE:
-        m_bIs3rdUpgradedWing = TRUE;
-    }
-
-    if (m_bIsWing || m_bIsUpgradedWing || m_bIs3rdUpgradedWing)
-    {
-        if (m_dwSpecialItem & RCP_SP_EXCELLENT)
-            m_dwSpecialItem ^= RCP_SP_EXCELLENT;
-    }
+    SetWingFlags(pItem->Type);
     switch (pItem->Type)
     {
     case ITEM_LARGE_HEALING_POTION:
     case ITEM_SMALL_COMPLEX_POTION:
     case ITEM_MEDIUM_COMPLEX_POTION:
-    case ITEM_POTION + 53:
-    case ITEM_POTION + 88:
-    case ITEM_POTION + 89:
+    case ITEM_TALISMAN_OF_LUCK:
+    case ITEM_WHITE_CHERRY_BLOSSOM_BRANCH:
+    case ITEM_RED_CHERRY_BLOSSOM_BRANCH:
     case ITEM_GOLDEN_CHERRY_BLOSSOM_BRANCH:
     case ITEM_POTION + 100:
         m_bCanStack = TRUE;
@@ -169,6 +146,31 @@ void CMixItem::SetItem(ITEM* pItem, DWORD dwMixValue)
 
     if (m_bCanStack == TRUE) m_iCount = m_iDurability;
     else m_iCount = 1;
+}
+
+void CMixItem::SetWingFlags(int itemType)
+{
+    // The small wings have none of the three flags.
+    switch (g_ItemDatabase.GetWingTier(itemType))
+    {
+    case Data::Items::WingTier::First:
+        m_bIsWing = TRUE;
+        break;
+    case Data::Items::WingTier::Second:
+        m_bIsUpgradedWing = TRUE;
+        break;
+    case Data::Items::WingTier::Third:
+        m_bIs3rdUpgradedWing = TRUE;
+        break;
+    default:
+        break;
+    }
+
+    if (m_bIsWing || m_bIsUpgradedWing || m_bIs3rdUpgradedWing)
+    {
+        if (m_dwSpecialItem & RCP_SP_EXCELLENT)
+            m_dwSpecialItem ^= RCP_SP_EXCELLENT;
+    }
 }
 
 int CMixItemInventory::AddItem(ITEM* pItem)
@@ -254,7 +256,8 @@ BOOL CMixRecipes::IsMixSource(ITEM* pItem)
     CMixItem mixitem;
     mixitem.SetItem(pItem, 0);
 
-    if (Check_LuckyItem(pItem->Type) && g_MixRecipeMgr.GetMixInventoryType() != MIXTYPE_JERRIDON)	return FALSE;
+    if (GameLogic::Items::IsLuckyItemType(pItem->Type) && g_MixRecipeMgr.GetMixInventoryType() != MIXTYPE_JERRIDON)
+        return FALSE;
 
     if (IsCharmItem(mixitem))
     {
@@ -547,16 +550,16 @@ BOOL CMixRecipes::GetCurRecipeName(wchar_t* pszNameOut, int iNameLine)
             switch (g_MixRecipeMgr.GetMixInventoryType())
             {
             case MIXTYPE_TRAINER:
-                mu_swprintf(pszNameOut, I18N::Game::ItemInappropriateForS, I18N::Game::Resurrection);
+                mu_swprintf(pszNameOut, I18N::Game::ItemInappropriateForS, I18N::Game::OperationResurrecting);
                 break;
             case MIXTYPE_OSBOURNE:
-                mu_swprintf(pszNameOut, I18N::Game::ItemInappropriateForS, I18N::Game::Refine);
+                mu_swprintf(pszNameOut, I18N::Game::ItemInappropriateForS, I18N::Game::OperationRefining);
                 break;
             case MIXTYPE_JERRIDON:
-                mu_swprintf(pszNameOut, I18N::Game::ItemInappropriateForS, I18N::Game::Restore);
+                mu_swprintf(pszNameOut, I18N::Game::ItemInappropriateForS, I18N::Game::OperationRestoring);
                 break;
             case MIXTYPE_ELPIS:
-                mu_swprintf(pszNameOut, I18N::Game::ItemInappropriateForS, I18N::Game::Refine);
+                mu_swprintf(pszNameOut, I18N::Game::ItemInappropriateForS, I18N::Game::OperationRefining);
                 break;
             default:
                 mu_swprintf(pszNameOut, L"%ls", I18N::Game::ImproperItemsForCombination);
@@ -645,6 +648,20 @@ BOOL CMixRecipes::GetRecipeAdvice(wchar_t* pszAdviceOut, int iAdivceLine)
     return TRUE;
 }
 
+namespace
+{
+/// Appends a localized detail (required level, option or quantity) to a recipe
+/// ingredient name, separated by a space. The localized text carries the
+/// placeholders, so every language can put the number where its grammar needs
+/// it instead of having it glued to a translated word.
+template <size_t N, typename... Args>
+void AppendRecipeDetail(wchar_t (&szName)[N], const wchar_t* pszFormat, Args... args)
+{
+    Core::Text::AppendFormatted(szName, L" ");
+    Core::Text::AppendFormatted(szName, pszFormat, args...);
+}
+} // namespace
+
 int CMixRecipes::GetSourceName(int iItemNum, wchar_t* pszNameOut, int iNumMixItems, CMixItem* pMixItems)
 {
     if (iNumMixItems < 0)	return MIX_SOURCE_ERROR;
@@ -663,7 +680,7 @@ int CMixRecipes::GetSourceName(int iItemNum, wchar_t* pszNameOut, int iNumMixIte
         (pMixRecipeItem->m_iOptionMin == pMixRecipeItem->m_iOptionMax || (pMixRecipeItem->m_iOptionMin == 0 && pMixRecipeItem->m_iOptionMax == 255)))
     {
         if (pMixRecipeItem->m_iDurabilityMin == pMixRecipeItem->m_iDurabilityMax)
-            mu_swprintf(szTempName, L"%ls(%d)", szTempName, pMixRecipeItem->m_iDurabilityMin);
+            Core::Text::AppendFormatted(szTempName, L"(%d)", pMixRecipeItem->m_iDurabilityMin);
     }
     else
     {
@@ -705,39 +722,42 @@ int CMixRecipes::GetSourceName(int iItemNum, wchar_t* pszNameOut, int iNumMixIte
                 if (szTempName[iNameLen - j] == '+') szTempName[iNameLen - j - 1] = '\0';
         }
         if (pMixRecipeItem->m_iDurabilityMin == pMixRecipeItem->m_iDurabilityMax)
-            mu_swprintf(szTempName, L"%ls(%d)", szTempName, pMixRecipeItem->m_iDurabilityMin);
+            Core::Text::AppendFormatted(szTempName, L"(%d)", pMixRecipeItem->m_iDurabilityMin);
 
         if (pMixRecipeItem->m_iLevelMin == 0 && pMixRecipeItem->m_iLevelMax == 255);
         else if (pMixRecipeItem->m_iLevelMin == pMixRecipeItem->m_iLevelMax)
-            mu_swprintf(szTempName, L"%ls +%d", szTempName, pMixRecipeItem->m_iLevelMin);
+            AppendRecipeDetail(szTempName, I18N::Game::MixLevel, pMixRecipeItem->m_iLevelMin);
         else if (pMixRecipeItem->m_iLevelMin == 0)
-            mu_swprintf(szTempName, L"%ls +%d%ls", szTempName, pMixRecipeItem->m_iLevelMax, I18N::Game::Maximum);
+            AppendRecipeDetail(szTempName, I18N::Game::MixLevelAtMost, pMixRecipeItem->m_iLevelMax);
         else if (pMixRecipeItem->m_iLevelMax == 255)
-            mu_swprintf(szTempName, L"%ls +%d%ls", szTempName, pMixRecipeItem->m_iLevelMin, I18N::Game::Minimum);
+            AppendRecipeDetail(szTempName, I18N::Game::MixLevelAtLeast, pMixRecipeItem->m_iLevelMin);
         else
-            mu_swprintf(szTempName, L"%ls +%d~%d", szTempName, pMixRecipeItem->m_iLevelMin, pMixRecipeItem->m_iLevelMax);
+            AppendRecipeDetail(szTempName, I18N::Game::MixLevelRange, pMixRecipeItem->m_iLevelMin,
+                               pMixRecipeItem->m_iLevelMax);
 
         if (pMixRecipeItem->m_iOptionMin == 0 && pMixRecipeItem->m_iOptionMax == 255);
         else if (pMixRecipeItem->m_iOptionMin == pMixRecipeItem->m_iOptionMax)
-            mu_swprintf(szTempName, L"%ls +%d%ls", szTempName, pMixRecipeItem->m_iOptionMin, I18N::Game::Option385);
+            AppendRecipeDetail(szTempName, I18N::Game::MixOption, pMixRecipeItem->m_iOptionMin);
         else if (pMixRecipeItem->m_iOptionMin == 0)
-            mu_swprintf(szTempName, L"%ls +%d%ls%ls", szTempName, pMixRecipeItem->m_iOptionMax, I18N::Game::Option385, I18N::Game::Maximum);
+            AppendRecipeDetail(szTempName, I18N::Game::MixOptionAtMost, pMixRecipeItem->m_iOptionMax);
         else if (pMixRecipeItem->m_iOptionMax == 255)
-            mu_swprintf(szTempName, L"%ls +%d%ls%ls", szTempName, pMixRecipeItem->m_iOptionMin, I18N::Game::Option385, I18N::Game::Minimum);
+            AppendRecipeDetail(szTempName, I18N::Game::MixOptionAtLeast, pMixRecipeItem->m_iOptionMin);
         else
-            mu_swprintf(szTempName, L"%ls +%d~%d%ls", szTempName, pMixRecipeItem->m_iOptionMin, pMixRecipeItem->m_iOptionMax, I18N::Game::Option385);
+            AppendRecipeDetail(szTempName, I18N::Game::MixOptionRange, pMixRecipeItem->m_iOptionMin,
+                               pMixRecipeItem->m_iOptionMax);
     }
 
     if (pMixRecipeItem->m_iCountMin == 0 && pMixRecipeItem->m_iCountMax == 255)
-        mu_swprintf(szTempName, L"%ls (%ls)", szTempName, I18N::Game::RateIncrease);
+        Core::Text::AppendFormatted(szTempName, L" (%ls)", I18N::Game::RateIncrease);
     else if (pMixRecipeItem->m_iCountMin == pMixRecipeItem->m_iCountMax)
-        mu_swprintf(szTempName, L"%ls %d%ls", szTempName, pMixRecipeItem->m_iCountMin, I18N::Game::Quantity);
+        AppendRecipeDetail(szTempName, I18N::Game::MixCount, pMixRecipeItem->m_iCountMin);
     else if (pMixRecipeItem->m_iCountMin == 0)
-        mu_swprintf(szTempName, L"%ls %d%ls %ls", szTempName, pMixRecipeItem->m_iCountMax, I18N::Game::Quantity, I18N::Game::Maximum);
+        AppendRecipeDetail(szTempName, I18N::Game::MixCountAtMost, pMixRecipeItem->m_iCountMax);
     else if (pMixRecipeItem->m_iCountMax == 255)
-        mu_swprintf(szTempName, L"%ls %d%ls %ls", szTempName, pMixRecipeItem->m_iCountMin, I18N::Game::Quantity, I18N::Game::Minimum);
+        AppendRecipeDetail(szTempName, I18N::Game::MixCountAtLeast, pMixRecipeItem->m_iCountMin);
     else
-        mu_swprintf(szTempName, L"%ls %d~%d%ls", szTempName, pMixRecipeItem->m_iCountMin, pMixRecipeItem->m_iCountMax, I18N::Game::Quantity);
+        AppendRecipeDetail(szTempName, I18N::Game::MixCountRange, pMixRecipeItem->m_iCountMin,
+                           pMixRecipeItem->m_iCountMax);
 
     BOOL bPreName = FALSE;
     if (pMixRecipeItem->m_dwSpecialItem & RCP_SP_EXCELLENT)
@@ -1057,7 +1077,7 @@ BOOL CMixRecipes::IsSourceOfRefiningStone(CMixItem& rSource)
 
 BOOL CMixRecipes::IsSourceOfAttachSeedSphereToWeapon(CMixItem& rSource)
 {
-    if (rSource.m_sType >= ITEM_SEED_SPHERE_FIRE_1 && rSource.m_sType <= ITEM_SEED_SPHERE_EARTH_5)
+    if (GameLogic::Items::IsSocketSeedSphereType(rSource.m_sType))
     {
         int iSeedSphereType = rSource.m_sType - ITEM_WING;
         if (iSeedSphereType % 2 == 0) return TRUE;
@@ -1067,7 +1087,7 @@ BOOL CMixRecipes::IsSourceOfAttachSeedSphereToWeapon(CMixItem& rSource)
 
 BOOL CMixRecipes::IsSourceOfAttachSeedSphereToArmor(CMixItem& rSource)
 {
-    if (rSource.m_sType >= ITEM_SEED_SPHERE_FIRE_1 && rSource.m_sType <= ITEM_SEED_SPHERE_EARTH_5)
+    if (GameLogic::Items::IsSocketSeedSphereType(rSource.m_sType))
     {
         int iSeedSphereType = rSource.m_sType - ITEM_WING;
 
