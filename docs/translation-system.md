@@ -489,6 +489,34 @@ normally to check progress messages. Switch back to English and restart to check
 language persistence. Account-blocked and already-connected messages can be
 checked when the server returns those states; no account changes are required.
 
+The character-management batch covers character selection, creation and deletion:
+67 additional Chinese entries include all 18 class/advancement names, seven class
+descriptions, base attributes, guild roles, controls and related validation messages.
+Class names match the local OpenMU `CharacterClassNames.zh-CN.resx` terminology;
+other prose is translated from current English resources, not extracted official
+UI text. The minimum-name hint says at least four characters, matching the client
+validation. Unverified lore name Arka remains unchanged.
+
+Character-selection captions and creation headers now follow the selected locale.
+Legacy character controls and message-box buttons use existing blank legacy frames
+with translated text in place of English baked into textures; positions and actions
+are preserved. The creation name row also uses a separate translated label.
+Class descriptions refresh when the language changes, including while open.
+Fruit (13/15) descriptions and per-level stat names use the same Chinese terms
+as the shared attribute labels and Dark Lord class name, including the equipment
+removal hint and class restriction.
+
+Check both themes: select an existing character and inspect its class and guild
+role, open creation and inspect all seven classes, stats, descriptions and name
+field, then cancel. Check empty/short names and a duplicate name, then create a
+disposable test character if desired. Use only that test character for an actual
+delete test; first check that cancelling deletion preserves it. Verify the name in
+the confirmation, password prompt where enabled by the server, and success/error
+messages. Check English/Chinese switching and 75%/150% UI scales for overlap.
+Blocked-account, guild and level restrictions should be verified only when an
+existing test state allows it. Shared class/attribute names and message-box buttons
+also appear translated in other screens.
+
 Add future translations to `Game.zh-CN.resx` by screen or feature. Keep English
 resource keys, legacy IDs, formatting arguments and command tokens unchanged.
 Missing translations intentionally use the existing English fallback.

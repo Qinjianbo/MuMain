@@ -162,6 +162,7 @@ void CCharMakeWin::Create()
     std::fill(&m_aszJobDesc[0][0],
         &m_aszJobDesc[0][0] + (CMW_DESC_LINE_MAX * CMW_DESC_ROW_MAX), L'\0');
     m_nDescLine = 0;
+    m_LastDescription = nullptr;
 
     m_nSelJob = CLASS_KNIGHT;
     m_aJobState[m_nSelJob].checked = true;
@@ -210,6 +211,9 @@ void CCharMakeWin::BindRmlModel(Rml::DataModelConstructor& c, CharMakeRmlModel& 
     c.Bind("ok_label", &model.okLabel);
     c.Bind("cancel_label", &model.cancelLabel);
     c.Bind("char_name", &model.charName);
+    c.Bind("name_label", &model.nameLabel);
+    c.Bind("class_label", &model.classLabel);
+    c.Bind("attributes_label", &model.attributesLabel);
 
     c.BindEventCallback("charmake_select_job",
         [this](Rml::DataModelHandle, Rml::Event&, const Rml::VariantList& arguments)
@@ -336,12 +340,7 @@ void CCharMakeWin::UpdateDisplay()
     const bool isDarkLord = (m_nSelJob == CLASS_DARK_LORD);
     m_asprBack[CMW_SPR_STAT].SetSize(0, isDarkLord ? kDarkLordStatHeight : kDefaultStatHeight, Y);
 
-    const int descriptionTextId = ResolveDescriptionTextId(m_nSelJob);
-    m_nDescLine = ::SeparateTextIntoLines(
-        I18N::Game::Lookup(descriptionTextId),
-        m_aszJobDesc[0],
-        CMW_DESC_LINE_MAX,
-        CMW_DESC_ROW_MAX);
+    SyncDescription();
 
     SelectCreateCharacter();
 }
@@ -452,23 +451,10 @@ void CCharMakeWin::SyncRmlModel()
 {
     if (!m_RmlView.Document()) return;
 
+    SyncJobButtons();
+    SyncDescription();
+
     auto& model = m_RmlView.GetModel();
-    auto& jobs = model.jobs;
-    bool jobsDirty = false;
-    for (int classIndex = 0; classIndex < MAX_CLASS; ++classIndex)
-    {
-        JobButtonEntry& entry = jobs[classIndex];
-        const bool checked = m_aJobState[classIndex].checked;
-        const bool disabled = !m_aJobState[classIndex].enabled;
-        if (entry.checked != checked) { entry.checked = checked; jobsDirty = true; }
-        if (entry.disabled != disabled) { entry.disabled = disabled; jobsDirty = true; }
-
-        const std::string label = StringUtils::WideToNarrow(I18N::Game::Lookup(kClassButtonTextIds[classIndex]));
-        if (entry.label != label) { entry.label = label; jobsDirty = true; }
-    }
-    if (jobsDirty)
-        m_RmlView.MarkDirty("jobs");
-
     const bool isDarkLord = (m_nSelJob == CLASS_DARK_LORD);
     if (model.darkLordExtra != isDarkLord)
     {
@@ -506,8 +492,53 @@ void CCharMakeWin::SyncRmlModel()
     syncLabel(&CharMakeRmlModel::descLine1, "desc_line1", m_nDescLine > 0 ? m_aszJobDesc[0] : L"");
     syncLabel(&CharMakeRmlModel::descLine2, "desc_line2", m_nDescLine > 1 ? m_aszJobDesc[1] : L"");
 
+    syncLabel(&CharMakeRmlModel::nameLabel, "name_label", I18N::Game::Name);
+    syncLabel(&CharMakeRmlModel::classLabel, "class_label", I18N::Game::Class);
+    syncLabel(&CharMakeRmlModel::attributesLabel, "attributes_label", I18N::Game::BaseAttributes);
     syncLabel(&CharMakeRmlModel::okLabel, "ok_label", I18N::Game::OK);
     syncLabel(&CharMakeRmlModel::cancelLabel, "cancel_label", I18N::Game::Cancel);
+}
+
+void CCharMakeWin::SyncDescription()
+{
+    const wchar_t* description = I18N::Game::Lookup(ResolveDescriptionTextId(m_nSelJob));
+    if (description == m_LastDescription)
+        return;
+
+    m_LastDescription = description;
+    m_nDescLine = ::SeparateTextIntoLines(description, m_aszJobDesc[0], CMW_DESC_LINE_MAX, CMW_DESC_ROW_MAX);
+}
+
+void CCharMakeWin::SyncJobButtons()
+{
+    auto& model = m_RmlView.GetModel();
+    auto& jobs = model.jobs;
+    bool jobsDirty = false;
+    for (int classIndex = 0; classIndex < MAX_CLASS; ++classIndex)
+    {
+        JobButtonEntry& entry = jobs[classIndex];
+        const bool checked = m_aJobState[classIndex].checked;
+        const bool disabled = !m_aJobState[classIndex].enabled;
+        if (entry.checked != checked)
+        {
+            entry.checked = checked;
+            jobsDirty = true;
+        }
+        if (entry.disabled != disabled)
+        {
+            entry.disabled = disabled;
+            jobsDirty = true;
+        }
+
+        const std::string label = StringUtils::WideToNarrow(I18N::Game::Lookup(kClassButtonTextIds[classIndex]));
+        if (entry.label != label)
+        {
+            entry.label = label;
+            jobsDirty = true;
+        }
+    }
+    if (jobsDirty)
+        m_RmlView.MarkDirty("jobs");
 }
 
 void CCharMakeWin::SelectCreateCharacter()

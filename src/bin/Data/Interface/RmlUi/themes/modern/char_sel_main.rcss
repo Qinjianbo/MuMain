@@ -73,3 +73,6 @@
 	padding: 0 2dp;
 	font-family: "token(font-body)";
 }
+
+/* Legacy uses text inside the button; modern retains its icon and translated caption. */
+.button-text { display: none; }
