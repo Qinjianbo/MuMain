@@ -35,11 +35,14 @@ accident.
 Before adding or revising Chinese translations, follow the required source order in
 [`docs/translation-system.md`](docs/translation-system.md#required-source-order-for-chinese-translations):
 official client resources first, then official Chinese documentation, then the
-current English text and behavior. Record sources and fallback limitations in the
-PR description; local OpenMU terminology does not replace these checks.
+current English text and behavior. Record only the adopted sources and translation
+choices in review notes and PR descriptions, not extraction/decryption procedures
+or technical limitations. Label contributor wording as translated from the English
+meaning; local OpenMU terminology does not replace the official-source checks.
 
-This section and the required source-order policy are fork-only instructions. Keep
-them on the local policy branch and exclude them from upstream pull requests.
+This section, the required source-order policy and `docs/localization-reviews/`
+are fork-only material. Keep them on the local policy branch and exclude them
+from upstream pull requests.
 
 ## Build setup
 

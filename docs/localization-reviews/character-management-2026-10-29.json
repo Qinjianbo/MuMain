@@ -1,0 +1,1173 @@
+{
+  "review_date": "2026-10-29",
+  "scope": "67 UI translations and 10 fruit-data translations in character management",
+  "archive": "Muonline-Season20Part2-taren-0616.zip",
+  "source_order": [
+    "official_client",
+    "official_chinese_documentation",
+    "current_english_and_behavior"
+  ],
+  "version_notes": [
+    "Official tooltip IDs293–297 specify increase1–3; IDs298–302 specify decrease1–9, matching the current English data.",
+    "Historical official update /news/Update/203.html uses an older decrease1–5 rule; do not replace the current1–9 rule with it.",
+    "Official creation guide describes national-ID verification; preserve current WEBZEN prompt per user instruction."
+  ],
+  "status": "Source review completed; adopted sources and translation choices recorded. Fruit name uses the official client name.",
+  "counts": {
+    "official_document_terminology": 20,
+    "official_client_term_with_document_confirmation": 2,
+    "official_client_terminology": 14,
+    "english_behavior_fallback": 27,
+    "official_document_context_plus_english_adaptation": 7,
+    "english_template_with_official_client_context": 1,
+    "official_client_normalized": 5,
+    "official_client_item_name": 1
+  },
+  "entries": [
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Dark Wizard",
+      "english": "Dark Wizard",
+      "chinese": "魔法师",
+      "legacy_ids": "legacy_id=20",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameIntro/01_character02.html"
+      ],
+      "basis": "official_document_terminology",
+      "notes": "职业/转职名已与官网表格核对，保持现有名称。旧大师页使用祭祀/格斗大师；不混用后期更新页的祭司/祭师/格斗专家变体。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Soul Master",
+      "english": "Soul Master",
+      "chinese": "魔导师",
+      "legacy_ids": "legacy_id=25",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameSystem/08_quest.html"
+      ],
+      "basis": "official_document_terminology",
+      "notes": "职业/转职名已与官网表格核对，保持现有名称。旧大师页使用祭祀/格斗大师；不混用后期更新页的祭司/祭师/格斗专家变体。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Grand Master",
+      "english": "Grand Master",
+      "chinese": "神导师",
+      "legacy_ids": "legacy_id=1669",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameSystem/08_quest.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/09_master.html"
+      ],
+      "basis": "official_document_terminology",
+      "notes": "职业/转职名已与官网表格核对，保持现有名称。旧大师页使用祭祀/格斗大师；不混用后期更新页的祭司/祭师/格斗专家变体。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Dark Knight",
+      "english": "Dark Knight",
+      "chinese": "剑士",
+      "legacy_ids": "legacy_id=21",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameIntro/01_character01.html"
+      ],
+      "basis": "official_document_terminology",
+      "notes": "职业/转职名已与官网表格核对，保持现有名称。旧大师页使用祭祀/格斗大师；不混用后期更新页的祭司/祭师/格斗专家变体。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Blade Knight",
+      "english": "Blade Knight",
+      "chinese": "骑士",
+      "legacy_ids": "legacy_id=26",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameSystem/08_quest.html"
+      ],
+      "basis": "official_document_terminology",
+      "notes": "职业/转职名已与官网表格核对，保持现有名称。旧大师页使用祭祀/格斗大师；不混用后期更新页的祭司/祭师/格斗专家变体。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Blade Master",
+      "english": "Blade Master",
+      "chinese": "神骑士",
+      "legacy_ids": "legacy_id=1668",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameSystem/08_quest.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/09_master.html"
+      ],
+      "basis": "official_document_terminology",
+      "notes": "职业/转职名已与官网表格核对，保持现有名称。旧大师页使用祭祀/格斗大师；不混用后期更新页的祭司/祭师/格斗专家变体。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Elf",
+      "english": "Elf",
+      "chinese": "弓箭手",
+      "legacy_ids": "legacy_id=22",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameIntro/01_character03.html"
+      ],
+      "basis": "official_document_terminology",
+      "notes": "职业/转职名已与官网表格核对，保持现有名称。旧大师页使用祭祀/格斗大师；不混用后期更新页的祭司/祭师/格斗专家变体。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Muse Elf",
+      "english": "Muse Elf",
+      "chinese": "圣射手",
+      "legacy_ids": "legacy_id=27",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameSystem/08_quest.html"
+      ],
+      "basis": "official_document_terminology",
+      "notes": "职业/转职名已与官网表格核对，保持现有名称。旧大师页使用祭祀/格斗大师；不混用后期更新页的祭司/祭师/格斗专家变体。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "High Elf",
+      "english": "High Elf",
+      "chinese": "神射手",
+      "legacy_ids": "legacy_id=1670",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameSystem/08_quest.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/09_master.html"
+      ],
+      "basis": "official_document_terminology",
+      "notes": "职业/转职名已与官网表格核对，保持现有名称。旧大师页使用祭祀/格斗大师；不混用后期更新页的祭司/祭师/格斗专家变体。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Magic Gladiator",
+      "english": "Magic Gladiator",
+      "chinese": "魔剑士",
+      "legacy_ids": "legacy_id=23",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameIntro/01_character04.html"
+      ],
+      "basis": "official_document_terminology",
+      "notes": "职业/转职名已与官网表格核对，保持现有名称。旧大师页使用祭祀/格斗大师；不混用后期更新页的祭司/祭师/格斗专家变体。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Dual Master",
+      "english": "Dual Master",
+      "chinese": "剑圣",
+      "legacy_ids": "legacy_id=1671",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameSystem/08_quest.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/09_master.html"
+      ],
+      "basis": "official_document_terminology",
+      "notes": "职业/转职名已与官网表格核对，保持现有名称。旧大师页使用祭祀/格斗大师；不混用后期更新页的祭司/祭师/格斗专家变体。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Dark Lord",
+      "english": "Dark Lord",
+      "chinese": "圣导师",
+      "legacy_ids": "legacy_id=24",
+      "decision": "retain",
+      "client_text_ids": [
+        98
+      ],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameIntro/01_character05.html"
+      ],
+      "basis": "official_client_term_with_document_confirmation",
+      "notes": "职业/转职名已与官网表格核对，保持现有名称。旧大师页使用祭祀/格斗大师；不混用后期更新页的祭司/祭师/格斗专家变体。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Lord Emperor",
+      "english": "Lord Emperor",
+      "chinese": "祭祀",
+      "legacy_ids": "legacy_id=1672",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameSystem/08_quest.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/09_master.html"
+      ],
+      "basis": "official_document_terminology",
+      "notes": "职业/转职名已与官网表格核对，保持现有名称。旧大师页使用祭祀/格斗大师；不混用后期更新页的祭司/祭师/格斗专家变体。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Summoner",
+      "english": "Summoner",
+      "chinese": "召唤术师",
+      "legacy_ids": "legacy_id=1687",
+      "decision": "retain",
+      "client_text_ids": [
+        241
+      ],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameIntro/01_character06.html"
+      ],
+      "basis": "official_client_term_with_document_confirmation",
+      "notes": "职业/转职名已与官网表格核对，保持现有名称。旧大师页使用祭祀/格斗大师；不混用后期更新页的祭司/祭师/格斗专家变体。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Bloody Summoner",
+      "english": "Bloody Summoner",
+      "chinese": "召唤导师",
+      "legacy_ids": "legacy_id=1688",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameSystem/08_quest.html"
+      ],
+      "basis": "official_document_terminology",
+      "notes": "职业/转职名已与官网表格核对，保持现有名称。旧大师页使用祭祀/格斗大师；不混用后期更新页的祭司/祭师/格斗专家变体。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Dimension Master",
+      "english": "Dimension Master",
+      "chinese": "召唤巫师",
+      "legacy_ids": "legacy_id=1689",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameSystem/08_quest.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/09_master.html"
+      ],
+      "basis": "official_document_terminology",
+      "notes": "职业/转职名已与官网表格核对，保持现有名称。旧大师页使用祭祀/格斗大师；不混用后期更新页的祭司/祭师/格斗专家变体。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Rage Fighter",
+      "english": "Rage Fighter",
+      "chinese": "格斗家",
+      "legacy_ids": "legacy_id=3150",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameIntro/01_character07.html"
+      ],
+      "basis": "official_document_terminology",
+      "notes": "职业/转职名已与官网表格核对，保持现有名称。旧大师页使用祭祀/格斗大师；不混用后期更新页的祭司/祭师/格斗专家变体。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Fist Master",
+      "english": "Fist Master",
+      "chinese": "格斗大师",
+      "legacy_ids": "legacy_id=3151",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameSystem/08_quest.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/09_master.html"
+      ],
+      "basis": "official_document_terminology",
+      "notes": "职业/转职名已与官网表格核对，保持现有名称。旧大师页使用祭祀/格斗大师；不混用后期更新页的祭司/祭师/格斗专家变体。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Strength",
+      "english": "Strength",
+      "chinese": "力量",
+      "legacy_ids": "legacy_id=1701",
+      "decision": "retain",
+      "client_text_ids": [
+        296
+      ],
+      "official_documents": [],
+      "basis": "official_client_terminology",
+      "notes": "沿用官方果实提示中的属性名称；缩写键显示完整中文属性名。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Agility",
+      "english": "Agility",
+      "chinese": "敏捷",
+      "legacy_ids": "legacy_id=1702",
+      "decision": "retain",
+      "client_text_ids": [
+        295
+      ],
+      "official_documents": [],
+      "basis": "official_client_terminology",
+      "notes": "沿用官方果实提示中的属性名称；缩写键显示完整中文属性名。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Vitality",
+      "english": "Vitality",
+      "chinese": "体力",
+      "legacy_ids": "legacy_id=1703",
+      "decision": "retain",
+      "client_text_ids": [
+        294
+      ],
+      "official_documents": [],
+      "basis": "official_client_terminology",
+      "notes": "沿用官方果实提示中的属性名称；缩写键显示完整中文属性名。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Energy",
+      "english": "Energy",
+      "chinese": "智力",
+      "legacy_ids": "legacy_id=1704",
+      "decision": "retain",
+      "client_text_ids": [
+        293
+      ],
+      "official_documents": [],
+      "basis": "official_client_terminology",
+      "notes": "沿用官方果实提示中的属性名称；缩写键显示完整中文属性名。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Command",
+      "english": "Command",
+      "chinese": "统率",
+      "legacy_ids": "legacy_id=1738,1900",
+      "decision": "retain",
+      "client_text_ids": [
+        297
+      ],
+      "official_documents": [],
+      "basis": "official_client_terminology",
+      "notes": "沿用官方果实提示中的属性名称；缩写键显示完整中文属性名。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Commoner",
+      "english": "Commoner",
+      "chinese": "无战盟",
+      "legacy_ids": "legacy_id=488",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/BeginnerGuide/04default.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/01_interface.html"
+      ],
+      "basis": "english_behavior_fallback",
+      "notes": "按英文含义结合当前界面行为翻译。 选角代码把无战盟状态映射到此键；无战盟是语境化译法，不是提取的官方原句。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Master",
+      "english": "Master",
+      "chinese": "盟主",
+      "legacy_ids": "legacy_id=1300,1745",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html"
+      ],
+      "basis": "official_document_terminology",
+      "notes": "官网支持盟主、副盟主、战斗队长和战盟成员术语；短标签按当前界面语境使用。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Assist. M.",
+      "english": "Assist. M.",
+      "chinese": "副盟主",
+      "legacy_ids": "legacy_id=1301",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html"
+      ],
+      "basis": "official_document_terminology",
+      "notes": "官网支持盟主、副盟主、战斗队长和战盟成员术语；短标签按当前界面语境使用。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Battle M.",
+      "english": "Battle M.",
+      "chinese": "战斗队长",
+      "legacy_ids": "legacy_id=1302",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html"
+      ],
+      "basis": "official_document_terminology",
+      "notes": "官网支持盟主、副盟主、战斗队长和战盟成员术语；短标签按当前界面语境使用。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Members",
+      "english": "Members",
+      "chinese": "战盟成员",
+      "legacy_ids": "legacy_id=1330",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html"
+      ],
+      "basis": "official_document_terminology",
+      "notes": "官网支持盟主、副盟主、战斗队长和战盟成员术语；短标签按当前界面语境使用。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "StrongMentalityAndExcellentInsightCreates",
+      "english": "Strong mentality and excellent insight creates the most powerful curse spell. Also this item pulls out another world summoners and use the detrimental sorcery against them.",
+      "chinese": "凭借强大精神力与敏锐洞察力施展诅咒，召唤异界生物，以巫术打击敌人。",
+      "legacy_ids": "legacy_id=1690",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameIntro/01_character06.html"
+      ],
+      "basis": "official_document_context_plus_english_adaptation",
+      "notes": "官网核对职业特点与术语；当前说明是保留英文信息的简短译文，不是逐字摘录官方客户端。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "KingdomOfWizardsDescendantOfArka",
+      "english": "Kingdom of wizards, descendant of Arka. He has a inferior physical condition but has a enormous power and can command attacking spells freely.",
+      "chinese": "魔法王国 Arka 的后裔。体质较弱，却拥有强大魔力，能自如施展攻击魔法。",
+      "legacy_ids": "legacy_id=1705",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameIntro/01_character02.html"
+      ],
+      "basis": "official_document_context_plus_english_adaptation",
+      "notes": "官网核对职业特点与术语；当前说明是保留英文信息的简短译文，不是逐字摘录官方客户端。 官网说明支持魔力强/体质弱，但检查的资料未解释 Arka；保留英文专名，不擅自音译或改成出生地。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "KingdomOfKnightsDescendantOfLorencia",
+      "english": "Kingdom of knights, descendant of Lorencia.With a powerful strength and swordsmanship he can handle most of the close-range weapons.",
+      "chinese": "来自骑士王国勇者大陆的后裔。力量强大，剑术精湛，擅长使用各种近战武器。",
+      "legacy_ids": "legacy_id=1706",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameIntro/01_character01.html"
+      ],
+      "basis": "official_document_context_plus_english_adaptation",
+      "notes": "官网核对职业特点与术语；当前说明是保留英文信息的简短译文，不是逐字摘录官方客户端。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "KingdomOfElvesDescendantsOfNoria",
+      "english": "Kingdom of elves, descendants of Noria. A master of arrows and bows and commands various spells.",
+      "chinese": "来自仙踪林的精灵后裔。精通弓箭，也能施展多种魔法。",
+      "legacy_ids": "legacy_id=1707",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameIntro/01_character03.html"
+      ],
+      "basis": "official_document_context_plus_english_adaptation",
+      "notes": "官网核对职业特点与术语；当前说明是保留英文信息的简短译文，不是逐字摘录官方客户端。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "ComplexCharacterThatHasACharacteristics",
+      "english": "Complex character that has a characteristics of the Dark knight and Dark wizard. Master in a close-range combat and can command spells freely.",
+      "chinese": "兼具剑士与魔法师特点的职业。既精通近身战斗，也能自如施展魔法。",
+      "legacy_ids": "legacy_id=1708",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameIntro/01_character04.html"
+      ],
+      "basis": "official_document_context_plus_english_adaptation",
+      "notes": "官网核对职业特点与术语；当前说明是保留英文信息的简短译文，不是逐字摘录官方客户端。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "CharismaticCharacterThatCanCommandThe",
+      "english": "Charismatic character that can command the troops and handle the Dark spirit and Dark horse.",
+      "chinese": "富有领袖魅力，能够统率部队，并驾驭天鹰与黑王马。",
+      "legacy_ids": "legacy_id=1709",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameIntro/01_character05.html"
+      ],
+      "basis": "official_document_context_plus_english_adaptation",
+      "notes": "官网核对职业特点与术语；当前说明是保留英文信息的简短译文，不是逐字摘录官方客户端。 客户端 itemtooltip.bmd 的 13/4、13/5 名称为黑王马之角、天鹰之爪，辅助确认宠物名称。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "LegitimateBearersOfTheKarutanRoyal",
+      "english": "Legitimate bearers of the Karutan Royal Knights and martial artists of great physical strength. They also help other party memgers by casting subsidiary buffs.",
+      "chinese": "卡伦特皇家骑士的正统传人，体魄强健、精通格斗，也能施展辅助技能帮助队友。",
+      "legacy_ids": "legacy_id=3152",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/news/Update/212.html"
+      ],
+      "basis": "official_document_context_plus_english_adaptation",
+      "notes": "官网核对职业特点与术语；当前说明是保留英文信息的简短译文，不是逐字摘录官方客户端。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Create a character",
+      "english": "Create a character",
+      "chinese": "创建角色",
+      "legacy_ids": "legacy_id=1700",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/BeginnerGuide/04default.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/01_interface.html"
+      ],
+      "basis": "english_behavior_fallback",
+      "notes": "按英文含义结合当前界面行为翻译。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Character level above %d cannot be deleted.",
+      "english": "Character level above %d cannot be deleted.",
+      "chinese": "等级超过 %d 的角色无法删除。",
+      "legacy_ids": "legacy_id=1711",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/BeginnerGuide/04default.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/01_interface.html"
+      ],
+      "basis": "english_behavior_fallback",
+      "notes": "按英文含义结合当前界面行为翻译。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Would you like to delete %s character?",
+      "english": "Would you like to delete %s character?",
+      "chinese": "确定要删除角色 %s 吗？",
+      "legacy_ids": "legacy_id=1712",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/BeginnerGuide/04default.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/01_interface.html"
+      ],
+      "basis": "english_behavior_fallback",
+      "notes": "按英文含义结合当前界面行为翻译。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Character was deleted successfully.",
+      "english": "Character was deleted successfully.",
+      "chinese": "角色删除成功。",
+      "legacy_ids": "legacy_id=1714",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/BeginnerGuide/04default.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/01_interface.html"
+      ],
+      "basis": "english_behavior_fallback",
+      "notes": "按英文含义结合当前界面行为翻译。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "It contains prohibited words.",
+      "english": "It contains prohibited words.",
+      "chinese": "名称包含禁用词语。",
+      "legacy_ids": "legacy_id=1715",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/BeginnerGuide/04default.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/01_interface.html"
+      ],
+      "basis": "english_behavior_fallback",
+      "notes": "按英文含义结合当前界面行为翻译。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Incorrect character name was entered or same character name exists.",
+      "english": "Incorrect character name was entered or same character name exists.",
+      "chinese": "角色名称无效，或该名称已被使用。",
+      "legacy_ids": "legacy_id=1716",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/BeginnerGuide/04default.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/01_interface.html"
+      ],
+      "basis": "english_behavior_fallback",
+      "notes": "按英文含义结合当前界面行为翻译。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "You can't delete the character that belongs to the guild",
+      "english": "You can't delete the character that belongs to the guild",
+      "chinese": "无法删除已加入战盟的角色。",
+      "legacy_ids": "legacy_id=1654",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/BeginnerGuide/04default.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/01_interface.html"
+      ],
+      "basis": "english_behavior_fallback",
+      "notes": "按英文含义结合当前界面行为翻译。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Please enter your WEBZEN.COM password.",
+      "english": "Please enter your WEBZEN.COM password.",
+      "chinese": "请输入你的 WEBZEN.COM 密码。",
+      "legacy_ids": "legacy_id=428,444,1713",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/BeginnerGuide/04default.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/01_interface.html"
+      ],
+      "basis": "english_behavior_fallback",
+      "notes": "按英文含义结合当前界面行为翻译。 按用户要求保留 WEBZEN 相关文案，未改为中国官方旧版身份证验证规则。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "This is a blocked character",
+      "english": "This is a blocked character",
+      "chinese": "该角色已被封停。",
+      "legacy_ids": "legacy_id=434",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/BeginnerGuide/04default.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/01_interface.html"
+      ],
+      "basis": "english_behavior_fallback",
+      "notes": "按英文含义结合当前界面行为翻译。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "This account is item blocked.",
+      "english": "This account is item blocked.",
+      "chinese": "该账号的物品已被锁定。",
+      "legacy_ids": "legacy_id=436",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/BeginnerGuide/04default.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/01_interface.html"
+      ],
+      "basis": "english_behavior_fallback",
+      "notes": "按英文含义结合当前界面行为翻译。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Please check on http://muonline.webzen.com site",
+      "english": "Please check on http://muonline.webzen.com site",
+      "chinese": "请访问 http://muonline.webzen.com 查看详情。",
+      "legacy_ids": "legacy_id=437",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/BeginnerGuide/04default.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/01_interface.html"
+      ],
+      "basis": "english_behavior_fallback",
+      "notes": "按英文含义结合当前界面行为翻译。 按用户要求保留 WEBZEN 相关文案，未改为中国官方旧版身份证验证规则。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "You cannot remove your character since the guild cannot be removed",
+      "english": "You cannot remove your character since the guild cannot be removed",
+      "chinese": "战盟无法解散，因此无法删除该角色。",
+      "legacy_ids": "legacy_id=438",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/BeginnerGuide/04default.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/01_interface.html"
+      ],
+      "basis": "english_behavior_fallback",
+      "notes": "按英文含义结合当前界面行为翻译。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "The character is item blocked",
+      "english": "The character is item blocked",
+      "chinese": "该角色的物品已被锁定。",
+      "legacy_ids": "legacy_id=439",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/BeginnerGuide/04default.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/01_interface.html"
+      ],
+      "basis": "english_behavior_fallback",
+      "notes": "按英文含义结合当前界面行为翻译。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Type more than 4 letters",
+      "english": "Type more than 4 letters",
+      "chinese": "角色名称至少需要 4 个字符。",
+      "legacy_ids": "legacy_id=390",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/BeginnerGuide/04default.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/01_interface.html"
+      ],
+      "basis": "english_behavior_fallback",
+      "notes": "按英文含义结合当前界面行为翻译。 当前代码检查长度小于4，因此保留“至少4个字符”；官网未给出这条错误文本。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Cannot use symbols.",
+      "english": "Cannot use symbols.",
+      "chinese": "不能使用特殊符号。",
+      "legacy_ids": "legacy_id=391",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/BeginnerGuide/04default.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/01_interface.html"
+      ],
+      "basis": "english_behavior_fallback",
+      "notes": "按英文含义结合当前界面行为翻译。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "No more characters can be created.",
+      "english": "No more characters can be created.",
+      "chinese": "无法创建更多角色。",
+      "legacy_ids": "legacy_id=396",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/BeginnerGuide/04default.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/01_interface.html"
+      ],
+      "basis": "english_behavior_fallback",
+      "notes": "按英文含义结合当前界面行为翻译。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "You cannot delete characters",
+      "english": "You cannot delete characters",
+      "chinese": "无法删除角色。",
+      "legacy_ids": "legacy_id=399",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/BeginnerGuide/04default.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/01_interface.html"
+      ],
+      "basis": "english_behavior_fallback",
+      "notes": "按英文含义结合当前界面行为翻译。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "The password you have entered is incorrect.",
+      "english": "The password you have entered is incorrect.",
+      "chinese": "输入的密码错误。",
+      "legacy_ids": "legacy_id=401,511",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/BeginnerGuide/04default.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/01_interface.html"
+      ],
+      "basis": "english_behavior_fallback",
+      "notes": "按英文含义结合当前界面行为翻译。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Name",
+      "english": "Name",
+      "chinese": "名称",
+      "legacy_ids": "legacy_id=1389,3463",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/BeginnerGuide/04default.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/01_interface.html"
+      ],
+      "basis": "english_behavior_fallback",
+      "notes": "按英文含义结合当前界面行为翻译。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Class",
+      "english": "Class",
+      "chinese": "职业",
+      "legacy_ids": "legacy_id=1973",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/BeginnerGuide/04default.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/01_interface.html"
+      ],
+      "basis": "english_behavior_fallback",
+      "notes": "按英文含义结合当前界面行为翻译。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Create",
+      "english": "Create",
+      "chinese": "创建",
+      "legacy_ids": "legacy_id=1412",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/BeginnerGuide/04default.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/01_interface.html"
+      ],
+      "basis": "english_behavior_fallback",
+      "notes": "按英文含义结合当前界面行为翻译。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Delete",
+      "english": "Delete",
+      "chinese": "删除",
+      "legacy_ids": "legacy_id=1011,2932,3506",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/BeginnerGuide/04default.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/01_interface.html"
+      ],
+      "basis": "english_behavior_fallback",
+      "notes": "按英文含义结合当前界面行为翻译。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Menu",
+      "english": "Menu",
+      "chinese": "菜单",
+      "legacy_ids": "",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/BeginnerGuide/04default.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/01_interface.html"
+      ],
+      "basis": "english_behavior_fallback",
+      "notes": "按英文含义结合当前界面行为翻译。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Base Attributes",
+      "english": "Base Attributes",
+      "chinese": "基础属性",
+      "legacy_ids": "",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/BeginnerGuide/04default.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/01_interface.html"
+      ],
+      "basis": "english_behavior_fallback",
+      "notes": "按英文含义结合当前界面行为翻译。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Connect",
+      "english": "Connect",
+      "chinese": "连接",
+      "legacy_ids": "legacy_id=452,562",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/BeginnerGuide/04default.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/01_interface.html"
+      ],
+      "basis": "english_behavior_fallback",
+      "notes": "按英文含义结合当前界面行为翻译。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Loading character list",
+      "english": "Loading character list",
+      "chinese": "正在加载角色列表",
+      "legacy_ids": "",
+      "decision": "retain",
+      "client_text_ids": [],
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/BeginnerGuide/04default.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/04_group.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/01_interface.html"
+      ],
+      "basis": "english_behavior_fallback",
+      "notes": "按英文含义结合当前界面行为翻译。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "ENG",
+      "english": "ENG",
+      "chinese": "智力",
+      "legacy_ids": "legacy_id=168",
+      "decision": "retain",
+      "client_text_ids": [
+        293
+      ],
+      "official_documents": [],
+      "basis": "official_client_terminology",
+      "notes": "沿用官方果实提示中的属性名称；缩写键显示完整中文属性名。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "STA",
+      "english": "STA",
+      "chinese": "体力",
+      "legacy_ids": "legacy_id=169",
+      "decision": "retain",
+      "client_text_ids": [
+        294
+      ],
+      "official_documents": [],
+      "basis": "official_client_terminology",
+      "notes": "沿用官方果实提示中的属性名称；缩写键显示完整中文属性名。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "AGI",
+      "english": "AGI",
+      "chinese": "敏捷",
+      "legacy_ids": "legacy_id=167",
+      "decision": "retain",
+      "client_text_ids": [
+        295
+      ],
+      "official_documents": [],
+      "basis": "official_client_terminology",
+      "notes": "沿用官方果实提示中的属性名称；缩写键显示完整中文属性名。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "STR",
+      "english": "STR",
+      "chinese": "力量",
+      "legacy_ids": "legacy_id=166",
+      "decision": "retain",
+      "client_text_ids": [
+        296
+      ],
+      "official_documents": [],
+      "basis": "official_client_terminology",
+      "notes": "沿用官方果实提示中的属性名称；缩写键显示完整中文属性名。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Can be equipped by %s",
+      "english": "Can be equipped by %s",
+      "chinese": "适用职业：%s",
+      "legacy_ids": "legacy_id=61",
+      "decision": "retain",
+      "client_text_ids": [
+        98
+      ],
+      "official_documents": [],
+      "basis": "english_template_with_official_client_context",
+      "notes": "官方98确认圣导师专用限制；通用 %s 模板按英文含义翻译为适用职业，保留占位符。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "It can be used with item removed.",
+      "english": "It can be used with item removed.",
+      "chinese": "卸下装备后方可使用。",
+      "legacy_ids": "legacy_id=1908",
+      "decision": "retain",
+      "client_text_ids": [
+        96
+      ],
+      "official_documents": [],
+      "basis": "official_client_normalized",
+      "notes": "官方文本有“才以使用”错字；规范为卸下装备后方可使用，含义不变。"
+    },
+    {
+      "resource": "Group13_Helper.json / 13,15",
+      "key": "description/0",
+      "english": "{stat} Increases 1~3 stat points",
+      "chinese": "{stat} 增加 1～3 点属性",
+      "decision": "retain",
+      "basis": "official_client_normalized",
+      "client_text_ids": [
+        293,
+        294,
+        295,
+        296,
+        297
+      ],
+      "official_documents": [],
+      "notes": "参考所列官方客户端文本，按当前英文含义规范语序与标点，并保留 {stat} 占位符。"
+    },
+    {
+      "resource": "Group13_Helper.json / 13,15",
+      "key": "description/1",
+      "english": "{stat} Possible to decrease stat 1~9 point",
+      "chinese": "{stat} 可减少 1～9 点属性",
+      "decision": "retain",
+      "basis": "official_client_normalized",
+      "client_text_ids": [
+        298,
+        299,
+        300,
+        301,
+        302
+      ],
+      "official_documents": [],
+      "notes": "参考所列官方客户端文本，按当前英文含义规范语序与标点，并保留 {stat} 占位符。"
+    },
+    {
+      "resource": "Group13_Helper.json / 13,15",
+      "key": "description/2",
+      "english": "It can be used with item removed.",
+      "chinese": "卸下装备后方可使用。",
+      "decision": "retain",
+      "basis": "official_client_normalized",
+      "client_text_ids": [
+        96
+      ],
+      "official_documents": [],
+      "notes": "参考所列官方客户端文本，按当前英文含义规范语序与标点，并保留 {stat} 占位符。"
+    },
+    {
+      "resource": "Group13_Helper.json / 13,15",
+      "key": "description/3",
+      "english": "Can be equipped by Dark Lord",
+      "chinese": "适用职业：圣导师",
+      "decision": "retain",
+      "basis": "official_client_normalized",
+      "client_text_ids": [
+        98
+      ],
+      "official_documents": [],
+      "notes": "参考所列官方客户端文本，按当前英文含义规范语序与标点，并保留 {stat} 占位符。"
+    },
+    {
+      "resource": "Group13_Helper.json / 13,15",
+      "key": "levelValues/stat/0",
+      "english": "ENG",
+      "chinese": "智力",
+      "decision": "retain",
+      "basis": "official_client_terminology",
+      "client_text_ids": [
+        293,
+        298
+      ],
+      "official_documents": [],
+      "notes": "属性名与客户端果实文本一致。"
+    },
+    {
+      "resource": "Group13_Helper.json / 13,15",
+      "key": "levelValues/stat/1",
+      "english": "STA",
+      "chinese": "体力",
+      "decision": "retain",
+      "basis": "official_client_terminology",
+      "client_text_ids": [
+        294,
+        299
+      ],
+      "official_documents": [],
+      "notes": "属性名与客户端果实文本一致。"
+    },
+    {
+      "resource": "Group13_Helper.json / 13,15",
+      "key": "levelValues/stat/2",
+      "english": "AGI",
+      "chinese": "敏捷",
+      "decision": "retain",
+      "basis": "official_client_terminology",
+      "client_text_ids": [
+        295,
+        300
+      ],
+      "official_documents": [],
+      "notes": "属性名与客户端果实文本一致。"
+    },
+    {
+      "resource": "Group13_Helper.json / 13,15",
+      "key": "levelValues/stat/3",
+      "english": "STR",
+      "chinese": "力量",
+      "decision": "retain",
+      "basis": "official_client_terminology",
+      "client_text_ids": [
+        296,
+        301
+      ],
+      "official_documents": [],
+      "notes": "属性名与客户端果实文本一致。"
+    },
+    {
+      "resource": "Group13_Helper.json / 13,15",
+      "key": "levelValues/stat/4",
+      "english": "Command",
+      "chinese": "统率",
+      "decision": "retain",
+      "basis": "official_client_terminology",
+      "client_text_ids": [
+        297,
+        302
+      ],
+      "official_documents": [],
+      "notes": "属性名与客户端果实文本一致。"
+    },
+    {
+      "resource": "Group13_Helper.json / 13,15",
+      "key": "name",
+      "english": "Fruits",
+      "chinese": "果实",
+      "decision": "add",
+      "basis": "official_client_item_name",
+      "client_text_ids": [],
+      "official_documents": [],
+      "notes": "采用官方客户端 Data/Local/itemtooltip.bmd 中物品13/15的名称“果实”；配合属性名称组成五种果实名称。"
+    }
+  ],
+  "fork_only": true
+}

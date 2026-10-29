@@ -450,10 +450,13 @@ Before adding or revising Chinese text, check sources in this order:
    using established Chinese terminology. Local OpenMU translations are a supporting
    terminology reference, not a substitute for the official-source checks above.
 
-Record the source and any fallback or adaptation in the PR description. Distinguish
-an extracted official string, an official-document reference and a contributor
-translation. If a resource cannot be decoded or searched, record that limitation;
-this does not establish that the official client lacks the text.
+In translation review notes and PR descriptions, record only the adopted source
+and translation choice: official-client text, official-document reference, or
+"translated from the English meaning" when no corresponding official wording is
+used. Record version-specific adaptations where relevant. Do not include extraction
+or decryption procedures, failed attempts, or technical limitations. Do not label
+contributor translations as official wording or claim that the official client has
+no such text merely because a corresponding string was not obtained.
 
 Preserve the current client's behavior, numeric rules and formatting placeholders.
 When official wording describes a different game version, reuse compatible terms
