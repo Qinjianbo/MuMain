@@ -435,9 +435,32 @@ translations are added. Item names and server messages are separate data.
 This batch also translates 12 existing item tooltip texts required for every
 UI language by the item data tests; shared texts cover 15 items.
 
-Use official Chinese terminology as a reference, check item IDs and version-specific
-behavior, and preserve the current English meaning and placeholders. Do not import
-a newer client's rules merely to match its wording.
+### Required source order for Chinese translations
+
+Before adding or revising Chinese text, check sources in this order:
+
+1. **Official Chinese client resources.** Look for the corresponding text in the
+   available official client, matching item IDs, text IDs, class or feature context
+   rather than relying on a similar name alone.
+2. **Official Chinese documentation.** If no corresponding client text can be found,
+   check the official operator's guides, item descriptions and update documentation,
+   preferably for the applicable game version.
+3. **Current English text and behavior.** Only when neither official source supplies
+   a corresponding translation, translate the current English meaning in context,
+   using established Chinese terminology. Local OpenMU translations are a supporting
+   terminology reference, not a substitute for the official-source checks above.
+
+Record the source and any fallback or adaptation in the PR description. Distinguish
+an extracted official string, an official-document reference and a contributor
+translation. If a resource cannot be decoded or searched, record that limitation;
+this does not establish that the official client lacks the text.
+
+Preserve the current client's behavior, numeric rules and formatting placeholders.
+When official wording describes a different game version, reuse compatible terms
+and adapt the explanation to this client's rules; identify that adaptation rather
+than presenting it as verbatim official text. Do not import a newer client's rules
+merely to match its wording. Apply these checks to related item-data descriptions
+as well as UI resources before considering a translation batch ready for review.
 
 Rebuild the client, then select **简体中文** in the Options language dropdown.
 Select **Noto Sans SC** in the font dropdown to use Simplified Chinese glyph

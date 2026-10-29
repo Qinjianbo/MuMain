@@ -30,6 +30,17 @@ several near-identical-name classes across different eras that look interchangea
 these docs exist specifically so new code doesn't reach for a closed or transitional one by
 accident.
 
+## Chinese translations
+
+Before adding or revising Chinese translations, follow the required source order in
+[`docs/translation-system.md`](docs/translation-system.md#required-source-order-for-chinese-translations):
+official client resources first, then official Chinese documentation, then the
+current English text and behavior. Record sources and fallback limitations in the
+PR description; local OpenMU terminology does not replace these checks.
+
+This section and the required source-order policy are fork-only instructions. Keep
+them on the local policy branch and exclude them from upstream pull requests.
+
 ## Build setup
 
 The project uses CMake. Supported build environments and setup steps are
