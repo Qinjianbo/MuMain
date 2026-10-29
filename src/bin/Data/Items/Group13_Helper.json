@@ -737,7 +737,8 @@
         "en": "Fruits",
         "de": "Früchte",
         "es": "Fruto",
-        "pt": "Fruta"
+        "pt": "Fruta",
+        "zh-CN": "果实"
       },
       "tags": ["valuable"],
       "description": [
