@@ -427,13 +427,17 @@ ctest --test-dir <build folder> --build-config Debug -R items --output-on-failur
 
 ## Simplified Chinese (`zh-CN`)
 
-Simplified Chinese is being added incrementally. The first batch translates the
-Options window, including its graphics tuning labels and help text. Shared
-labels also appear translated wherever other screens use the same resource key.
-Other game text, NPC dialogue and editor text fall back to English until their
-translations are added. Item names and server messages are separate data.
-This batch also translates 12 existing item tooltip texts required for every
-UI language by the item data tests; shared texts cover 15 items.
+Simplified Chinese is being added incrementally. Translated screens include the
+Options window and its graphics tuning labels and help text, and the system menu
+at character selection and in game (Esc). The login window also translates account
+and password fields, remember-account/password controls, the password-saving
+confirmation, server titles, login progress and common account errors. Character
+selection, creation and deletion include class and advancement names, class
+descriptions, base attributes, guild roles, controls and validation messages.
+Shared labels such as OK, Cancel and Close also appear translated wherever other
+screens use the same resource keys, including other dialogs and windows.
+Untranslated text falls back to English. Item names and server messages are
+separate data; translated item tooltips are also available.
 
 ### Required source order for Chinese translations
 
@@ -479,69 +483,20 @@ Alternatively, set the executable directory's `config.ini`:
 Locale=zh-CN
 ```
 
-After rebuilding, check the Options tabs and graphics tuning in both themes:
+After rebuilding, check the Options tabs and graphics tuning, and open the
+system menu at character selection and with Esc in game, in both themes.
 Chinese glyphs should render without boxes, and labels and help should fit at
 75% and 150% UI scale. Switch back to English and restart to check that the
 language choice is retained.
 
-The next batch adds the character-selection and in-game system menus in both
-themes: the title, exit, server selection, character switching, close/cancel,
-and the warning shown when the Chaos mixing window blocks leaving. These seven
-entries are contributor translations checked against the current English
-resources and menu actions, not claimed as verbatim official-client strings.
-Shared entries such as Cancel also appear translated in other dialogs. Login
-fields and the rest of the character-selection screen remain outside this batch.
+The password-saving warning wraps within the dialog in both themes. Server
+names are preserved; untranslated connection and subscription errors use English.
 
-To check this batch, open the menu on the character-selection screen and with
-Esc in game. Check both themes at 75% and 150% scale, then switch between English
-and Simplified Chinese and reopen the menu. Verify close/cancel, options, server
-selection, character switching and exit still perform their usual actions.
-
-The login batch adds 18 entries for account/password fields, remember-account
-and remember-password controls, the password-saving confirmation, server titles,
-login progress and common account errors. These are contributor translations
-of the current English resources, not extracted official-client UI text.
-The password-saving warning wraps continuous text, including Chinese, within
-the dialog in both themes.
-Server names are preserved, and untranslated connection/subscription errors
-continue to fall back to English. Shared entries such as OK and incorrect
-password also translate their other existing uses.
-
-After rebuilding, check the login window and password-saving confirmation in
-both themes at 75% and 150% scale. Confirm that server names and numbers remain
-correct, labels and the warning fit, and Chinese glyphs render correctly. Check
-empty account/password validation, cancel the password-saving prompt, and log in
-normally to check progress messages. Switch back to English and restart to check
-language persistence. Account-blocked and already-connected messages can be
-checked when the server returns those states; no account changes are required.
-
-The character-management batch covers character selection, creation and deletion:
-67 additional Chinese entries include all 18 class/advancement names, seven class
-descriptions, base attributes, guild roles, controls and related validation messages.
-Class names match the local OpenMU `CharacterClassNames.zh-CN.resx` terminology;
-other prose is translated from current English resources, not extracted official
-UI text. The minimum-name hint says at least four characters, matching the client
-validation. Unverified lore name Arka remains unchanged.
-
-Character-selection captions and creation headers now follow the selected locale.
-Legacy character controls and message-box buttons use existing blank legacy frames
-with translated text in place of English baked into textures; positions and actions
-are preserved. The creation name row also uses a separate translated label.
-Class descriptions refresh when the language changes, including while open.
-Fruit (13/15) descriptions and per-level stat names use the same Chinese terms
-as the shared attribute labels and Dark Lord class name, including the equipment
-removal hint and class restriction.
-
-Check both themes: select an existing character and inspect its class and guild
-role, open creation and inspect all seven classes, stats, descriptions and name
-field, then cancel. Check empty/short names and a duplicate name, then create a
-disposable test character if desired. Use only that test character for an actual
-delete test; first check that cancelling deletion preserves it. Verify the name in
-the confirmation, password prompt where enabled by the server, and success/error
-messages. Check English/Chinese switching and 75%/150% UI scales for overlap.
-Blocked-account, guild and level restrictions should be verified only when an
-existing test state allows it. Shared class/attribute names and message-box buttons
-also appear translated in other screens.
+Character-selection captions, creation headings and class descriptions follow
+the selected language. Class descriptions also refresh while the window is open.
+Character names require at least four characters. Fruit names, attribute names
+and descriptions are translated; enable **Translate item names** to display the
+translated item names.
 
 Add future translations to `Game.zh-CN.resx` by screen or feature. Keep English
 resource keys, legacy IDs, formatting arguments and command tokens unchanged.
