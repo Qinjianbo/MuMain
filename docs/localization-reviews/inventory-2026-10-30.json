@@ -1,0 +1,873 @@
+{
+  "scope": "Inventory controls, common item actions and equipment tooltip properties",
+  "official_documents_checked": [
+    "https://mu.zhaouc.com/Guide/ItemSystem/01_itemSys.html",
+    "https://mu.zhaouc.com/Guide/GameSystem/01_interface.html"
+  ],
+  "entries": [
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Inventory",
+      "english": "Inventory",
+      "chinese": "背包",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Close (I,V)",
+      "english": "Close (I,V)",
+      "chinese": "关闭（I、V）",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Inventory (I,V)",
+      "english": "Inventory (I,V)",
+      "chinese": "背包（I、V）",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "I,V : Inventory",
+      "english": "I,V : Inventory",
+      "chinese": "I、V：背包",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Open Inventory (I/V) Window",
+      "english": "Open Inventory (I/V) Window",
+      "chinese": "打开背包（I/V）",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Repair (L)",
+      "english": "Repair (L)",
+      "chinese": "修理（L）",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Repair all (A)",
+      "english": "Repair all (A)",
+      "chinese": "全部修理（A）",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Repairing cost: %s",
+      "english": "Repairing cost: %s",
+      "chinese": "修理费用：%s",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Repair all",
+      "english": "Repair all",
+      "chinese": "全部修理",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Repair Item",
+      "english": "Repair Item",
+      "chinese": "修理物品",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Purchase Price: %s",
+      "english": "Purchase Price: %s",
+      "chinese": "购买价格：%s",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Selling Price: %s",
+      "english": "Selling Price: %s",
+      "chinese": "出售价格：%s",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Cannot be equipped by %s",
+      "english": "Cannot be equipped by %s",
+      "chinese": "%s 无法装备",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Inventory is full.",
+      "english": "Inventory is full.",
+      "chinese": "背包已满。",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Inventory space is insufficient.",
+      "english": "Inventory space is insufficient.",
+      "chinese": "背包空间不足。",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Leave at least one empty slot in your inventory.",
+      "english": "Leave at least one empty slot in your inventory.",
+      "chinese": "请在背包中至少留出一个空位。",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Open Expanded Inventory (K)",
+      "english": "Open Expanded Inventory (K)",
+      "chinese": "打开扩展背包（K）",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Expanded Inventory",
+      "english": "Expanded Inventory",
+      "chinese": "扩展背包",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Insufficient space in the expanded inventory",
+      "english": "Insufficient space in the expanded inventory",
+      "chinese": "扩展背包空间不足。",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Please log in to game again to use the expanded inventory/vault.",
+      "english": "Please log in to game again to use the expanded inventory/vault.",
+      "chinese": "请重新登录游戏后使用扩展背包或仓库。",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Use this to expand your inventory.",
+      "english": "Use this to expand your inventory.",
+      "chinese": "用于扩展背包。",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "You must purchase Expanded Inventory first.",
+      "english": "You must purchase Expanded Inventory first.",
+      "chinese": "请先购买扩展背包。",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "An expensive item!",
+      "english": "An expensive item!",
+      "chinese": "这是贵重物品！",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Check the item please",
+      "english": "Check the item please",
+      "chinese": "请确认要出售的物品。",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Are you sure you want to sell it?",
+      "english": "Are you sure you want to sell it?",
+      "chinese": "确定要出售吗？",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "You are not allowed to drop this expensive item",
+      "english": "You are not allowed to drop this expensive item",
+      "chinese": "无法丢弃此贵重物品。",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "This item cannot be dropped.",
+      "english": "This item cannot be dropped.",
+      "chinese": "无法丢弃此物品。",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Reinforced item can't be dropped.",
+      "english": "Reinforced item can't be dropped.",
+      "chinese": "无法丢弃强化过的物品。",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "These items cannot be traded.",
+      "english": "These items cannot be traded.",
+      "chinese": "这些物品无法交易。",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Cannot be traded.",
+      "english": "Cannot be traded.",
+      "chinese": "无法交易。",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Can't wear item.",
+      "english": "Can't wear item.",
+      "chinese": "无法装备此物品。",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "You can only use this in a safe zone.",
+      "english": "You can only use this in a safe zone.",
+      "chinese": "只能在安全区内使用。",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Can't be used in the safe zone",
+      "english": "Can't be used in the safe zone",
+      "chinese": "无法在安全区内使用。",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Incorrect item",
+      "english": "Incorrect item",
+      "chinese": "物品不正确。",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "You cannot use the item at certain applicable locations.",
+      "english": "You cannot use the item at certain applicable locations.",
+      "chinese": "无法在此地点使用该物品。",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "This item cannot be used along with an item that's already in use.",
+      "english": "This item cannot be used along with an item that's already in use.",
+      "chinese": "无法与正在使用的物品同时使用。",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": " You cannot use this item while the Potion effects remain active.",
+      "english": " You cannot use this item while the Potion effects remain active.",
+      "chinese": "药水效果持续期间无法使用此物品。",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "KeepFlightEquipmentInIcarus",
+      "english": "In Icarus you cannot take off your last wings or flying mount.",
+      "chinese": "在天空之城，必须保留至少一件翅膀或飞行坐骑。",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Open personal store(S)",
+      "english": "Open personal store(S)",
+      "chinese": "打开个人商店（S）",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Close personal store(S)",
+      "english": "Close personal store(S)",
+      "chinese": "关闭个人商店（S）",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Set option",
+      "english": "Set option",
+      "chinese": "套装属性",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Socket option",
+      "english": "Socket option",
+      "chinese": "镶嵌属性",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Arrows: %d (%d)",
+      "english": "Arrows: %d (%d)",
+      "chinese": "箭：%d（%d）",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Bolts: %d (%d)",
+      "english": "Bolts: %d (%d)",
+      "chinese": "弩箭：%d（%d）",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Attack speed: %d",
+      "english": "Attack speed: %d",
+      "chinese": "攻击速度：%d",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #6",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Defense: %d",
+      "english": "Defense: %d",
+      "chinese": "防御力：%d",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #3",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Defense rate: %d",
+      "english": "Defense rate: %d",
+      "chinese": "防御率：%d",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #5",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Durability: [%d/%d]",
+      "english": "Durability: [%d/%d]",
+      "chinese": "耐久：[%d/%d]",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #8",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Strength Requirement: %d",
+      "english": "Strength Requirement: %d",
+      "chinese": "需求力量：%d",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #11",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "(lacking %d)",
+      "english": "(lacking %d)",
+      "chinese": "（还差 %d）",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Agility Requirement: %d",
+      "english": "Agility Requirement: %d",
+      "chinese": "需求敏捷：%d",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #13",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Minimum Level Requirement: %d",
+      "english": "Minimum Level Requirement: %d",
+      "chinese": "需求等级：%d",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #9",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Energy Requirement: %d",
+      "english": "Energy Requirement: %d",
+      "chinese": "需求智力：%d",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #17",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Charisma Requirement: %d",
+      "english": "Charisma Requirement: %d",
+      "chinese": "需求统率：%d",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #19",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Increase %d%% of Damage",
+      "english": "Increase %d%% of Damage",
+      "chinese": "伤害提高 %d%%",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #26",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Absorb %d%% of Damage",
+      "english": "Absorb %d%% of Damage",
+      "chinese": "伤害吸收 %d%%",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #30",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Increase speed",
+      "english": "Increase speed",
+      "chinese": "移动速度提高",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #25",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Increases moving speed",
+      "english": "Increases moving speed",
+      "chinese": "移动速度提高",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #25",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Swimming speed increase",
+      "english": "Swimming speed increase",
+      "chinese": "游泳速度提高",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #24",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "durability",
+      "english": "Durability: [{durability}/{maxDurability}]",
+      "chinese": "耐久：[{durability}/{maxDurability}]",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #8",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "numberOfItems",
+      "english": "Number of items: {durability}",
+      "chinese": "数量：{durability}",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #2",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "life",
+      "english": "Life: {durability}",
+      "chinese": "生命：{durability}",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #56",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "usableTimes",
+      "english": "usable {durability} times",
+      "chinese": "可使用 {durability} 次",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #86",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "oneHandedDamage",
+      "english": "One-Handed Damage: {damageMin} ~ {damageMax}",
+      "chinese": "单手攻击力：{damageMin} ~ {damageMax}",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #0",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "twoHandedDamage",
+      "english": "Two-Handed Damage: {damageMin} ~ {damageMax}",
+      "chinese": "双手攻击力：{damageMin} ~ {damageMax}",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #1",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "wizardryDamage",
+      "english": "Wizardry Damage: {damageMin} ~ {damageMax}",
+      "chinese": "魔法攻击力：{damageMin} ~ {damageMax}",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "defense",
+      "english": "Defense: {defense}",
+      "chinese": "防御力：{defense}",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #3",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "magicDefense",
+      "english": "Spell resistance: {magicDefense}",
+      "chinese": "魔法抵抗力：{magicDefense}",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #4",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "blockRate",
+      "english": "Defense rate: {blockRate}",
+      "chinese": "防御率：{blockRate}",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #5",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "attackSpeed",
+      "english": "Attack speed: {attackSpeed}",
+      "chinese": "攻击速度：{attackSpeed}",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #6",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "walkSpeed",
+      "english": "Moving speed: {walkSpeed}",
+      "chinese": "移动速度：{walkSpeed}",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #7",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "requiredLevel",
+      "english": "Minimum Level Requirement: {requiredLevel}",
+      "chinese": "需求等级：{requiredLevel}",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #9",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "requiredStrength",
+      "english": "Strength Requirement: {requiredStrength}",
+      "chinese": "需求力量：{requiredStrength}",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #11",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "requiredDexterity",
+      "english": "Agility Requirement: {requiredDexterity}",
+      "chinese": "需求敏捷：{requiredDexterity}",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #13",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "requiredVitality",
+      "english": "Stamina Requirement: {requiredVitality}",
+      "chinese": "需求体力：{requiredVitality}",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #15",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "requiredEnergy",
+      "english": "Energy Requirement: {requiredEnergy}",
+      "chinese": "需求智力：{requiredEnergy}",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #17",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "requiredLeadership",
+      "english": "Charisma Requirement: {requiredLeadership}",
+      "chinese": "需求统率：{requiredLeadership}",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #19",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "lacking",
+      "english": "(lacking {missing})",
+      "chinese": "（还差 {missing}）",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "wizardryDamageIncrease",
+      "english": "Wizardry Dmg {magicPower}% rise",
+      "chinese": "魔力提高 {magicPower}%",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #22",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "curseDamageIncrease",
+      "english": "Curse Spell increment {magicPower}%",
+      "chinese": "诅咒提高 {magicPower}%",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #23",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "petAttackIncrease",
+      "english": "Increase pet attack as {magicPower}%",
+      "chinese": "宠物攻击力提高 {magicPower}%",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #21",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。宠物通用提示保留当前 Season 6 适用范围，不引入官方新版宠物名称。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "damageIncrease",
+      "english": "Increase {percent}% of Damage",
+      "chinese": "伤害提高 {percent}%",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #26",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "damageAbsorb",
+      "english": "Absorb {percent}% of Damage",
+      "chinese": "伤害吸收 {percent}%",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #30",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "increaseSpeed",
+      "english": "Increase speed",
+      "chinese": "移动速度提高",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #25",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "cannotRepair",
+      "english": "Cannot Repair",
+      "chinese": "无法修理",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #68",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "cannotStoreInVault",
+      "english": "Cannot store in vault.",
+      "chinese": "无法存入仓库。",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "cannotBeTraded",
+      "english": "Cannot be traded.",
+      "chinese": "无法交易。",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "remainingTimeShown",
+      "english": "The remaining time is shown",
+      "chinese": "右键点击",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #64",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "whenYouRightClick",
+      "english": "when you right click on your mouse.",
+      "chinese": "可查看剩余时间。",
+      "basis": "official_client_adapted",
+      "source": "Data/Local/itemtooltiptext.bmd #64",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "iceResistance",
+      "english": "Ice Resistance: {iceResistance}",
+      "chinese": "冰属性抵抗力：{iceResistance}",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "poisonResistance",
+      "english": "Poison Resistance: {poisonResistance}",
+      "chinese": "毒属性抵抗力：{poisonResistance}",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "lightningResistance",
+      "english": "Lightning Resistance: {lightningResistance}",
+      "chinese": "电属性抵抗力：{lightningResistance}",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "fireResistance",
+      "english": "Fire Resistance: {fireResistance}",
+      "chinese": "火属性抵抗力：{fireResistance}",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "earthResistance",
+      "english": "Earth Resistance: {earthResistance}",
+      "chinese": "土属性抵抗力：{earthResistance}",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "windResistance",
+      "english": "Wind Resistance: {windResistance}",
+      "chinese": "风属性抵抗力：{windResistance}",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Tooltips/Tooltip.json",
+      "key": "waterResistance",
+      "english": "Water Resistance: {waterResistance}",
+      "chinese": "水属性抵抗力：{waterResistance}",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and calling behavior",
+      "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    }
+  ]
+}
