@@ -868,6 +868,15 @@
       "basis": "translated_from_english_meaning",
       "source": "current English text and calling behavior",
       "notes": "保留当前占位符、数值与行为；规范中文标点。"
+    },
+    {
+      "resource": "Game.zh-CN.resx",
+      "key": "Purchasing price: %s(%s)",
+      "english": "Purchasing price: %s(%s)",
+      "chinese": "购买价格：%s（%s）",
+      "basis": "translated_from_english_meaning",
+      "source": "current English text and ZzzInventory.cpp NPC shop tooltip behavior",
+      "notes": "保留两个 %s：先显示含税购买价，括号内为原价；legacy_id=1620。"
     }
   ]
 }
