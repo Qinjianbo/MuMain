@@ -44,6 +44,7 @@
 #include <RmlUi/Core/Elements/ElementFormControlInput.h>
 #include <RmlUi/Core/Event.h>
 #include <cmath>
+#include <iterator>
 
 extern unsigned int WindowWidth, WindowHeight;
 
@@ -470,15 +471,7 @@ void CLoginWin::SyncRmlModel()
         m_RmlView.MarkDirty("save_password_checked");
     }
 
-    wchar_t szServerName[MAX_TEXT_LENGTH] = {};
-    const wchar_t* pServerStatus = g_ServerListManager->GetNonPVPInfo() ? I18N::Game::SDServer : I18N::Game::SDNonPvPServer;
-    mu_swprintf(szServerName, pServerStatus, g_ServerListManager->GetSelectServerName(), g_ServerListManager->GetSelectServerIndex());
-    const std::string serverNameUtf8 = StringUtils::WideToNarrow(szServerName);
-    if (m_RmlView.GetModel().serverName != serverNameUtf8)
-    {
-        m_RmlView.GetModel().serverName = serverNameUtf8;
-        m_RmlView.MarkDirty("server_name");
-    }
+    SyncServerName();
 
     // Static (per-locale) labels; only dirties the model on an active locale change.
     auto syncLabel = [this](Rml::String LoginRmlModel::* field, const char* boundName, const wchar_t* text)
@@ -497,6 +490,23 @@ void CLoginWin::SyncRmlModel()
     syncLabel(&LoginRmlModel::trustWarning, "trust_warning", I18N::Game::LoginTrustWarning);
     syncLabel(&LoginRmlModel::okLabel, "ok_label", I18N::Game::OK);
     syncLabel(&LoginRmlModel::cancelLabel, "cancel_label", I18N::Game::Cancel);
+}
+
+void CLoginWin::SyncServerName()
+{
+    const wchar_t* serverFormats[] = {I18N::Game::SDServer, I18N::Game::SDNonPvPServer, I18N::Game::SDGoldPvPServer,
+                                      I18N::Game::SDGoldServer};
+    const auto serverType = g_ServerListManager->GetNonPVPInfo();
+    const wchar_t* format = serverType < std::size(serverFormats) ? serverFormats[serverType] : serverFormats[0];
+    wchar_t szServerName[MAX_TEXT_LENGTH] = {};
+    mu_swprintf(szServerName, format, g_ServerListManager->GetSelectServerName(),
+                g_ServerListManager->GetSelectServerIndex());
+    const std::string serverNameUtf8 = StringUtils::WideToNarrow(szServerName);
+    if (m_RmlView.GetModel().serverName != serverNameUtf8)
+    {
+        m_RmlView.GetModel().serverName = serverNameUtf8;
+        m_RmlView.MarkDirty("server_name");
+    }
 }
 
 bool CLoginWin::UpdateMouseEvent()

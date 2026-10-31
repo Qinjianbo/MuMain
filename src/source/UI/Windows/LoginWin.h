@@ -151,6 +151,7 @@ private:
         {.afterBuild = [this] { ApplyCredentialLimits(); }, .afterReload = [this] { OnRmlReloaded(); }}};
 
     void SyncRmlModel();
+    void SyncServerName();
     void BindRmlModel(Rml::DataModelConstructor& c, LoginRmlModel& model);
     void OnRmlReloaded();
     // Pushes MAX_USERNAME_SIZE/MAX_PASSWORD_SIZE onto the two fields, so the caps stay one C++ rule
