@@ -1,0 +1,37 @@
+{
+  "scope": "PR 879 login follow-up and PR 883 shared wording corrections",
+  "entries": [
+    {
+      "key": "LoginSavePasswordWarningTitle",
+      "chinese": "警告！",
+      "basis": "按英文含义翻译",
+      "notes": "保留 WARNING!!! 的警示语气。"
+    },
+    {
+      "key": "[%s-%d(Gold PvP) Server] / [%s-%d(Gold) Server]",
+      "chinese": "黄金 PvP / 黄金",
+      "basis": "官方文档术语结合英文含义",
+      "source": "https://mu.zhaouc.com/news/Notice/12303.html",
+      "notes": "采用官方黄金线术语；保留服务器名称、编号和 PvP 类型占位符。"
+    },
+    {
+      "key": "Commoner",
+      "chinese": "平民",
+      "basis": "按英文含义翻译",
+      "notes": "同时用于无战盟角色身份和 PK 状态恢复正常的提示，使用两种语境通用的译词。"
+    },
+    {
+      "key": "Type more than 4 letters",
+      "chinese": "名称至少需要 4 个字符。",
+      "basis": "按英文含义结合当前行为翻译",
+      "notes": "角色和战盟名称共用；实际校验均为至少 4 个字符。"
+    },
+    {
+      "key": "Decrease",
+      "chinese": "减少",
+      "basis": "官方客户端术语结合当前英文含义",
+      "source": "Data/Local/itemtooltiptext.bmd #298–302",
+      "notes": "果实减少属性按钮。"
+    }
+  ]
+}
