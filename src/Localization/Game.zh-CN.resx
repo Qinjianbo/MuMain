@@ -365,7 +365,7 @@
     <comment>Login screen: warning under the remember-password checkbox.</comment>
   </data>
   <data name="LoginSavePasswordWarningTitle" xml:space="preserve">
-    <value>安全提示</value>
+    <value>警告！</value>
     <comment>Remember-password confirmation dialog: header.</comment>
   </data>
   <data name="LoginSavePasswordWarningBody" xml:space="preserve">
@@ -392,6 +392,12 @@
   </data>
   <data name="+Effect limitation" xml:space="preserve">
     <value>+效果限制</value>
+  </data>
+  <data name="[%s-%d(Gold PvP) Server]" xml:space="preserve">
+    <value>[%s-%d（黄金 PvP）服务器]</value>
+  </data>
+  <data name="[%s-%d(Gold) Server]" xml:space="preserve">
+    <value>[%s-%d（黄金）服务器]</value>
   </data>
   <data name="System Menu" xml:space="preserve">
     <value>系统菜单</value>

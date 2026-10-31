@@ -462,9 +462,6 @@ Chinese glyphs should render without boxes, and labels and help should fit at
 75% and 150% UI scale. Switch back to English and restart to check that the
 language choice is retained.
 
-The password-saving warning wraps within the dialog in both themes. Server
-names are preserved; untranslated connection and subscription errors use English.
-
 Add future translations to `Game.zh-CN.resx` by screen or feature. Keep English
 resource keys, formatting arguments and command tokens unchanged.
 Missing translations intentionally use the existing English fallback.
