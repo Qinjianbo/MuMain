@@ -62,6 +62,35 @@ Quick references:
 - Match the style of existing commit messages in `git log`.
 - Reference the related issue in the PR description when applicable.
 
+## Fork workflow: validation before upstream PR updates
+
+For this fork, follow this order for code and translation changes, including fixes
+requested during PR review:
+
+1. Make the changes and run appropriate static checks.
+2. Sync the intended revision to the Windows review source directory.
+3. Give the user the build command and a concrete gameplay verification checklist,
+   including affected screens, themes, languages and relevant limitations.
+4. The user compiles and performs the gameplay checks. Wait for the user's explicit
+   acceptance of that revision.
+5. Only after acceptance, create or update the upstream PR with that revision.
+
+The user owns compilation and gameplay verification unless they explicitly delegate
+those steps. Static checks or CI do not replace the user's build and acceptance.
+An earlier revision's acceptance does not cover later code or translation fixes.
+If verification finds a problem, fix it and repeat the sync and acceptance steps.
+Stating that a PR revision is untested does not permit publishing it early.
+
+Local commits and backup pushes to this fork may precede acceptance when authorized,
+but use a separate branch that does not back an open upstream PR. Pushing to the
+head branch of an existing upstream PR updates that PR immediately, even when the
+remote is this fork; do not do so before acceptance. Stage review fixes on a separate
+branch until the user accepts them.
+
+This workflow section is fork-only policy. Keep it on the local policy branch and
+exclude it from upstream pull requests. If it blocks publication, report which
+revision is awaiting acceptance instead of claiming that validation is complete.
+
 ## Out of scope for AI changes
 
 Don't perform large retroactive cleanups of existing code to fit the rules unless
