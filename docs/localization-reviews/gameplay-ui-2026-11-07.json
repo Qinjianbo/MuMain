@@ -1,0 +1,100 @@
+{
+  "review_date": "2026-11-07",
+  "scope": "93 Simplified Chinese resources for storage, player trade, personal stores, NPC shops and the main HUD",
+  "source_order": [
+    "official_client",
+    "official_chinese_documentation",
+    "current_english_and_behavior"
+  ],
+  "official_documents_checked": [
+    "https://mu.zhaouc.com/Guide/GameSystem/06_trade.html",
+    "https://mu.zhaouc.com/guide/gamesystem/01_interface.html",
+    "https://mu.zhaouc.com/news/Update/217.html",
+    "https://mu.zhaouc.com/news/event/wap-581.html",
+    "https://mu.zhaouc.com/event/mu-20260915-act/act.html"
+  ],
+  "status": "Source review completed; adopted terminology and English-behavior adaptations recorded. Resource XML and formatting placeholders validated.",
+  "validation": {
+    "resources_reviewed": 93,
+    "placeholder_mismatches": 0,
+    "duplicate_keys": 0,
+    "xml_well_formed": true
+  },
+  "feature_reviews": [
+    {
+      "feature": "storage",
+      "resource_commit": "1e4efe98e",
+      "basis": "official_document_terminology_plus_english_behavior",
+      "official_documents": [
+        "https://mu.zhaouc.com/news/event/wap-581.html",
+        "https://mu.zhaouc.com/Guide/GameSystem/06_trade.html"
+      ],
+      "adopted_terms": {
+        "Storage": "仓库",
+        "Expanded Vault": "扩展仓库",
+        "Zen": "奇迹币"
+      },
+      "notes": "Official documentation supplies the storage, expanded-storage and currency terminology. Titles, controls, password prompts and error messages follow the current English text and calling behavior. Current four-digit password behavior is preserved."
+    },
+    {
+      "feature": "player_trade",
+      "resource_commit": "df55ade5d",
+      "basis": "official_document_terminology_plus_english_behavior",
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameSystem/06_trade.html"
+      ],
+      "adopted_terms": {
+        "Trade": "交易",
+        "Zen": "奇迹币"
+      },
+      "notes": "Official documentation supplies trade and currency terminology. Request, item-change, inventory-full and cancellation messages are translated from the current English meaning and preserve the current client behavior."
+    },
+    {
+      "feature": "personal_store",
+      "resource_commit": "c624e587d",
+      "basis": "official_document_terminology_plus_english_behavior",
+      "official_documents": [
+        "https://mu.zhaouc.com/Guide/GameSystem/06_trade.html",
+        "https://mu.zhaouc.com/event/mu-20260915-act/act.html"
+      ],
+      "adopted_terms": {
+        "Personal store": "个人商店",
+        "Zen": "奇迹币",
+        "Goblin Points": "哥布林点数"
+      },
+      "notes": "Official documentation supplies the store and currency terminology. W Coin labels remain product names. Price dialogs, confirmations, restrictions and status messages follow the current English text and behavior."
+    },
+    {
+      "feature": "npc_shop",
+      "resource_commit": "81d48e511",
+      "basis": "translated_from_english_meaning",
+      "official_documents": [],
+      "adopted_terms": {
+        "Merchant": "商人"
+      },
+      "notes": "The merchant title, purchase confirmation, real-time tax label and reinforced-item restriction are translated from the current English meaning and calling behavior. Numeric and percent placeholders are unchanged."
+    },
+    {
+      "feature": "main_hud",
+      "resource_commit": "e6fccc8b6",
+      "basis": "official_document_terminology_plus_english_behavior",
+      "official_documents": [
+        "https://mu.zhaouc.com/guide/gamesystem/01_interface.html",
+        "https://mu.zhaouc.com/news/Update/217.html"
+      ],
+      "adopted_terms": {
+        "Character (C)": "角色信息（C）",
+        "Friend (F)": "好友（F）",
+        "Menu (U)": "菜单（U）",
+        "Party (P)": "组队（P）",
+        "Guild (G)": "战盟（G）",
+        "Command (D)": "互动菜单（D）",
+        "MU Item Shop(X)": "商城（X）",
+        "Official MU Helper Setting": "设置奇迹助手",
+        "Start Official MU Helper": "运行奇迹助手",
+        "Stop Official MU Helper": "停止奇迹助手"
+      },
+      "notes": "Official interface and helper documentation supplies the HUD control terminology. Life, mana, AG, SD, experience, duration and cancellation strings follow the current English values and retain every formatting placeholder."
+    }
+  ]
+}
