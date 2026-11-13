@@ -1,0 +1,6513 @@
+{
+  "review_date": "2026-11-13",
+  "scope": "Simplified Chinese equipment names, selected monster names, equipment option texts and name labels",
+  "source_order": [
+    "official_client",
+    "official_chinese_documentation",
+    "current_english_and_behavior"
+  ],
+  "official_client": "Muonline-Season20Part2-taren-0616.zip",
+  "status": "Source review completed; awaiting user Windows build and gameplay acceptance. Not published to an upstream PR.",
+  "base_commit": "39540090bbae0ea577644b28aa482cf00150dac0",
+  "draft_diff_sha256": "62b41c20f4bedb8f9b07cdc277cff091f20ca9873c1a035464e84167ac83fc3b",
+  "official_documents": [
+    "https://mu.zhaouc.com/Guide/ItemSystem/01_itemSys.html",
+    "https://mu.zhaouc.com/Guide/ItemSystem/03_itemSys.html",
+    "https://mu.zhaouc.com/01_news/updatecn/fourthupdate/other_update.htm",
+    "https://mu.zhaouc.com/Guide/GameIntro/02_area17.html"
+  ],
+  "choices": [
+    "Names are matched by item group/number and monster number; local OpenMU names are supporting terminology only.",
+    "Current English strings, item and monster identifiers, numeric rules, models, maps and other existing languages are preserved.",
+    "The source spans a later client version; only corresponding names and compatible terminology are adopted.",
+    "Item 5/20 uses 恒翼之杖: the official name 恒翼之仗 is normalized to the staff spelling matching Eternal Wing Stick.",
+    "Monster name 死灵巫師 uses the Simplified Chinese character 师; parentheses in training-soldier names use full-width punctuation.",
+    "Monster 12 retains 毒虫; monster 532 gets its own 幼虫 name while its inherited English, Spanish and Portuguese names remain unchanged.",
+    "Option templates retain the current {value}/{divisor} variables, plus signs and percentages; fixed values from newer resources are not imported.",
+    "Zen retains the previously accepted 金币 terminology.",
+    "Version-specific and unreviewed entries retain English fallback; Wizard Ring level variants remain outside this batch."
+  ],
+  "validation": {
+    "json_and_xml_well_formed": true,
+    "duplicate_keys": 0,
+    "placeholder_mismatches": 0,
+    "existing_values_preserved": true,
+    "effective_inherited_monster_fields_preserved": true,
+    "name_length_limits_checked": true,
+    "git_diff_check_passed": true,
+    "windows_build": "pending_user",
+    "gameplay_acceptance": "pending_user"
+  },
+  "equipment_names": [
+    {
+      "item": "0/0",
+      "english": "Kris",
+      "chinese": "波刃剑",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/0]",
+      "official_text": "波刃剑"
+    },
+    {
+      "item": "0/1",
+      "english": "Short Sword",
+      "chinese": "短剑",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/1]",
+      "official_text": "短剑"
+    },
+    {
+      "item": "0/2",
+      "english": "Rapier",
+      "chinese": "西洋剑",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/2]",
+      "official_text": "西洋剑"
+    },
+    {
+      "item": "0/3",
+      "english": "Katana",
+      "chinese": "东洋刀",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/3]",
+      "official_text": "东洋刀"
+    },
+    {
+      "item": "0/4",
+      "english": "Sword of Assassin",
+      "chinese": "暗杀者",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/4]",
+      "official_text": "暗杀者"
+    },
+    {
+      "item": "0/5",
+      "english": "Blade",
+      "chinese": "极光刀",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/5]",
+      "official_text": "极光刀"
+    },
+    {
+      "item": "0/6",
+      "english": "Gladius",
+      "chinese": "拉丁剑",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/6]",
+      "official_text": "拉丁剑"
+    },
+    {
+      "item": "0/7",
+      "english": "Falchion",
+      "chinese": "偃月刀",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/7]",
+      "official_text": "偃月刀"
+    },
+    {
+      "item": "0/8",
+      "english": "Serpent Sword",
+      "chinese": "巨蛇魔剑",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/8]",
+      "official_text": "巨蛇魔剑"
+    },
+    {
+      "item": "0/9",
+      "english": "Sword of Salamander",
+      "chinese": "背叛者",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/9]",
+      "official_text": "背叛者"
+    },
+    {
+      "item": "0/10",
+      "english": "Light Saber",
+      "chinese": "天行者",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/10]",
+      "official_text": "天行者"
+    },
+    {
+      "item": "0/11",
+      "english": "Legendary Sword",
+      "chinese": "传说之剑",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/11]",
+      "official_text": "传说之剑"
+    },
+    {
+      "item": "0/12",
+      "english": "Heliacal Sword",
+      "chinese": "太阳之剑",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/12]",
+      "official_text": "太阳之剑"
+    },
+    {
+      "item": "0/13",
+      "english": "Double Blade",
+      "chinese": "真红之剑",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/13]",
+      "official_text": "真红之剑"
+    },
+    {
+      "item": "0/14",
+      "english": "Lighting Sword",
+      "chinese": "雷神之剑",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/14]",
+      "official_text": "雷神之剑"
+    },
+    {
+      "item": "0/15",
+      "english": "Giant Sword",
+      "chinese": "帝王之剑",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/15]",
+      "official_text": "帝王之剑"
+    },
+    {
+      "item": "0/16",
+      "english": "Sword of Destruction",
+      "chinese": "破坏之剑",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/16]",
+      "official_text": "破坏之剑"
+    },
+    {
+      "item": "0/17",
+      "english": "Dark Breaker",
+      "chinese": "屠龙刀",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/17]",
+      "official_text": "屠龙刀"
+    },
+    {
+      "item": "0/18",
+      "english": "Thunder Blade",
+      "chinese": "奔雷剑",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/18]",
+      "official_text": "奔雷剑"
+    },
+    {
+      "item": "0/19",
+      "english": "Divine Sword of Archangel",
+      "chinese": "大天使之剑",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/19]",
+      "official_text": "大天使之剑"
+    },
+    {
+      "item": "0/20",
+      "english": "Knight Blade",
+      "chinese": "断月之光",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/20]",
+      "official_text": "断月之光"
+    },
+    {
+      "item": "0/21",
+      "english": "Dark Reign Blade",
+      "chinese": "魔神剑",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/21]",
+      "official_text": "魔神剑"
+    },
+    {
+      "item": "0/22",
+      "english": "Bone Blade",
+      "chinese": "龙骨巨晶剑",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/22]",
+      "official_text": "龙骨巨晶剑"
+    },
+    {
+      "item": "0/23",
+      "english": "Explosion Blade",
+      "chinese": "傲天魔剑",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/23]",
+      "official_text": "傲天魔剑"
+    },
+    {
+      "item": "0/24",
+      "english": "Daybreak",
+      "chinese": "暴风锯齿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/24]",
+      "official_text": "暴风锯齿"
+    },
+    {
+      "item": "0/25",
+      "english": "Sword Dancer",
+      "chinese": "烈火巨刃",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/25]",
+      "official_text": "烈火巨刃"
+    },
+    {
+      "item": "0/26",
+      "english": "Flameberge",
+      "chinese": "虚伪之剑",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/26]",
+      "official_text": "虚伪之剑"
+    },
+    {
+      "item": "0/27",
+      "english": "Sword Breaker",
+      "chinese": "杀戮之剑",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/27]",
+      "official_text": "杀戮之剑"
+    },
+    {
+      "item": "0/28",
+      "english": "Rune Bastard Sword",
+      "chinese": "双子之剑",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/28]",
+      "official_text": "双子之剑"
+    },
+    {
+      "item": "0/31",
+      "english": "Rune Blade",
+      "chinese": "天雷剑",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/31]",
+      "official_text": "天雷剑"
+    },
+    {
+      "item": "0/32",
+      "english": "Sacred Glove",
+      "chinese": "神圣火焰拳刃",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/32]",
+      "official_text": "神圣火焰拳刃"
+    },
+    {
+      "item": "0/33",
+      "english": "Holy Storm Claw",
+      "chinese": "暴风毁灭拳刃",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/33]",
+      "official_text": "暴风毁灭拳刃"
+    },
+    {
+      "item": "0/34",
+      "english": "Piercing Blade Glove",
+      "chinese": "刀锋拳刃",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/34]",
+      "official_text": "刀锋拳刃"
+    },
+    {
+      "item": "0/35",
+      "english": "Phoenix Soul Star",
+      "chinese": "凤魂之星",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [0/35]",
+      "official_text": "凤魂之星"
+    },
+    {
+      "item": "1/0",
+      "english": "Small Axe",
+      "chinese": "短斧",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [1/0]",
+      "official_text": "短斧"
+    },
+    {
+      "item": "1/1",
+      "english": "Hand Axe",
+      "chinese": "手斧",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [1/1]",
+      "official_text": "手斧"
+    },
+    {
+      "item": "1/2",
+      "english": "Double Axe",
+      "chinese": "双刃斧",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [1/2]",
+      "official_text": "双刃斧"
+    },
+    {
+      "item": "1/3",
+      "english": "Tomahawk",
+      "chinese": "飞翔斧",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [1/3]",
+      "official_text": "飞翔斧"
+    },
+    {
+      "item": "1/4",
+      "english": "Elven Axe",
+      "chinese": "精灵之斧",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [1/4]",
+      "official_text": "精灵之斧"
+    },
+    {
+      "item": "1/5",
+      "english": "Battle Axe",
+      "chinese": "战士之斧",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [1/5]",
+      "official_text": "战士之斧"
+    },
+    {
+      "item": "1/6",
+      "english": "Nikea Axe",
+      "chinese": "斗士之斧",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [1/6]",
+      "official_text": "斗士之斧"
+    },
+    {
+      "item": "1/7",
+      "english": "Larkan Axe",
+      "chinese": "斗神之斧",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [1/7]",
+      "official_text": "斗神之斧"
+    },
+    {
+      "item": "1/8",
+      "english": "Crescent Axe",
+      "chinese": "末日之斧",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [1/8]",
+      "official_text": "末日之斧"
+    },
+    {
+      "item": "2/0",
+      "english": "Mace",
+      "chinese": "石槌",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [2/0]",
+      "official_text": "石槌"
+    },
+    {
+      "item": "2/1",
+      "english": "Morning Star",
+      "chinese": "流星槌",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [2/1]",
+      "official_text": "流星槌"
+    },
+    {
+      "item": "2/2",
+      "english": "Flail",
+      "chinese": "破坏之槌",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [2/2]",
+      "official_text": "破坏之槌"
+    },
+    {
+      "item": "2/3",
+      "english": "Great Hammer",
+      "chinese": "白金之槌",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [2/3]",
+      "official_text": "白金之槌"
+    },
+    {
+      "item": "2/4",
+      "english": "Crystal Morning Star",
+      "chinese": "水晶流星",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [2/4]",
+      "official_text": "水晶流星"
+    },
+    {
+      "item": "2/5",
+      "english": "Crystal Sword",
+      "chinese": "玄冰剑",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [2/5]",
+      "official_text": "玄冰剑"
+    },
+    {
+      "item": "2/6",
+      "english": "Chaos Dragon Axe",
+      "chinese": "玛雅龙斧",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [2/6]",
+      "official_text": "玛雅龙斧"
+    },
+    {
+      "item": "2/7",
+      "english": "Elemental Mace",
+      "chinese": "精灵之槌",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [2/7]",
+      "official_text": "精灵之槌"
+    },
+    {
+      "item": "2/8",
+      "english": "Battle Scepter",
+      "chinese": "战斗权杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [2/8]",
+      "official_text": "战斗权杖"
+    },
+    {
+      "item": "2/9",
+      "english": "Master Scepter",
+      "chinese": "征服权杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [2/9]",
+      "official_text": "征服权杖"
+    },
+    {
+      "item": "2/10",
+      "english": "Great Scepter",
+      "chinese": "圣剑权杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [2/10]",
+      "official_text": "圣剑权杖"
+    },
+    {
+      "item": "2/11",
+      "english": "Lord Scepter",
+      "chinese": "王者权杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [2/11]",
+      "official_text": "王者权杖"
+    },
+    {
+      "item": "2/12",
+      "english": "Great Lord Scepter",
+      "chinese": "至尊权杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [2/12]",
+      "official_text": "至尊权杖"
+    },
+    {
+      "item": "2/13",
+      "english": "Divine Scepter of Archangel",
+      "chinese": "大天使绝对权杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [2/13]",
+      "official_text": "大天使绝对权杖"
+    },
+    {
+      "item": "2/14",
+      "english": "Soleil Sceptor",
+      "chinese": "圣尊天使权杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [2/14]",
+      "official_text": "圣尊天使权杖"
+    },
+    {
+      "item": "2/15",
+      "english": "Shining Scepter",
+      "chinese": "圣光权杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [2/15]",
+      "official_text": "圣光权杖"
+    },
+    {
+      "item": "2/16",
+      "english": "Frost Mace",
+      "chinese": "巨毒之刺",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [2/16]",
+      "official_text": "巨毒之刺"
+    },
+    {
+      "item": "2/17",
+      "english": "Absolute Scepter",
+      "chinese": "独裁权杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [2/17]",
+      "official_text": "独裁权杖"
+    },
+    {
+      "item": "2/18",
+      "english": "Striker Scepter",
+      "chinese": "弹奏权杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [2/18]",
+      "official_text": "弹奏权杖"
+    },
+    {
+      "item": "3/0",
+      "english": "Light Spear",
+      "chinese": "黑武士",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [3/0]",
+      "official_text": "黑武士"
+    },
+    {
+      "item": "3/1",
+      "english": "Spear",
+      "chinese": "鹤嘴矛",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [3/1]",
+      "official_text": "鹤嘴矛"
+    },
+    {
+      "item": "3/2",
+      "english": "Dragon Lance",
+      "chinese": "战矛",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [3/2]",
+      "official_text": "战矛"
+    },
+    {
+      "item": "3/3",
+      "english": "Giant Trident",
+      "chinese": "双鹤矛",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [3/3]",
+      "official_text": "双鹤矛"
+    },
+    {
+      "item": "3/4",
+      "english": "Serpent Spear",
+      "chinese": "巨蛇镰刀",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [3/4]",
+      "official_text": "巨蛇镰刀"
+    },
+    {
+      "item": "3/5",
+      "english": "Double Poleaxe",
+      "chinese": "双刃矛",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [3/5]",
+      "official_text": "双刃矛"
+    },
+    {
+      "item": "3/6",
+      "english": "Halberd",
+      "chinese": "斧刃矛",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [3/6]",
+      "official_text": "斧刃矛"
+    },
+    {
+      "item": "3/7",
+      "english": "Berdysh",
+      "chinese": "巴迪之矛",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [3/7]",
+      "official_text": "巴迪之矛"
+    },
+    {
+      "item": "3/8",
+      "english": "Great Scythe",
+      "chinese": "帝王镰刀",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [3/8]",
+      "official_text": "帝王镰刀"
+    },
+    {
+      "item": "3/9",
+      "english": "Bill of Balrog",
+      "chinese": "死神镰刀",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [3/9]",
+      "official_text": "死神镰刀"
+    },
+    {
+      "item": "3/10",
+      "english": "Dragon Spear",
+      "chinese": "青龙刀",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [3/10]",
+      "official_text": "青龙刀"
+    },
+    {
+      "item": "3/11",
+      "english": "Brova",
+      "chinese": "铰刀",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [3/11]",
+      "official_text": "铰刀"
+    },
+    {
+      "item": "4/0",
+      "english": "Short Bow",
+      "chinese": "短弓",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [4/0]",
+      "official_text": "短弓"
+    },
+    {
+      "item": "4/1",
+      "english": "Bow",
+      "chinese": "长弓",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [4/1]",
+      "official_text": "长弓"
+    },
+    {
+      "item": "4/2",
+      "english": "Elven Bow",
+      "chinese": "精灵之弓",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [4/2]",
+      "official_text": "精灵之弓"
+    },
+    {
+      "item": "4/3",
+      "english": "Battle Bow",
+      "chinese": "巴特之弓",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [4/3]",
+      "official_text": "巴特之弓"
+    },
+    {
+      "item": "4/4",
+      "english": "Tiger Bow",
+      "chinese": "黄金之虎",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [4/4]",
+      "official_text": "黄金之虎"
+    },
+    {
+      "item": "4/5",
+      "english": "Silver Bow",
+      "chinese": "银翼之弓",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [4/5]",
+      "official_text": "银翼之弓"
+    },
+    {
+      "item": "4/6",
+      "english": "Chaos Nature Bow",
+      "chinese": "玛雅神弓",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [4/6]",
+      "official_text": "玛雅神弓"
+    },
+    {
+      "item": "4/7",
+      "english": "Bolt",
+      "chinese": "弩箭",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [4/7]",
+      "official_text": "弩箭"
+    },
+    {
+      "item": "4/8",
+      "english": "Crossbow",
+      "chinese": "石弩",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [4/8]",
+      "official_text": "石弩"
+    },
+    {
+      "item": "4/9",
+      "english": "Golden Crossbow",
+      "chinese": "黄金石弩",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [4/9]",
+      "official_text": "黄金石弩"
+    },
+    {
+      "item": "4/10",
+      "english": "Arquebus",
+      "chinese": "火神弩",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [4/10]",
+      "official_text": "火神弩"
+    },
+    {
+      "item": "4/11",
+      "english": "Light Crossbow",
+      "chinese": "巨人弩",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [4/11]",
+      "official_text": "巨人弩"
+    },
+    {
+      "item": "4/12",
+      "english": "Serpent Crossbow",
+      "chinese": "诱惑之弩",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [4/12]",
+      "official_text": "诱惑之弩"
+    },
+    {
+      "item": "4/13",
+      "english": "Bluewing Crossbow",
+      "chinese": "蓝翎弩",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [4/13]",
+      "official_text": "蓝翎弩"
+    },
+    {
+      "item": "4/14",
+      "english": "Aquagold Crossbow",
+      "chinese": "温蒂妮",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [4/14]",
+      "official_text": "温蒂妮"
+    },
+    {
+      "item": "4/15",
+      "english": "Arrow",
+      "chinese": "弓箭",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [4/15]",
+      "official_text": "弓箭"
+    },
+    {
+      "item": "4/16",
+      "english": "Saint Crossbow",
+      "chinese": "圣者之弩",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [4/16]",
+      "official_text": "圣者之弩"
+    },
+    {
+      "item": "4/17",
+      "english": "Celestial Bow",
+      "chinese": "圣灵之弓",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [4/17]",
+      "official_text": "圣灵之弓"
+    },
+    {
+      "item": "4/18",
+      "english": "Divine Crossbow of Archangel",
+      "chinese": "大天使之弩",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [4/18]",
+      "official_text": "大天使之弩"
+    },
+    {
+      "item": "4/19",
+      "english": "Great Reign Crossbow",
+      "chinese": "追月神弩",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [4/19]",
+      "official_text": "追月神弩"
+    },
+    {
+      "item": "4/20",
+      "english": "Arrow Viper Bow",
+      "chinese": "红羽神弓",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [4/20]",
+      "official_text": "红羽神弓"
+    },
+    {
+      "item": "4/21",
+      "english": "Sylph Wind Bow",
+      "chinese": "紫焰之弓",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [4/21]",
+      "official_text": "紫焰之弓"
+    },
+    {
+      "item": "4/22",
+      "english": "Albatross Bow",
+      "chinese": "碧影魔弓",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [4/22]",
+      "official_text": "碧影魔弓"
+    },
+    {
+      "item": "4/23",
+      "english": "Dark Stinger",
+      "chinese": "神羽之弓",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [4/23]",
+      "official_text": "神羽之弓"
+    },
+    {
+      "item": "4/24",
+      "english": "Aileen Bowr",
+      "chinese": "傲视魔弓",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [4/24]",
+      "official_text": "傲视魔弓"
+    },
+    {
+      "item": "5/0",
+      "english": "Skull Staff",
+      "chinese": "骷髅杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [5/0]",
+      "official_text": "骷髅杖"
+    },
+    {
+      "item": "5/1",
+      "english": "Angelic Staff",
+      "chinese": "天使杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [5/1]",
+      "official_text": "天使杖"
+    },
+    {
+      "item": "5/2",
+      "english": "Serpent Staff",
+      "chinese": "毒蛇杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [5/2]",
+      "official_text": "毒蛇杖"
+    },
+    {
+      "item": "5/3",
+      "english": "Thunder Staff",
+      "chinese": "闪电杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [5/3]",
+      "official_text": "闪电杖"
+    },
+    {
+      "item": "5/4",
+      "english": "Gorgon Staff",
+      "chinese": "戈登之杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [5/4]",
+      "official_text": "戈登之杖"
+    },
+    {
+      "item": "5/5",
+      "english": "Legendary Staff",
+      "chinese": "传说之杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [5/5]",
+      "official_text": "传说之杖"
+    },
+    {
+      "item": "5/6",
+      "english": "Staff of Resurrection",
+      "chinese": "复活之杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [5/6]",
+      "official_text": "复活之杖"
+    },
+    {
+      "item": "5/7",
+      "english": "Chaos Lighting Staff",
+      "chinese": "玛雅雷杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [5/7]",
+      "official_text": "玛雅雷杖"
+    },
+    {
+      "item": "5/8",
+      "english": "Staff of Destruction",
+      "chinese": "毁灭之杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [5/8]",
+      "official_text": "毁灭之杖"
+    },
+    {
+      "item": "5/9",
+      "english": "Dragon Soul Staff",
+      "chinese": "麒麟之杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [5/9]",
+      "official_text": "麒麟之杖"
+    },
+    {
+      "item": "5/10",
+      "english": "Divine Staff of Archangel",
+      "chinese": "大天使之杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [5/10]",
+      "official_text": "大天使之杖"
+    },
+    {
+      "item": "5/11",
+      "english": "Staff of Kundun",
+      "chinese": "昆顿之杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [5/11]",
+      "official_text": "昆顿之杖"
+    },
+    {
+      "item": "5/12",
+      "english": "Grand Viper Staff",
+      "chinese": "死神之杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [5/12]",
+      "official_text": "死神之杖"
+    },
+    {
+      "item": "5/13",
+      "english": "Platina Staff",
+      "chinese": "幻月雷杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [5/13]",
+      "official_text": "幻月雷杖"
+    },
+    {
+      "item": "5/14",
+      "english": "Mystery Stick",
+      "chinese": "迷之杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [5/14]",
+      "official_text": "迷之杖"
+    },
+    {
+      "item": "5/15",
+      "english": "Violent Wind Stick",
+      "chinese": "飓风之杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [5/15]",
+      "official_text": "飓风之杖"
+    },
+    {
+      "item": "5/16",
+      "english": "Red Wing Stick",
+      "chinese": "红翼之杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [5/16]",
+      "official_text": "红翼之杖"
+    },
+    {
+      "item": "5/17",
+      "english": "Ancient Stick",
+      "chinese": "远古之杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [5/17]",
+      "official_text": "远古之杖"
+    },
+    {
+      "item": "5/18",
+      "english": "Demonic Stick",
+      "chinese": "魔灵之杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [5/18]",
+      "official_text": "魔灵之杖"
+    },
+    {
+      "item": "5/19",
+      "english": "Storm Blitz Stick",
+      "chinese": "风影之杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [5/19]",
+      "official_text": "风影之杖"
+    },
+    {
+      "item": "5/20",
+      "english": "Eternal Wing Stick",
+      "chinese": "恒翼之杖",
+      "basis": "official_client_normalized",
+      "source": "Data/Local/item.bmd [5/20]",
+      "official_text": "恒翼之仗"
+    },
+    {
+      "item": "5/21",
+      "english": "Book of Samut",
+      "chinese": "火龙兽之书",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [5/21]",
+      "official_text": "火龙兽之书"
+    },
+    {
+      "item": "5/22",
+      "english": "Book of Neil",
+      "chinese": "异灵之书",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [5/22]",
+      "official_text": "异灵之书"
+    },
+    {
+      "item": "5/23",
+      "english": "Book of Lagle",
+      "chinese": "污灵之书",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [5/23]",
+      "official_text": "污灵之书"
+    },
+    {
+      "item": "5/30",
+      "english": "Deadly Staff",
+      "chinese": "致命魔杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [5/30]",
+      "official_text": "致命魔杖"
+    },
+    {
+      "item": "5/31",
+      "english": "Inberial Staff",
+      "chinese": "魔狱之杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [5/31]",
+      "official_text": "魔狱之杖"
+    },
+    {
+      "item": "5/33",
+      "english": "Chromatic Staff",
+      "chinese": "多彩魔杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [5/33]",
+      "official_text": "多彩魔杖"
+    },
+    {
+      "item": "5/34",
+      "english": "Raven Stick",
+      "chinese": "乌鸦之杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [5/34]",
+      "official_text": "乌鸦之杖"
+    },
+    {
+      "item": "5/36",
+      "english": "Divine Stick of the Archangel",
+      "chinese": "大天使绝对魔杖",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [5/36]",
+      "official_text": "大天使绝对魔杖"
+    },
+    {
+      "item": "6/0",
+      "english": "Small Shield",
+      "chinese": "圆盾",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [6/0]",
+      "official_text": "圆盾"
+    },
+    {
+      "item": "6/1",
+      "english": "Horn Shield",
+      "chinese": "战士之盾",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [6/1]",
+      "official_text": "战士之盾"
+    },
+    {
+      "item": "6/2",
+      "english": "Kite Shield",
+      "chinese": "风之盾",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [6/2]",
+      "official_text": "风之盾"
+    },
+    {
+      "item": "6/3",
+      "english": "Elven Shield",
+      "chinese": "魔法之盾",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [6/3]",
+      "official_text": "魔法之盾"
+    },
+    {
+      "item": "6/4",
+      "english": "Buckler",
+      "chinese": "钢铁之盾",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [6/4]",
+      "official_text": "钢铁之盾"
+    },
+    {
+      "item": "6/5",
+      "english": "Dragon Slayer Shield",
+      "chinese": "龙之盾",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [6/5]",
+      "official_text": "龙之盾"
+    },
+    {
+      "item": "6/6",
+      "english": "Skull Shield",
+      "chinese": "骷髅之盾",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [6/6]",
+      "official_text": "骷髅之盾"
+    },
+    {
+      "item": "6/7",
+      "english": "Spiked Shield",
+      "chinese": "尖刺之盾",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [6/7]",
+      "official_text": "尖刺之盾"
+    },
+    {
+      "item": "6/8",
+      "english": "Tower Shield",
+      "chinese": "失落之盾",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [6/8]",
+      "official_text": "失落之盾"
+    },
+    {
+      "item": "6/9",
+      "english": "Plate Shield",
+      "chinese": "远古之盾",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [6/9]",
+      "official_text": "远古之盾"
+    },
+    {
+      "item": "6/10",
+      "english": "Large Round Shield",
+      "chinese": "自由之盾",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [6/10]",
+      "official_text": "自由之盾"
+    },
+    {
+      "item": "6/11",
+      "english": "Serpent Shield",
+      "chinese": "毒蛇之盾",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [6/11]",
+      "official_text": "毒蛇之盾"
+    },
+    {
+      "item": "6/12",
+      "english": "Bronze Shield",
+      "chinese": "布朗司",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [6/12]",
+      "official_text": "布朗司"
+    },
+    {
+      "item": "6/13",
+      "english": "Dragon Shield",
+      "chinese": "火龙之盾",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [6/13]",
+      "official_text": "火龙之盾"
+    },
+    {
+      "item": "6/14",
+      "english": "Legendary Shield",
+      "chinese": "传说之盾",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [6/14]",
+      "official_text": "传说之盾"
+    },
+    {
+      "item": "6/15",
+      "english": "Grand Soul Shield",
+      "chinese": "麒麟之盾",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [6/15]",
+      "official_text": "麒麟之盾"
+    },
+    {
+      "item": "6/16",
+      "english": "Elemental Shield",
+      "chinese": "精灵之盾",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [6/16]",
+      "official_text": "精灵之盾"
+    },
+    {
+      "item": "6/17",
+      "english": "Crimson Glory",
+      "chinese": "荣誉之盾",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [6/17]",
+      "official_text": "荣誉之盾"
+    },
+    {
+      "item": "6/18",
+      "english": "Salamander Shield",
+      "chinese": "火蛇之盾",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [6/18]",
+      "official_text": "火蛇之盾"
+    },
+    {
+      "item": "6/19",
+      "english": "Frost Barrier",
+      "chinese": "寒冰之盾",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [6/19]",
+      "official_text": "寒冰之盾"
+    },
+    {
+      "item": "6/20",
+      "english": "Guardian Shield",
+      "chinese": "亡魂之盾",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [6/20]",
+      "official_text": "亡魂之盾"
+    },
+    {
+      "item": "6/21",
+      "english": "Cross Shield",
+      "chinese": "十字架之盾",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [6/21]",
+      "official_text": "十字架之盾"
+    },
+    {
+      "item": "7/0",
+      "english": "Bronze Helm",
+      "chinese": "青铜盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/0]",
+      "official_text": "青铜盔"
+    },
+    {
+      "item": "7/1",
+      "english": "Dragon Helm",
+      "chinese": "龙王之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/1]",
+      "official_text": "龙王之盔"
+    },
+    {
+      "item": "7/2",
+      "english": "Pad Helm",
+      "chinese": "革盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/2]",
+      "official_text": "革盔"
+    },
+    {
+      "item": "7/3",
+      "english": "Legendary Helm",
+      "chinese": "传说之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/3]",
+      "official_text": "传说之盔"
+    },
+    {
+      "item": "7/4",
+      "english": "Bone Helm",
+      "chinese": "骷髅头盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/4]",
+      "official_text": "骷髅头盔"
+    },
+    {
+      "item": "7/5",
+      "english": "Leather Helm",
+      "chinese": "皮盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/5]",
+      "official_text": "皮盔"
+    },
+    {
+      "item": "7/6",
+      "english": "Scale Helm",
+      "chinese": "翡翠盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/6]",
+      "official_text": "翡翠盔"
+    },
+    {
+      "item": "7/7",
+      "english": "Sphinx Mask",
+      "chinese": "魔王之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/7]",
+      "official_text": "魔王之盔"
+    },
+    {
+      "item": "7/8",
+      "english": "Brass Helm",
+      "chinese": "黄金盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/8]",
+      "official_text": "黄金盔"
+    },
+    {
+      "item": "7/9",
+      "english": "Plate Helm",
+      "chinese": "白金盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/9]",
+      "official_text": "白金盔"
+    },
+    {
+      "item": "7/10",
+      "english": "Vine Helm",
+      "chinese": "藤盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/10]",
+      "official_text": "藤盔"
+    },
+    {
+      "item": "7/11",
+      "english": "Silk Helm",
+      "chinese": "天蚕之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/11]",
+      "official_text": "天蚕之盔"
+    },
+    {
+      "item": "7/12",
+      "english": "Wind Helm",
+      "chinese": "风之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/12]",
+      "official_text": "风之盔"
+    },
+    {
+      "item": "7/13",
+      "english": "Spirit Helm",
+      "chinese": "精灵之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/13]",
+      "official_text": "精灵之盔"
+    },
+    {
+      "item": "7/14",
+      "english": "Guardian Helm",
+      "chinese": "女神之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/14]",
+      "official_text": "女神之盔"
+    },
+    {
+      "item": "7/16",
+      "english": "Black Dragon Helm",
+      "chinese": "黑龙王之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/16]",
+      "official_text": "黑龙王之盔"
+    },
+    {
+      "item": "7/17",
+      "english": "Dark Phoenix Helm",
+      "chinese": "黑凤凰之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/17]",
+      "official_text": "黑凤凰之盔"
+    },
+    {
+      "item": "7/18",
+      "english": "Grand Soul Helm",
+      "chinese": "火麒麟之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/18]",
+      "official_text": "火麒麟之盔"
+    },
+    {
+      "item": "7/19",
+      "english": "Divine Helm",
+      "chinese": "圣灵之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/19]",
+      "official_text": "圣灵之盔"
+    },
+    {
+      "item": "7/21",
+      "english": "Great Dragon Helm",
+      "chinese": "龙炎之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/21]",
+      "official_text": "龙炎之盔"
+    },
+    {
+      "item": "7/22",
+      "english": "Dark Soul Helm",
+      "chinese": "黑炎之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/22]",
+      "official_text": "黑炎之盔"
+    },
+    {
+      "item": "7/24",
+      "english": "Red Spirit Helm",
+      "chinese": "红羽之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/24]",
+      "official_text": "红羽之盔"
+    },
+    {
+      "item": "7/25",
+      "english": "Light Plate Mask",
+      "chinese": "圣元之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/25]",
+      "official_text": "圣元之盔"
+    },
+    {
+      "item": "7/26",
+      "english": "Adamantine Mask",
+      "chinese": "圣魂之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/26]",
+      "official_text": "圣魂之盔"
+    },
+    {
+      "item": "7/27",
+      "english": "Dark Steel Mask",
+      "chinese": "神圣之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/27]",
+      "official_text": "神圣之盔"
+    },
+    {
+      "item": "7/28",
+      "english": "Dark Master Mask",
+      "chinese": "至尊之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/28]",
+      "official_text": "至尊之盔"
+    },
+    {
+      "item": "7/29",
+      "english": "Dragon Knight Helm",
+      "chinese": "暗黑斗神之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/29]",
+      "official_text": "暗黑斗神之盔"
+    },
+    {
+      "item": "7/30",
+      "english": "Venom Mist Helm",
+      "chinese": "法魂玄灵之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/30]",
+      "official_text": "法魂玄灵之盔"
+    },
+    {
+      "item": "7/31",
+      "english": "Sylphid Ray Helm",
+      "chinese": "紫灵之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/31]",
+      "official_text": "紫灵之盔"
+    },
+    {
+      "item": "7/33",
+      "english": "Sunlight Mask",
+      "chinese": "宙斯之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/33]",
+      "official_text": "宙斯之盔"
+    },
+    {
+      "item": "7/34",
+      "english": "Ashcrow Helm",
+      "chinese": "暴风之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/34]",
+      "official_text": "暴风之盔"
+    },
+    {
+      "item": "7/35",
+      "english": "Eclipse Helm",
+      "chinese": "幻月之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/35]",
+      "official_text": "幻月之盔"
+    },
+    {
+      "item": "7/36",
+      "english": "Iris Helm",
+      "chinese": "碧影之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/36]",
+      "official_text": "碧影之盔"
+    },
+    {
+      "item": "7/38",
+      "english": "Glorious Mask",
+      "chinese": "圣光之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/38]",
+      "official_text": "圣光之盔"
+    },
+    {
+      "item": "7/39",
+      "english": "Violent Wind Helm",
+      "chinese": "飓风之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/39]",
+      "official_text": "飓风之盔"
+    },
+    {
+      "item": "7/40",
+      "english": "Red Wing Helm",
+      "chinese": "红翼之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/40]",
+      "official_text": "红翼之盔"
+    },
+    {
+      "item": "7/41",
+      "english": "Ancient Helm",
+      "chinese": "远古之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/41]",
+      "official_text": "远古之盔"
+    },
+    {
+      "item": "7/42",
+      "english": "Demonic Helm",
+      "chinese": "魔灵之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/42]",
+      "official_text": "魔灵之盔"
+    },
+    {
+      "item": "7/43",
+      "english": "Storm Blitz Helm",
+      "chinese": "风影之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/43]",
+      "official_text": "风影之盔"
+    },
+    {
+      "item": "7/44",
+      "english": "Eternal Wing Helm",
+      "chinese": "恒翼之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/44]",
+      "official_text": "恒翼之盔"
+    },
+    {
+      "item": "7/45",
+      "english": "Titan  Helm",
+      "chinese": "泰坦之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/45]",
+      "official_text": "泰坦之盔"
+    },
+    {
+      "item": "7/46",
+      "english": "Brave Helm",
+      "chinese": "勇气之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/46]",
+      "official_text": "勇气之盔"
+    },
+    {
+      "item": "7/49",
+      "english": "Seraphim Helm",
+      "chinese": "恐惧之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/49]",
+      "official_text": "恐惧之盔"
+    },
+    {
+      "item": "7/50",
+      "english": "Faith Helm",
+      "chinese": "灵光之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/50]",
+      "official_text": "灵光之盔"
+    },
+    {
+      "item": "7/51",
+      "english": "Royal Mask",
+      "chinese": "霸王之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/51]",
+      "official_text": "霸王之盔"
+    },
+    {
+      "item": "7/52",
+      "english": "Hades Helm",
+      "chinese": "冥王之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/52]",
+      "official_text": "冥王之盔"
+    },
+    {
+      "item": "7/59",
+      "english": "Sacred Fire Helm",
+      "chinese": "神圣火焰之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/59]",
+      "official_text": "神圣火焰之盔"
+    },
+    {
+      "item": "7/60",
+      "english": "Storm Jahad Helm",
+      "chinese": "暴风毁灭之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/60]",
+      "official_text": "暴风毁灭之盔"
+    },
+    {
+      "item": "7/61",
+      "english": "Piercing Groove Helm",
+      "chinese": "刀锋之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/61]",
+      "official_text": "刀锋之盔"
+    },
+    {
+      "item": "7/62",
+      "english": "Scale Helm",
+      "chinese": "翡翠盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/62]",
+      "official_text": "翡翠盔"
+    },
+    {
+      "item": "7/63",
+      "english": "Silk Helm",
+      "chinese": "天蚕之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/63]",
+      "official_text": "天蚕之盔"
+    },
+    {
+      "item": "7/64",
+      "english": "Sphinx Helm",
+      "chinese": "魔王盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/64]",
+      "official_text": "魔王盔"
+    },
+    {
+      "item": "7/65",
+      "english": "Violent Wind Helm",
+      "chinese": "飓风之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/65]",
+      "official_text": "飓风之盔"
+    },
+    {
+      "item": "7/66",
+      "english": "Adamantine Mask",
+      "chinese": "圣魂之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/66]",
+      "official_text": "圣魂之盔"
+    },
+    {
+      "item": "7/67",
+      "english": "Dragon Helm",
+      "chinese": "龙王之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/67]",
+      "official_text": "龙王之盔"
+    },
+    {
+      "item": "7/68",
+      "english": "Guardian Helm",
+      "chinese": "女神之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/68]",
+      "official_text": "女神之盔"
+    },
+    {
+      "item": "7/69",
+      "english": "Legendary Helm",
+      "chinese": "传说之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/69]",
+      "official_text": "传说之盔"
+    },
+    {
+      "item": "7/70",
+      "english": "Red Wing Helm",
+      "chinese": "红翼之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/70]",
+      "official_text": "红翼之盔"
+    },
+    {
+      "item": "7/72",
+      "english": "Storm Jahad Helm",
+      "chinese": "暴风毁灭之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/72]",
+      "official_text": "暴风毁灭之盔"
+    },
+    {
+      "item": "7/73",
+      "english": "Phoenix Soul Helmet",
+      "chinese": "凤魂之盔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [7/73]",
+      "official_text": "凤魂之盔"
+    },
+    {
+      "item": "8/0",
+      "english": "Bronze Armor",
+      "chinese": "青铜铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/0]",
+      "official_text": "青铜铠"
+    },
+    {
+      "item": "8/1",
+      "english": "Dragon Armor",
+      "chinese": "龙王之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/1]",
+      "official_text": "龙王之铠"
+    },
+    {
+      "item": "8/2",
+      "english": "Pad Armor",
+      "chinese": "革铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/2]",
+      "official_text": "革铠"
+    },
+    {
+      "item": "8/3",
+      "english": "Legendary Armor",
+      "chinese": "传说之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/3]",
+      "official_text": "传说之铠"
+    },
+    {
+      "item": "8/4",
+      "english": "Bone Armor",
+      "chinese": "骷髅铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/4]",
+      "official_text": "骷髅铠"
+    },
+    {
+      "item": "8/5",
+      "english": "Leather Armor",
+      "chinese": "皮铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/5]",
+      "official_text": "皮铠"
+    },
+    {
+      "item": "8/6",
+      "english": "Scale Armor",
+      "chinese": "翡翠铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/6]",
+      "official_text": "翡翠铠"
+    },
+    {
+      "item": "8/7",
+      "english": "Sphinx Armor",
+      "chinese": "魔王之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/7]",
+      "official_text": "魔王之铠"
+    },
+    {
+      "item": "8/8",
+      "english": "Brass Armor",
+      "chinese": "黄金铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/8]",
+      "official_text": "黄金铠"
+    },
+    {
+      "item": "8/9",
+      "english": "Plate Armor",
+      "chinese": "白金铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/9]",
+      "official_text": "白金铠"
+    },
+    {
+      "item": "8/10",
+      "english": "Vine Armor",
+      "chinese": "藤铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/10]",
+      "official_text": "藤铠"
+    },
+    {
+      "item": "8/11",
+      "english": "Silk Armor",
+      "chinese": "天蚕之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/11]",
+      "official_text": "天蚕之铠"
+    },
+    {
+      "item": "8/12",
+      "english": "Wind Armor",
+      "chinese": "风之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/12]",
+      "official_text": "风之铠"
+    },
+    {
+      "item": "8/13",
+      "english": "Spirit Armor",
+      "chinese": "精灵之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/13]",
+      "official_text": "精灵之铠"
+    },
+    {
+      "item": "8/14",
+      "english": "Guardian Armor",
+      "chinese": "女神之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/14]",
+      "official_text": "女神之铠"
+    },
+    {
+      "item": "8/15",
+      "english": "Storm Crow Armor",
+      "chinese": "亚特兰蒂斯之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/15]",
+      "official_text": "亚特兰蒂斯之铠"
+    },
+    {
+      "item": "8/16",
+      "english": "Black Dragon Armor",
+      "chinese": "黑龙王之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/16]",
+      "official_text": "黑龙王之铠"
+    },
+    {
+      "item": "8/17",
+      "english": "Dark Phoenix Armor",
+      "chinese": "黑凤凰之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/17]",
+      "official_text": "黑凤凰之铠"
+    },
+    {
+      "item": "8/18",
+      "english": "Grand Soul Armor",
+      "chinese": "火麒麟之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/18]",
+      "official_text": "火麒麟之铠"
+    },
+    {
+      "item": "8/19",
+      "english": "Divine Armor",
+      "chinese": "圣灵之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/19]",
+      "official_text": "圣灵之铠"
+    },
+    {
+      "item": "8/20",
+      "english": "Thunder Hawk Armor",
+      "chinese": "奔雷之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/20]",
+      "official_text": "奔雷之铠"
+    },
+    {
+      "item": "8/21",
+      "english": "Great Dragon Armor",
+      "chinese": "龙炎之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/21]",
+      "official_text": "龙炎之铠"
+    },
+    {
+      "item": "8/22",
+      "english": "Dark Soul Armor",
+      "chinese": "黑炎之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/22]",
+      "official_text": "黑炎之铠"
+    },
+    {
+      "item": "8/23",
+      "english": "Hurricane Armor",
+      "chinese": "魔神之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/23]",
+      "official_text": "魔神之铠"
+    },
+    {
+      "item": "8/24",
+      "english": "Red Sprit Armor",
+      "chinese": "红羽之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/24]",
+      "official_text": "红羽之铠"
+    },
+    {
+      "item": "8/25",
+      "english": "Light Plate Armor",
+      "chinese": "圣元之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/25]",
+      "official_text": "圣元之铠"
+    },
+    {
+      "item": "8/26",
+      "english": "Adamantine Armor",
+      "chinese": "圣魂之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/26]",
+      "official_text": "圣魂之铠"
+    },
+    {
+      "item": "8/27",
+      "english": "Dark Steel Armor",
+      "chinese": "神圣之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/27]",
+      "official_text": "神圣之铠"
+    },
+    {
+      "item": "8/28",
+      "english": "Dark Master Armor",
+      "chinese": "至尊之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/28]",
+      "official_text": "至尊之铠"
+    },
+    {
+      "item": "8/29",
+      "english": "Dragon Knight Armor",
+      "chinese": "暗黑斗神之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/29]",
+      "official_text": "暗黑斗神之铠"
+    },
+    {
+      "item": "8/30",
+      "english": "Venom Mist Armor",
+      "chinese": "法魂玄灵之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/30]",
+      "official_text": "法魂玄灵之铠"
+    },
+    {
+      "item": "8/31",
+      "english": "Sylphid Ray Armor",
+      "chinese": "紫灵之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/31]",
+      "official_text": "紫灵之铠"
+    },
+    {
+      "item": "8/32",
+      "english": "Volcano Armor",
+      "chinese": "天魔斗神之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/32]",
+      "official_text": "天魔斗神之铠"
+    },
+    {
+      "item": "8/33",
+      "english": "Sunlight Armor",
+      "chinese": "宙斯之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/33]",
+      "official_text": "宙斯之铠"
+    },
+    {
+      "item": "8/34",
+      "english": "Ashcrow Armor",
+      "chinese": "暴风之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/34]",
+      "official_text": "暴风之铠"
+    },
+    {
+      "item": "8/35",
+      "english": "Eclipse Armor",
+      "chinese": "幻月之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/35]",
+      "official_text": "幻月之铠"
+    },
+    {
+      "item": "8/36",
+      "english": "Iris Armor",
+      "chinese": "碧影之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/36]",
+      "official_text": "碧影之铠"
+    },
+    {
+      "item": "8/37",
+      "english": "Valiant Armor",
+      "chinese": "烈火之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/37]",
+      "official_text": "烈火之铠"
+    },
+    {
+      "item": "8/38",
+      "english": "Glorious Armor",
+      "chinese": "圣光之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/38]",
+      "official_text": "圣光之铠"
+    },
+    {
+      "item": "8/39",
+      "english": "Violent Wind Armor",
+      "chinese": "飓风之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/39]",
+      "official_text": "飓风之铠"
+    },
+    {
+      "item": "8/40",
+      "english": "Red Wing Armor",
+      "chinese": "红翼之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/40]",
+      "official_text": "红翼之铠"
+    },
+    {
+      "item": "8/41",
+      "english": "Ancient Armor",
+      "chinese": "远古之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/41]",
+      "official_text": "远古之铠"
+    },
+    {
+      "item": "8/42",
+      "english": "Demonic Armor",
+      "chinese": "魔灵之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/42]",
+      "official_text": "魔灵之铠"
+    },
+    {
+      "item": "8/43",
+      "english": "Storm Blitz Armor",
+      "chinese": "风影之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/43]",
+      "official_text": "风影之铠"
+    },
+    {
+      "item": "8/44",
+      "english": "Eternal Wing Armor",
+      "chinese": "恒翼之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/44]",
+      "official_text": "恒翼之铠"
+    },
+    {
+      "item": "8/45",
+      "english": "Titan  Armor",
+      "chinese": "泰坦之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/45]",
+      "official_text": "泰坦之铠"
+    },
+    {
+      "item": "8/46",
+      "english": "Brave Armor",
+      "chinese": "勇气之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/46]",
+      "official_text": "勇气之铠"
+    },
+    {
+      "item": "8/47",
+      "english": "Phantom  Armor",
+      "chinese": "巨石之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/47]",
+      "official_text": "巨石之铠"
+    },
+    {
+      "item": "8/48",
+      "english": "Destroy Armor",
+      "chinese": "破灭之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/48]",
+      "official_text": "破灭之铠"
+    },
+    {
+      "item": "8/49",
+      "english": "Seraphim Armor",
+      "chinese": "恐惧之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/49]",
+      "official_text": "恐惧之铠"
+    },
+    {
+      "item": "8/50",
+      "english": "Faith Armor",
+      "chinese": "灵光之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/50]",
+      "official_text": "灵光之铠"
+    },
+    {
+      "item": "8/51",
+      "english": "Royal Armor",
+      "chinese": "霸王之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/51]",
+      "official_text": "霸王之铠"
+    },
+    {
+      "item": "8/52",
+      "english": "Hades Armor",
+      "chinese": "冥王之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/52]",
+      "official_text": "冥王之铠"
+    },
+    {
+      "item": "8/59",
+      "english": "Sacred Fire Armor",
+      "chinese": "神圣火焰之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/59]",
+      "official_text": "神圣火焰之铠"
+    },
+    {
+      "item": "8/60",
+      "english": "Storm Jahad Armor",
+      "chinese": "暴风毁灭之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/60]",
+      "official_text": "暴风毁灭之铠"
+    },
+    {
+      "item": "8/61",
+      "english": "Piercing Groove Armor",
+      "chinese": "刀锋之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/61]",
+      "official_text": "刀锋之铠"
+    },
+    {
+      "item": "8/62",
+      "english": "Scale Armor",
+      "chinese": "翡翠铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/62]",
+      "official_text": "翡翠铠"
+    },
+    {
+      "item": "8/63",
+      "english": "Silk Armor",
+      "chinese": "天蚕之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/63]",
+      "official_text": "天蚕之铠"
+    },
+    {
+      "item": "8/64",
+      "english": "Sphinx Armor",
+      "chinese": "魔王之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/64]",
+      "official_text": "魔王之铠"
+    },
+    {
+      "item": "8/65",
+      "english": "Violent Wind Armor",
+      "chinese": "飓风之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/65]",
+      "official_text": "飓风之铠"
+    },
+    {
+      "item": "8/66",
+      "english": "Adamantine Armor",
+      "chinese": "圣魂之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/66]",
+      "official_text": "圣魂之铠"
+    },
+    {
+      "item": "8/67",
+      "english": "Dragon Armor",
+      "chinese": "龙王之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/67]",
+      "official_text": "龙王之铠"
+    },
+    {
+      "item": "8/68",
+      "english": "Guardian Armor",
+      "chinese": "女神之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/68]",
+      "official_text": "女神之铠"
+    },
+    {
+      "item": "8/69",
+      "english": "Legendary Armor",
+      "chinese": "传说之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/69]",
+      "official_text": "传说之铠"
+    },
+    {
+      "item": "8/70",
+      "english": "Red Wing Armor",
+      "chinese": "红翼之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/70]",
+      "official_text": "红翼之铠"
+    },
+    {
+      "item": "8/71",
+      "english": "Atlans Armor",
+      "chinese": "亚特兰蒂斯之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/71]",
+      "official_text": "亚特兰蒂斯之铠"
+    },
+    {
+      "item": "8/72",
+      "english": "Storm Jahad Armor",
+      "chinese": "暴风毁灭之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/72]",
+      "official_text": "暴风毁灭之铠"
+    },
+    {
+      "item": "8/73",
+      "english": "Phoenix Soul Armor",
+      "chinese": "凤魂之铠",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [8/73]",
+      "official_text": "凤魂之铠"
+    },
+    {
+      "item": "9/0",
+      "english": "Bronze Pants",
+      "chinese": "青铜护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/0]",
+      "official_text": "青铜护腿"
+    },
+    {
+      "item": "9/1",
+      "english": "Dragon Pants",
+      "chinese": "龙王护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/1]",
+      "official_text": "龙王护腿"
+    },
+    {
+      "item": "9/2",
+      "english": "Pad Pants",
+      "chinese": "革护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/2]",
+      "official_text": "革护腿"
+    },
+    {
+      "item": "9/3",
+      "english": "Legendary Pants",
+      "chinese": "传说之护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/3]",
+      "official_text": "传说之护腿"
+    },
+    {
+      "item": "9/4",
+      "english": "Bone Pants",
+      "chinese": "骷髅护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/4]",
+      "official_text": "骷髅护腿"
+    },
+    {
+      "item": "9/5",
+      "english": "Leather Pants",
+      "chinese": "皮护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/5]",
+      "official_text": "皮护腿"
+    },
+    {
+      "item": "9/6",
+      "english": "Scale Pants",
+      "chinese": "翡翠护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/6]",
+      "official_text": "翡翠护腿"
+    },
+    {
+      "item": "9/7",
+      "english": "Sphinx Pants",
+      "chinese": "魔王之护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/7]",
+      "official_text": "魔王之护腿"
+    },
+    {
+      "item": "9/8",
+      "english": "Brass Pants",
+      "chinese": "黄金护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/8]",
+      "official_text": "黄金护腿"
+    },
+    {
+      "item": "9/9",
+      "english": "Plate Pants",
+      "chinese": "白金护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/9]",
+      "official_text": "白金护腿"
+    },
+    {
+      "item": "9/10",
+      "english": "Vine Pants",
+      "chinese": "藤护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/10]",
+      "official_text": "藤护腿"
+    },
+    {
+      "item": "9/11",
+      "english": "Silk Pants",
+      "chinese": "天蚕之护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/11]",
+      "official_text": "天蚕之护腿"
+    },
+    {
+      "item": "9/12",
+      "english": "Wind Pants",
+      "chinese": "风之护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/12]",
+      "official_text": "风之护腿"
+    },
+    {
+      "item": "9/13",
+      "english": "Spirit Pants",
+      "chinese": "精灵之护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/13]",
+      "official_text": "精灵之护腿"
+    },
+    {
+      "item": "9/14",
+      "english": "Guardian Pants",
+      "chinese": "女神之护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/14]",
+      "official_text": "女神之护腿"
+    },
+    {
+      "item": "9/15",
+      "english": "Storm Crow Pants",
+      "chinese": "亚特兰蒂斯之护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/15]",
+      "official_text": "亚特兰蒂斯之护腿"
+    },
+    {
+      "item": "9/16",
+      "english": "Black Dragon Pants",
+      "chinese": "黑龙王护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/16]",
+      "official_text": "黑龙王护腿"
+    },
+    {
+      "item": "9/17",
+      "english": "Dark Phoenix Pants",
+      "chinese": "黑凤凰护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/17]",
+      "official_text": "黑凤凰护腿"
+    },
+    {
+      "item": "9/18",
+      "english": "Grand Soul Pants",
+      "chinese": "火麒麟护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/18]",
+      "official_text": "火麒麟护腿"
+    },
+    {
+      "item": "9/19",
+      "english": "Divine Pants",
+      "chinese": "圣灵护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/19]",
+      "official_text": "圣灵护腿"
+    },
+    {
+      "item": "9/20",
+      "english": "Thunder Hawk Pants",
+      "chinese": "奔雷护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/20]",
+      "official_text": "奔雷护腿"
+    },
+    {
+      "item": "9/21",
+      "english": "Great Dragon Pants",
+      "chinese": "龙炎护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/21]",
+      "official_text": "龙炎护腿"
+    },
+    {
+      "item": "9/22",
+      "english": "Dark Soul Pants",
+      "chinese": "黑炎护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/22]",
+      "official_text": "黑炎护腿"
+    },
+    {
+      "item": "9/23",
+      "english": "Hurricane Pants",
+      "chinese": "魔神护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/23]",
+      "official_text": "魔神护腿"
+    },
+    {
+      "item": "9/24",
+      "english": "Red Spirit Pants",
+      "chinese": "红羽护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/24]",
+      "official_text": "红羽护腿"
+    },
+    {
+      "item": "9/25",
+      "english": "Light Plate Pants",
+      "chinese": "圣元护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/25]",
+      "official_text": "圣元护腿"
+    },
+    {
+      "item": "9/26",
+      "english": "Adamantine Pants",
+      "chinese": "圣魂护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/26]",
+      "official_text": "圣魂护腿"
+    },
+    {
+      "item": "9/27",
+      "english": "Dark Steel Pants",
+      "chinese": "神圣护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/27]",
+      "official_text": "神圣护腿"
+    },
+    {
+      "item": "9/28",
+      "english": "Dark Master Pants",
+      "chinese": "至尊护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/28]",
+      "official_text": "至尊护腿"
+    },
+    {
+      "item": "9/29",
+      "english": "Dragon Knight Pants",
+      "chinese": "暗黑斗神护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/29]",
+      "official_text": "暗黑斗神护腿"
+    },
+    {
+      "item": "9/30",
+      "english": "Venom Mist Pants",
+      "chinese": "法魂玄灵护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/30]",
+      "official_text": "法魂玄灵护腿"
+    },
+    {
+      "item": "9/31",
+      "english": "Sylphid Ray Pants",
+      "chinese": "紫灵护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/31]",
+      "official_text": "紫灵护腿"
+    },
+    {
+      "item": "9/32",
+      "english": "Volcano Pants",
+      "chinese": "天魔斗神护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/32]",
+      "official_text": "天魔斗神护腿"
+    },
+    {
+      "item": "9/33",
+      "english": "Sunlight Pants",
+      "chinese": "宙斯护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/33]",
+      "official_text": "宙斯护腿"
+    },
+    {
+      "item": "9/34",
+      "english": "Ashcrow Pants",
+      "chinese": "暴风护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/34]",
+      "official_text": "暴风护腿"
+    },
+    {
+      "item": "9/35",
+      "english": "Eclipse Pants",
+      "chinese": "幻月护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/35]",
+      "official_text": "幻月护腿"
+    },
+    {
+      "item": "9/36",
+      "english": "Iris Pants",
+      "chinese": "碧影护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/36]",
+      "official_text": "碧影护腿"
+    },
+    {
+      "item": "9/37",
+      "english": "Valiant Pants",
+      "chinese": "烈火护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/37]",
+      "official_text": "烈火护腿"
+    },
+    {
+      "item": "9/38",
+      "english": "Glorious Pants",
+      "chinese": "圣光护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/38]",
+      "official_text": "圣光护腿"
+    },
+    {
+      "item": "9/39",
+      "english": "Violent Wind Pants",
+      "chinese": "飓风之护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/39]",
+      "official_text": "飓风之护腿"
+    },
+    {
+      "item": "9/40",
+      "english": "Red Wing Pants",
+      "chinese": "红翼之护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/40]",
+      "official_text": "红翼之护腿"
+    },
+    {
+      "item": "9/41",
+      "english": "Ancient Pants",
+      "chinese": "远古之护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/41]",
+      "official_text": "远古之护腿"
+    },
+    {
+      "item": "9/42",
+      "english": "Demonic Pants",
+      "chinese": "魔灵之护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/42]",
+      "official_text": "魔灵之护腿"
+    },
+    {
+      "item": "9/43",
+      "english": "Storm Blitz Pants",
+      "chinese": "风影护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/43]",
+      "official_text": "风影护腿"
+    },
+    {
+      "item": "9/44",
+      "english": "Eternal Wing Pants",
+      "chinese": "恒翼护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/44]",
+      "official_text": "恒翼护腿"
+    },
+    {
+      "item": "9/45",
+      "english": "Titan  Pants",
+      "chinese": "泰坦之护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/45]",
+      "official_text": "泰坦之护腿"
+    },
+    {
+      "item": "9/46",
+      "english": "Brave Pants",
+      "chinese": "勇气之护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/46]",
+      "official_text": "勇气之护腿"
+    },
+    {
+      "item": "9/47",
+      "english": "Phantom  Pants",
+      "chinese": "巨石之护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/47]",
+      "official_text": "巨石之护腿"
+    },
+    {
+      "item": "9/48",
+      "english": "Destroy Pants",
+      "chinese": "破灭之护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/48]",
+      "official_text": "破灭之护腿"
+    },
+    {
+      "item": "9/49",
+      "english": "Seraphim Pants",
+      "chinese": "恐惧之护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/49]",
+      "official_text": "恐惧之护腿"
+    },
+    {
+      "item": "9/50",
+      "english": "Faith Pants",
+      "chinese": "灵光之护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/50]",
+      "official_text": "灵光之护腿"
+    },
+    {
+      "item": "9/51",
+      "english": "Royal Pants",
+      "chinese": "霸王之护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/51]",
+      "official_text": "霸王之护腿"
+    },
+    {
+      "item": "9/52",
+      "english": "Hades Pants",
+      "chinese": "冥王之护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/52]",
+      "official_text": "冥王之护腿"
+    },
+    {
+      "item": "9/59",
+      "english": "Sacred Fire Pants",
+      "chinese": "神圣火焰护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/59]",
+      "official_text": "神圣火焰护腿"
+    },
+    {
+      "item": "9/60",
+      "english": "Storm Jahad Pants",
+      "chinese": "暴风毁灭护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/60]",
+      "official_text": "暴风毁灭护腿"
+    },
+    {
+      "item": "9/61",
+      "english": "Piercing Groove Pants",
+      "chinese": "刀锋护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/61]",
+      "official_text": "刀锋护腿"
+    },
+    {
+      "item": "9/62",
+      "english": "Scale Pants",
+      "chinese": "翡翠护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/62]",
+      "official_text": "翡翠护腿"
+    },
+    {
+      "item": "9/63",
+      "english": "Silk Pants",
+      "chinese": "天蚕之护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/63]",
+      "official_text": "天蚕之护腿"
+    },
+    {
+      "item": "9/64",
+      "english": "Sphinx Pants",
+      "chinese": "魔王之护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/64]",
+      "official_text": "魔王之护腿"
+    },
+    {
+      "item": "9/65",
+      "english": "Violent Wind Pants",
+      "chinese": "飓风之护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/65]",
+      "official_text": "飓风之护腿"
+    },
+    {
+      "item": "9/66",
+      "english": "Adamantine Pants",
+      "chinese": "圣魂护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/66]",
+      "official_text": "圣魂护腿"
+    },
+    {
+      "item": "9/67",
+      "english": "Dragon Pants",
+      "chinese": "龙王之护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/67]",
+      "official_text": "龙王之护腿"
+    },
+    {
+      "item": "9/68",
+      "english": "Guardian Pants",
+      "chinese": "女神之护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/68]",
+      "official_text": "女神之护腿"
+    },
+    {
+      "item": "9/69",
+      "english": "Legendary Pants",
+      "chinese": "传说之护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/69]",
+      "official_text": "传说之护腿"
+    },
+    {
+      "item": "9/70",
+      "english": "Red Wing Pants",
+      "chinese": "红翼之护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/70]",
+      "official_text": "红翼之护腿"
+    },
+    {
+      "item": "9/71",
+      "english": "Atlans Pants",
+      "chinese": "亚特兰蒂斯之护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/71]",
+      "official_text": "亚特兰蒂斯之护腿"
+    },
+    {
+      "item": "9/72",
+      "english": "Storm Jahad Pants",
+      "chinese": "暴风毁灭护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/72]",
+      "official_text": "暴风毁灭护腿"
+    },
+    {
+      "item": "9/73",
+      "english": "Phoenix Soul Pants",
+      "chinese": "凤魂护腿",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [9/73]",
+      "official_text": "凤魂护腿"
+    },
+    {
+      "item": "10/0",
+      "english": "Bronze Gloves",
+      "chinese": "青铜护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/0]",
+      "official_text": "青铜护手"
+    },
+    {
+      "item": "10/1",
+      "english": "Dragon Gloves",
+      "chinese": "龙王护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/1]",
+      "official_text": "龙王护手"
+    },
+    {
+      "item": "10/2",
+      "english": "Pad Gloves",
+      "chinese": "革护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/2]",
+      "official_text": "革护手"
+    },
+    {
+      "item": "10/3",
+      "english": "Legendary Gloves",
+      "chinese": "传说之护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/3]",
+      "official_text": "传说之护手"
+    },
+    {
+      "item": "10/4",
+      "english": "Bone Gloves",
+      "chinese": "骷髅护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/4]",
+      "official_text": "骷髅护手"
+    },
+    {
+      "item": "10/5",
+      "english": "Leather Gloves",
+      "chinese": "皮护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/5]",
+      "official_text": "皮护手"
+    },
+    {
+      "item": "10/6",
+      "english": "Scale Gloves",
+      "chinese": "翡翠护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/6]",
+      "official_text": "翡翠护手"
+    },
+    {
+      "item": "10/7",
+      "english": "Sphinx Gloves",
+      "chinese": "魔王之护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/7]",
+      "official_text": "魔王之护手"
+    },
+    {
+      "item": "10/8",
+      "english": "Brass Gloves",
+      "chinese": "黄金护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/8]",
+      "official_text": "黄金护手"
+    },
+    {
+      "item": "10/9",
+      "english": "Plate Gloves",
+      "chinese": "白金护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/9]",
+      "official_text": "白金护手"
+    },
+    {
+      "item": "10/10",
+      "english": "Vine Gloves",
+      "chinese": "藤护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/10]",
+      "official_text": "藤护手"
+    },
+    {
+      "item": "10/11",
+      "english": "Silk Gloves",
+      "chinese": "天蚕之护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/11]",
+      "official_text": "天蚕之护手"
+    },
+    {
+      "item": "10/12",
+      "english": "Wind Gloves",
+      "chinese": "风之护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/12]",
+      "official_text": "风之护手"
+    },
+    {
+      "item": "10/13",
+      "english": "Spirit Gloves",
+      "chinese": "精灵之护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/13]",
+      "official_text": "精灵之护手"
+    },
+    {
+      "item": "10/14",
+      "english": "Guardian Gloves",
+      "chinese": "女神之护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/14]",
+      "official_text": "女神之护手"
+    },
+    {
+      "item": "10/15",
+      "english": "Storm Crow Gloves",
+      "chinese": "亚特兰蒂斯之护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/15]",
+      "official_text": "亚特兰蒂斯之护手"
+    },
+    {
+      "item": "10/16",
+      "english": "Black Dragon Gloves",
+      "chinese": "黑龙王护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/16]",
+      "official_text": "黑龙王护手"
+    },
+    {
+      "item": "10/17",
+      "english": "Dark Phoenix Gloves",
+      "chinese": "黑凤凰护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/17]",
+      "official_text": "黑凤凰护手"
+    },
+    {
+      "item": "10/18",
+      "english": "Grand Soul Gloves",
+      "chinese": "火麒麟护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/18]",
+      "official_text": "火麒麟护手"
+    },
+    {
+      "item": "10/19",
+      "english": "Divine Gloves",
+      "chinese": "圣灵护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/19]",
+      "official_text": "圣灵护手"
+    },
+    {
+      "item": "10/20",
+      "english": "Thunder Hawk Gloves",
+      "chinese": "奔雷护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/20]",
+      "official_text": "奔雷护手"
+    },
+    {
+      "item": "10/21",
+      "english": "Great Dragon Gloves",
+      "chinese": "龙炎护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/21]",
+      "official_text": "龙炎护手"
+    },
+    {
+      "item": "10/22",
+      "english": "Dark Soul Gloves",
+      "chinese": "黑炎护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/22]",
+      "official_text": "黑炎护手"
+    },
+    {
+      "item": "10/23",
+      "english": "Hurricane Gloves",
+      "chinese": "魔神护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/23]",
+      "official_text": "魔神护手"
+    },
+    {
+      "item": "10/24",
+      "english": "Red Spirit Gloves",
+      "chinese": "红羽护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/24]",
+      "official_text": "红羽护手"
+    },
+    {
+      "item": "10/25",
+      "english": "Light Plate Gloves",
+      "chinese": "圣元护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/25]",
+      "official_text": "圣元护手"
+    },
+    {
+      "item": "10/26",
+      "english": "Adamantine Gloves",
+      "chinese": "圣魂护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/26]",
+      "official_text": "圣魂护手"
+    },
+    {
+      "item": "10/27",
+      "english": "Dark Steel Gloves",
+      "chinese": "神圣护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/27]",
+      "official_text": "神圣护手"
+    },
+    {
+      "item": "10/28",
+      "english": "Dark Master Gloves",
+      "chinese": "至尊护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/28]",
+      "official_text": "至尊护手"
+    },
+    {
+      "item": "10/29",
+      "english": "Dragon Knight Gloves",
+      "chinese": "暗黑斗神护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/29]",
+      "official_text": "暗黑斗神护手"
+    },
+    {
+      "item": "10/30",
+      "english": "Venom Mist Gloves",
+      "chinese": "法魂玄灵护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/30]",
+      "official_text": "法魂玄灵护手"
+    },
+    {
+      "item": "10/31",
+      "english": "Sylphid Ray Gloves",
+      "chinese": "紫灵护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/31]",
+      "official_text": "紫灵护手"
+    },
+    {
+      "item": "10/32",
+      "english": "Volcano Gloves",
+      "chinese": "天魔斗神护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/32]",
+      "official_text": "天魔斗神护手"
+    },
+    {
+      "item": "10/33",
+      "english": "Sunlight Gloves",
+      "chinese": "宙斯护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/33]",
+      "official_text": "宙斯护手"
+    },
+    {
+      "item": "10/34",
+      "english": "Ashcrow Gloves",
+      "chinese": "暴风护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/34]",
+      "official_text": "暴风护手"
+    },
+    {
+      "item": "10/35",
+      "english": "Eclipse Gloves",
+      "chinese": "幻月护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/35]",
+      "official_text": "幻月护手"
+    },
+    {
+      "item": "10/36",
+      "english": "Iris Gloves",
+      "chinese": "碧影护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/36]",
+      "official_text": "碧影护手"
+    },
+    {
+      "item": "10/37",
+      "english": "Valiant Gloves",
+      "chinese": "烈火护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/37]",
+      "official_text": "烈火护手"
+    },
+    {
+      "item": "10/38",
+      "english": "Glorious Gloves",
+      "chinese": "圣光护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/38]",
+      "official_text": "圣光护手"
+    },
+    {
+      "item": "10/39",
+      "english": "Violent Wind Gloves",
+      "chinese": "飓风之护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/39]",
+      "official_text": "飓风之护手"
+    },
+    {
+      "item": "10/40",
+      "english": "Red Wing Gloves",
+      "chinese": "红翼之护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/40]",
+      "official_text": "红翼之护手"
+    },
+    {
+      "item": "10/41",
+      "english": "Ancient Gloves",
+      "chinese": "远古之护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/41]",
+      "official_text": "远古之护手"
+    },
+    {
+      "item": "10/42",
+      "english": "Demonic Gloves",
+      "chinese": "魔灵之护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/42]",
+      "official_text": "魔灵之护手"
+    },
+    {
+      "item": "10/43",
+      "english": "Storm Blitz Gloves",
+      "chinese": "风影护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/43]",
+      "official_text": "风影护手"
+    },
+    {
+      "item": "10/44",
+      "english": "Eternal Wing Gloves",
+      "chinese": "恒翼护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/44]",
+      "official_text": "恒翼护手"
+    },
+    {
+      "item": "10/45",
+      "english": "Titan  Gloves",
+      "chinese": "泰坦之护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/45]",
+      "official_text": "泰坦之护手"
+    },
+    {
+      "item": "10/46",
+      "english": "Brave Gloves",
+      "chinese": "勇气之护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/46]",
+      "official_text": "勇气之护手"
+    },
+    {
+      "item": "10/47",
+      "english": "Phantom  Gloves",
+      "chinese": "巨石之护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/47]",
+      "official_text": "巨石之护手"
+    },
+    {
+      "item": "10/48",
+      "english": "Destroy Gloves",
+      "chinese": "破灭之护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/48]",
+      "official_text": "破灭之护手"
+    },
+    {
+      "item": "10/49",
+      "english": "Seraphim Gloves",
+      "chinese": "恐惧之护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/49]",
+      "official_text": "恐惧之护手"
+    },
+    {
+      "item": "10/50",
+      "english": "Faith Gloves",
+      "chinese": "灵光之护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/50]",
+      "official_text": "灵光之护手"
+    },
+    {
+      "item": "10/51",
+      "english": "Royal Gloves",
+      "chinese": "霸王之护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/51]",
+      "official_text": "霸王之护手"
+    },
+    {
+      "item": "10/52",
+      "english": "Hades Gloves",
+      "chinese": "冥王之护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/52]",
+      "official_text": "冥王之护手"
+    },
+    {
+      "item": "10/62",
+      "english": "Scale Gloves",
+      "chinese": "翡翠护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/62]",
+      "official_text": "翡翠护手"
+    },
+    {
+      "item": "10/63",
+      "english": "Silk Gloves",
+      "chinese": "天蚕之护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/63]",
+      "official_text": "天蚕之护手"
+    },
+    {
+      "item": "10/64",
+      "english": "Sphinx Gloves",
+      "chinese": "魔王之护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/64]",
+      "official_text": "魔王之护手"
+    },
+    {
+      "item": "10/65",
+      "english": "Violent Wind Gloves",
+      "chinese": "飓风之护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/65]",
+      "official_text": "飓风之护手"
+    },
+    {
+      "item": "10/66",
+      "english": "Adamantine Gloves",
+      "chinese": "圣魂护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/66]",
+      "official_text": "圣魂护手"
+    },
+    {
+      "item": "10/67",
+      "english": "Dragon Gloves",
+      "chinese": "龙王之护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/67]",
+      "official_text": "龙王之护手"
+    },
+    {
+      "item": "10/68",
+      "english": "Guardian Gloves",
+      "chinese": "女神之护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/68]",
+      "official_text": "女神之护手"
+    },
+    {
+      "item": "10/69",
+      "english": "Legendary Gloves",
+      "chinese": "传说之护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/69]",
+      "official_text": "传说之护手"
+    },
+    {
+      "item": "10/70",
+      "english": "Red Wing Gloves",
+      "chinese": "红翼之护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/70]",
+      "official_text": "红翼之护手"
+    },
+    {
+      "item": "10/71",
+      "english": "Atlans Gloves",
+      "chinese": "亚特兰蒂斯之护手",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [10/71]",
+      "official_text": "亚特兰蒂斯之护手"
+    },
+    {
+      "item": "11/0",
+      "english": "Bronze Boots",
+      "chinese": "青铜靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/0]",
+      "official_text": "青铜靴"
+    },
+    {
+      "item": "11/1",
+      "english": "Dragon Boots",
+      "chinese": "龙王之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/1]",
+      "official_text": "龙王之靴"
+    },
+    {
+      "item": "11/2",
+      "english": "Pad Boots",
+      "chinese": "革靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/2]",
+      "official_text": "革靴"
+    },
+    {
+      "item": "11/3",
+      "english": "Legendary Boots",
+      "chinese": "传说之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/3]",
+      "official_text": "传说之靴"
+    },
+    {
+      "item": "11/4",
+      "english": "Bone Boots",
+      "chinese": "骷髅靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/4]",
+      "official_text": "骷髅靴"
+    },
+    {
+      "item": "11/5",
+      "english": "Leather Boots",
+      "chinese": "皮靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/5]",
+      "official_text": "皮靴"
+    },
+    {
+      "item": "11/6",
+      "english": "Scale Boots",
+      "chinese": "翡翠靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/6]",
+      "official_text": "翡翠靴"
+    },
+    {
+      "item": "11/7",
+      "english": "Sphinx Boots",
+      "chinese": "魔王之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/7]",
+      "official_text": "魔王之靴"
+    },
+    {
+      "item": "11/8",
+      "english": "Brass Boots",
+      "chinese": "黄金靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/8]",
+      "official_text": "黄金靴"
+    },
+    {
+      "item": "11/9",
+      "english": "Plate Boots",
+      "chinese": "白金靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/9]",
+      "official_text": "白金靴"
+    },
+    {
+      "item": "11/10",
+      "english": "Vine Boots",
+      "chinese": "藤靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/10]",
+      "official_text": "藤靴"
+    },
+    {
+      "item": "11/11",
+      "english": "Silk Boots",
+      "chinese": "天蚕之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/11]",
+      "official_text": "天蚕之靴"
+    },
+    {
+      "item": "11/12",
+      "english": "Wind Boots",
+      "chinese": "风之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/12]",
+      "official_text": "风之靴"
+    },
+    {
+      "item": "11/13",
+      "english": "Spirit Boots",
+      "chinese": "精灵之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/13]",
+      "official_text": "精灵之靴"
+    },
+    {
+      "item": "11/14",
+      "english": "Guardian Boots",
+      "chinese": "女神之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/14]",
+      "official_text": "女神之靴"
+    },
+    {
+      "item": "11/15",
+      "english": "Storm Crow Boots",
+      "chinese": "亚特兰蒂斯之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/15]",
+      "official_text": "亚特兰蒂斯之靴"
+    },
+    {
+      "item": "11/16",
+      "english": "Black Dragon Boots",
+      "chinese": "黑龙王之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/16]",
+      "official_text": "黑龙王之靴"
+    },
+    {
+      "item": "11/17",
+      "english": "Dark Phoenix Boots",
+      "chinese": "黑凤凰之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/17]",
+      "official_text": "黑凤凰之靴"
+    },
+    {
+      "item": "11/18",
+      "english": "Grand Soul Boots",
+      "chinese": "火麒麟之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/18]",
+      "official_text": "火麒麟之靴"
+    },
+    {
+      "item": "11/19",
+      "english": "Divine Boots",
+      "chinese": "圣灵之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/19]",
+      "official_text": "圣灵之靴"
+    },
+    {
+      "item": "11/20",
+      "english": "Thunder Hawk Boots",
+      "chinese": "奔雷之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/20]",
+      "official_text": "奔雷之靴"
+    },
+    {
+      "item": "11/21",
+      "english": "Great Dragon Boots",
+      "chinese": "龙炎之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/21]",
+      "official_text": "龙炎之靴"
+    },
+    {
+      "item": "11/22",
+      "english": "Dark Soul Boots",
+      "chinese": "黑炎之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/22]",
+      "official_text": "黑炎之靴"
+    },
+    {
+      "item": "11/23",
+      "english": "Hurricane Boots",
+      "chinese": "魔神之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/23]",
+      "official_text": "魔神之靴"
+    },
+    {
+      "item": "11/24",
+      "english": "Red Spirit Boots",
+      "chinese": "红羽之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/24]",
+      "official_text": "红羽之靴"
+    },
+    {
+      "item": "11/25",
+      "english": "Light Plate Boots",
+      "chinese": "圣元之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/25]",
+      "official_text": "圣元之靴"
+    },
+    {
+      "item": "11/26",
+      "english": "Adamantine Boots",
+      "chinese": "圣魂之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/26]",
+      "official_text": "圣魂之靴"
+    },
+    {
+      "item": "11/27",
+      "english": "Dark Steel Boots",
+      "chinese": "神圣之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/27]",
+      "official_text": "神圣之靴"
+    },
+    {
+      "item": "11/28",
+      "english": "Dark Master Boots",
+      "chinese": "至尊之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/28]",
+      "official_text": "至尊之靴"
+    },
+    {
+      "item": "11/29",
+      "english": "Dragon Knight Boots",
+      "chinese": "暗黑斗神之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/29]",
+      "official_text": "暗黑斗神之靴"
+    },
+    {
+      "item": "11/30",
+      "english": "Venom Mist Boots",
+      "chinese": "法魂玄灵之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/30]",
+      "official_text": "法魂玄灵之靴"
+    },
+    {
+      "item": "11/31",
+      "english": "Sylphid Ray Boots",
+      "chinese": "紫灵之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/31]",
+      "official_text": "紫灵之靴"
+    },
+    {
+      "item": "11/32",
+      "english": "Volcano Boots",
+      "chinese": "天魔斗神之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/32]",
+      "official_text": "天魔斗神之靴"
+    },
+    {
+      "item": "11/33",
+      "english": "Sunlight Boots",
+      "chinese": "宙斯之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/33]",
+      "official_text": "宙斯之靴"
+    },
+    {
+      "item": "11/34",
+      "english": "Ashcrow Boots",
+      "chinese": "暴风之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/34]",
+      "official_text": "暴风之靴"
+    },
+    {
+      "item": "11/35",
+      "english": "Eclipse Boots",
+      "chinese": "幻月之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/35]",
+      "official_text": "幻月之靴"
+    },
+    {
+      "item": "11/36",
+      "english": "Iris Boots",
+      "chinese": "碧影之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/36]",
+      "official_text": "碧影之靴"
+    },
+    {
+      "item": "11/37",
+      "english": "Valiant Boots",
+      "chinese": "烈火之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/37]",
+      "official_text": "烈火之靴"
+    },
+    {
+      "item": "11/38",
+      "english": "Glorious Boots",
+      "chinese": "圣光之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/38]",
+      "official_text": "圣光之靴"
+    },
+    {
+      "item": "11/39",
+      "english": "Violent Wind Boots",
+      "chinese": "飓风之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/39]",
+      "official_text": "飓风之靴"
+    },
+    {
+      "item": "11/40",
+      "english": "Red Wing Boots",
+      "chinese": "红翼之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/40]",
+      "official_text": "红翼之靴"
+    },
+    {
+      "item": "11/41",
+      "english": "Ancient Boots",
+      "chinese": "远古之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/41]",
+      "official_text": "远古之靴"
+    },
+    {
+      "item": "11/42",
+      "english": "Demonic Boots",
+      "chinese": "魔灵之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/42]",
+      "official_text": "魔灵之靴"
+    },
+    {
+      "item": "11/43",
+      "english": "Storm Blitz Boots",
+      "chinese": "风影之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/43]",
+      "official_text": "风影之靴"
+    },
+    {
+      "item": "11/44",
+      "english": "Eternal Wing Boots",
+      "chinese": "恒翼之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/44]",
+      "official_text": "恒翼之靴"
+    },
+    {
+      "item": "11/45",
+      "english": "Titan Boots",
+      "chinese": "泰坦之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/45]",
+      "official_text": "泰坦之靴"
+    },
+    {
+      "item": "11/46",
+      "english": "Brave Boots",
+      "chinese": "勇气之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/46]",
+      "official_text": "勇气之靴"
+    },
+    {
+      "item": "11/47",
+      "english": "Phantom Boots",
+      "chinese": "巨石之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/47]",
+      "official_text": "巨石之靴"
+    },
+    {
+      "item": "11/48",
+      "english": "Destroy Boots",
+      "chinese": "破灭之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/48]",
+      "official_text": "破灭之靴"
+    },
+    {
+      "item": "11/49",
+      "english": "Seraphim Boots",
+      "chinese": "恐惧之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/49]",
+      "official_text": "恐惧之靴"
+    },
+    {
+      "item": "11/50",
+      "english": "Faith Boots",
+      "chinese": "灵光之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/50]",
+      "official_text": "灵光之靴"
+    },
+    {
+      "item": "11/51",
+      "english": "Royal Boots",
+      "chinese": "霸王之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/51]",
+      "official_text": "霸王之靴"
+    },
+    {
+      "item": "11/52",
+      "english": "Hades Boots",
+      "chinese": "冥王之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/52]",
+      "official_text": "冥王之靴"
+    },
+    {
+      "item": "11/59",
+      "english": "Sacred Fire Boots",
+      "chinese": "神圣火焰之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/59]",
+      "official_text": "神圣火焰之靴"
+    },
+    {
+      "item": "11/60",
+      "english": "Storm Jahad Boots",
+      "chinese": "暴风毁灭之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/60]",
+      "official_text": "暴风毁灭之靴"
+    },
+    {
+      "item": "11/61",
+      "english": "Piercing Groove Boots",
+      "chinese": "刀锋之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/61]",
+      "official_text": "刀锋之靴"
+    },
+    {
+      "item": "11/62",
+      "english": "Scale Boots",
+      "chinese": "翡翠靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/62]",
+      "official_text": "翡翠靴"
+    },
+    {
+      "item": "11/63",
+      "english": "Silk Boots",
+      "chinese": "天蚕之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/63]",
+      "official_text": "天蚕之靴"
+    },
+    {
+      "item": "11/64",
+      "english": "Sphinx Boots",
+      "chinese": "魔王之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/64]",
+      "official_text": "魔王之靴"
+    },
+    {
+      "item": "11/65",
+      "english": "Violent Wind Boots",
+      "chinese": "飓风之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/65]",
+      "official_text": "飓风之靴"
+    },
+    {
+      "item": "11/66",
+      "english": "Adamantine Boots",
+      "chinese": "圣魂之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/66]",
+      "official_text": "圣魂之靴"
+    },
+    {
+      "item": "11/67",
+      "english": "Dragon Boots",
+      "chinese": "龙王之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/67]",
+      "official_text": "龙王之靴"
+    },
+    {
+      "item": "11/68",
+      "english": "Guardian Boots",
+      "chinese": "女神之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/68]",
+      "official_text": "女神之靴"
+    },
+    {
+      "item": "11/69",
+      "english": "Legendary Boots",
+      "chinese": "传说之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/69]",
+      "official_text": "传说之靴"
+    },
+    {
+      "item": "11/70",
+      "english": "Red Wing Boots",
+      "chinese": "红翼之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/70]",
+      "official_text": "红翼之靴"
+    },
+    {
+      "item": "11/71",
+      "english": "Atlans Boots",
+      "chinese": "亚特兰蒂斯之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/71]",
+      "official_text": "亚特兰蒂斯之靴"
+    },
+    {
+      "item": "11/72",
+      "english": "Storm Jahad Boots",
+      "chinese": "神圣火焰之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/72]",
+      "official_text": "神圣火焰之靴"
+    },
+    {
+      "item": "11/73",
+      "english": "Phoenix Soul Boots",
+      "chinese": "凤魂之靴",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [11/73]",
+      "official_text": "凤魂之靴"
+    },
+    {
+      "item": "12/0",
+      "english": "Wings of Elf",
+      "chinese": "精灵之翼",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [12/0]",
+      "official_text": "精灵之翼"
+    },
+    {
+      "item": "12/1",
+      "english": "Wings of Heaven",
+      "chinese": "天使之翼",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [12/1]",
+      "official_text": "天使之翼"
+    },
+    {
+      "item": "12/2",
+      "english": "Wings of Satan",
+      "chinese": "恶魔之翼",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [12/2]",
+      "official_text": "恶魔之翼"
+    },
+    {
+      "item": "12/3",
+      "english": "Wings of Spirits",
+      "chinese": "圣灵之翼",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [12/3]",
+      "official_text": "圣灵之翼"
+    },
+    {
+      "item": "12/4",
+      "english": "Wings of Soul",
+      "chinese": "魔魂之翼",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [12/4]",
+      "official_text": "魔魂之翼"
+    },
+    {
+      "item": "12/5",
+      "english": "Wings of Dragon",
+      "chinese": "飞龙之翼",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [12/5]",
+      "official_text": "飞龙之翼"
+    },
+    {
+      "item": "12/6",
+      "english": "Wings of Darkness",
+      "chinese": "暗黑之翼",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [12/6]",
+      "official_text": "暗黑之翼"
+    },
+    {
+      "item": "12/36",
+      "english": "Wing of Storm",
+      "chinese": "暴风之翼",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [12/36]",
+      "official_text": "暴风之翼"
+    },
+    {
+      "item": "12/37",
+      "english": "Wing of Eternal",
+      "chinese": "时空之翼",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [12/37]",
+      "official_text": "时空之翼"
+    },
+    {
+      "item": "12/38",
+      "english": "Wing of Illusion",
+      "chinese": "幻影之翼",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [12/38]",
+      "official_text": "幻影之翼"
+    },
+    {
+      "item": "12/39",
+      "english": "Wing of Ruin",
+      "chinese": "破灭之翼",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [12/39]",
+      "official_text": "破灭之翼"
+    },
+    {
+      "item": "12/40",
+      "english": "Cape of Emperor",
+      "chinese": "帝王披风",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [12/40]",
+      "official_text": "帝王披风"
+    },
+    {
+      "item": "12/41",
+      "english": "Wing of Curse",
+      "chinese": "灾难之翼",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [12/41]",
+      "official_text": "灾难之翼"
+    },
+    {
+      "item": "12/42",
+      "english": "Wind of Despair",
+      "chinese": "绝望之翼",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [12/42]",
+      "official_text": "绝望之翼"
+    },
+    {
+      "item": "12/43",
+      "english": "Wing of Dimension",
+      "chinese": "次元之翼",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [12/43]",
+      "official_text": "次元之翼"
+    },
+    {
+      "item": "12/49",
+      "english": "Cape of Fighter",
+      "chinese": "武者披风",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [12/49]",
+      "official_text": "武者披风"
+    },
+    {
+      "item": "12/50",
+      "english": "Cape of Overrule",
+      "chinese": "斗皇披风",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [12/50]",
+      "official_text": "斗皇披风"
+    },
+    {
+      "item": "12/130",
+      "english": "Small Cape of Lord",
+      "chinese": "小帝王披风",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [12/130]",
+      "official_text": "小帝王披风"
+    },
+    {
+      "item": "12/131",
+      "english": "Small Wing of Curse",
+      "chinese": "小灾难之翼",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [12/131]",
+      "official_text": "小灾难之翼"
+    },
+    {
+      "item": "12/132",
+      "english": "Small Wings of Elf",
+      "chinese": "小精灵之翼",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [12/132]",
+      "official_text": "小精灵之翼"
+    },
+    {
+      "item": "12/133",
+      "english": "Small Wings of Heaven",
+      "chinese": "小天空之翼",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [12/133]",
+      "official_text": "小天空之翼"
+    },
+    {
+      "item": "12/134",
+      "english": "Small Wings of Satan",
+      "chinese": "小恶魔之翼",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [12/134]",
+      "official_text": "小恶魔之翼"
+    },
+    {
+      "item": "12/135",
+      "english": "Little Warrior's Cloak",
+      "chinese": "小武者披风",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [12/135]",
+      "official_text": "小武者披风"
+    },
+    {
+      "item": "13/0",
+      "english": "Guardian Angel",
+      "chinese": "守护天使",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/0]",
+      "official_text": "守护天使"
+    },
+    {
+      "item": "13/1",
+      "english": "Imp",
+      "chinese": "小恶魔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/1]",
+      "official_text": "小恶魔"
+    },
+    {
+      "item": "13/2",
+      "english": "Horn of Uniria",
+      "chinese": "兽角",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/2]",
+      "official_text": "兽角"
+    },
+    {
+      "item": "13/3",
+      "english": "Horn of Dinorant",
+      "chinese": "彩云兽",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/3]",
+      "official_text": "彩云兽"
+    },
+    {
+      "item": "13/4",
+      "english": "Dark Horse",
+      "chinese": "黑王马",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/4]",
+      "official_text": "黑王马"
+    },
+    {
+      "item": "13/8",
+      "english": "Ring of Ice",
+      "chinese": "冰之指环",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/8]",
+      "official_text": "冰之指环"
+    },
+    {
+      "item": "13/9",
+      "english": "Ring of Poison",
+      "chinese": "毒之指环",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/9]",
+      "official_text": "毒之指环"
+    },
+    {
+      "item": "13/12",
+      "english": "Pendant of Lighting",
+      "chinese": "雷之项链",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/12]",
+      "official_text": "雷之项链"
+    },
+    {
+      "item": "13/13",
+      "english": "Pendant of Fire",
+      "chinese": "火之项链",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/13]",
+      "official_text": "火之项链"
+    },
+    {
+      "item": "13/21",
+      "english": "Ring of Fire",
+      "chinese": "火之指环",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/21]",
+      "official_text": "火之指环"
+    },
+    {
+      "item": "13/22",
+      "english": "Ring of Earth",
+      "chinese": "地之指环",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/22]",
+      "official_text": "地之指环"
+    },
+    {
+      "item": "13/23",
+      "english": "Ring of Wind",
+      "chinese": "风之指环",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/23]",
+      "official_text": "风之指环"
+    },
+    {
+      "item": "13/24",
+      "english": "Ring of Magic",
+      "chinese": "魔之指环",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/24]",
+      "official_text": "魔之指环"
+    },
+    {
+      "item": "13/25",
+      "english": "Pendant of Ice",
+      "chinese": "冰之项链",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/25]",
+      "official_text": "冰之项链"
+    },
+    {
+      "item": "13/26",
+      "english": "Pendant of Wind",
+      "chinese": "风之项链",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/26]",
+      "official_text": "风之项链"
+    },
+    {
+      "item": "13/27",
+      "english": "Pendant of Water",
+      "chinese": "水之项链",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/27]",
+      "official_text": "水之项链"
+    },
+    {
+      "item": "13/28",
+      "english": "Pendant of Ability",
+      "chinese": "紫晶项链",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/28]",
+      "official_text": "紫晶项链"
+    },
+    {
+      "item": "13/30",
+      "english": "Cape of Lord",
+      "chinese": "王者披风",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/30]",
+      "official_text": "王者披风"
+    },
+    {
+      "item": "13/37",
+      "english": "Horn of Fenrir",
+      "chinese": "炎狼兽之角",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/37]",
+      "official_text": "炎狼兽之角"
+    },
+    {
+      "item": "13/38",
+      "english": "Moonstone Pendant",
+      "chinese": "悬石",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/38]",
+      "official_text": "悬石"
+    },
+    {
+      "item": "13/39",
+      "english": "Eilte Transfer Skeleton Ring",
+      "chinese": "骷髅战士变身指环",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/39]",
+      "official_text": "骷髅战士变身指环"
+    },
+    {
+      "item": "13/40",
+      "english": "Jack Olantern Ring",
+      "chinese": "南瓜灯变身指环",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/40]",
+      "official_text": "南瓜灯变身指环"
+    },
+    {
+      "item": "13/41",
+      "english": "Transfer Christmas Ring",
+      "chinese": "圣诞变身指环",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/41]",
+      "official_text": "圣诞变身指环"
+    },
+    {
+      "item": "13/42",
+      "english": "Ring of GM",
+      "chinese": "GM变身指环",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/42]",
+      "official_text": "GM变身指环"
+    },
+    {
+      "item": "13/64",
+      "english": "Demon",
+      "chinese": "强化恶魔",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/64]",
+      "official_text": "强化恶魔"
+    },
+    {
+      "item": "13/65",
+      "english": "Spirit of Guardian",
+      "chinese": "强化天使",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/65]",
+      "official_text": "强化天使"
+    },
+    {
+      "item": "13/67",
+      "english": "Pet Rudolf",
+      "chinese": "鲁道夫",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/67]",
+      "official_text": "鲁道夫"
+    },
+    {
+      "item": "13/68",
+      "english": "Snowman Transformation Ring",
+      "chinese": "雪人变身指环",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/68]",
+      "official_text": "雪人变身指环"
+    },
+    {
+      "item": "13/76",
+      "english": "Panda Ring",
+      "chinese": "熊猫变身指环",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/76]",
+      "official_text": "熊猫变身指环"
+    },
+    {
+      "item": "13/80",
+      "english": "Pet Panda",
+      "chinese": "熊猫",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/80]",
+      "official_text": "熊猫"
+    },
+    {
+      "item": "13/106",
+      "english": "Pet Unicorn",
+      "chinese": "独角兽",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/106]",
+      "official_text": "独角兽"
+    },
+    {
+      "item": "13/107",
+      "english": "Lethal Wizard's Ring",
+      "chinese": "致命魔法指环",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/107]",
+      "official_text": "致命魔法指环"
+    },
+    {
+      "item": "13/109",
+      "english": "Sapphire Ring",
+      "chinese": "蓝宝石戒指",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/109]",
+      "official_text": "蓝宝石戒指"
+    },
+    {
+      "item": "13/110",
+      "english": "Ruby Ring",
+      "chinese": "红宝石戒指",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/110]",
+      "official_text": "红宝石戒指"
+    },
+    {
+      "item": "13/111",
+      "english": "Topaz Ring",
+      "chinese": "黄宝石戒指",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/111]",
+      "official_text": "黄宝石戒指"
+    },
+    {
+      "item": "13/112",
+      "english": "Amethyst Ring",
+      "chinese": "紫水晶戒指",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/112]",
+      "official_text": "紫水晶戒指"
+    },
+    {
+      "item": "13/113",
+      "english": "Ruby Necklace",
+      "chinese": "红宝石项链",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/113]",
+      "official_text": "红宝石项链"
+    },
+    {
+      "item": "13/114",
+      "english": "Emerald Necklace",
+      "chinese": "绿宝石项链",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/114]",
+      "official_text": "绿宝石项链"
+    },
+    {
+      "item": "13/115",
+      "english": "Sapphire Necklace",
+      "chinese": "蓝宝石项链",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/115]",
+      "official_text": "蓝宝石项链"
+    },
+    {
+      "item": "13/122",
+      "english": "Skeleton Transformation Ring",
+      "chinese": "骷髅变身戒指",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/122]",
+      "official_text": "骷髅变身戒指"
+    },
+    {
+      "item": "13/123",
+      "english": "Pet Skeleton",
+      "chinese": "幼龙骨架",
+      "basis": "official_client",
+      "source": "Data/Local/item.bmd [13/123]",
+      "official_text": "幼龙骨架"
+    }
+  ],
+  "monster_names": [
+    {
+      "number": 0,
+      "english": "Bull Fighter",
+      "chinese": "牛怪",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [0]",
+      "official_text": "牛怪"
+    },
+    {
+      "number": 1,
+      "english": "Hound",
+      "chinese": "猎犬怪",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [1]",
+      "official_text": "猎犬怪"
+    },
+    {
+      "number": 2,
+      "english": "Budge Dragon",
+      "chinese": "幼龙",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [2]",
+      "official_text": "幼龙"
+    },
+    {
+      "number": 3,
+      "english": "Spider",
+      "chinese": "蜘蛛",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [3]",
+      "official_text": "蜘蛛"
+    },
+    {
+      "number": 4,
+      "english": "Elite Bull Fighter",
+      "chinese": "蛮牛怪",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [4]",
+      "official_text": "蛮牛怪"
+    },
+    {
+      "number": 5,
+      "english": "Hell Hound",
+      "chinese": "地狱猎犬怪",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [5]",
+      "official_text": "地狱猎犬怪"
+    },
+    {
+      "number": 6,
+      "english": "LIch",
+      "chinese": "黑巫师",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [6]",
+      "official_text": "黑巫师"
+    },
+    {
+      "number": 7,
+      "english": "Giant",
+      "chinese": "巨人",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [7]",
+      "official_text": "巨人"
+    },
+    {
+      "number": 8,
+      "english": "Poison Bull Fighter",
+      "chinese": "毒牛怪",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [8]",
+      "official_text": "毒牛怪"
+    },
+    {
+      "number": 9,
+      "english": "Thunder Lich",
+      "chinese": "死灵巫师",
+      "basis": "official_client_normalized",
+      "source": "Data/Local/npcname.bmd [9]",
+      "official_text": "死灵巫師"
+    },
+    {
+      "number": 10,
+      "english": "Dark Knight",
+      "chinese": "暗黑骑士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [10]",
+      "official_text": "暗黑骑士"
+    },
+    {
+      "number": 11,
+      "english": "Ghost",
+      "chinese": "幽灵",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [11]",
+      "official_text": "幽灵"
+    },
+    {
+      "number": 12,
+      "english": "Larva",
+      "chinese": "毒虫",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [12]",
+      "official_text": "毒虫"
+    },
+    {
+      "number": 532,
+      "english": "Larva",
+      "chinese": "幼虫",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [532]",
+      "official_text": "幼虫"
+    },
+    {
+      "number": 13,
+      "english": "Hell Spider",
+      "chinese": "地狱蜘蛛",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [13]",
+      "official_text": "地狱蜘蛛"
+    },
+    {
+      "number": 14,
+      "english": "Skeleton",
+      "chinese": "骷髅兵",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [14]",
+      "official_text": "骷髅兵"
+    },
+    {
+      "number": 15,
+      "english": "Skeleton Archer",
+      "chinese": "骷髅弓箭手",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [15]",
+      "official_text": "骷髅弓箭手"
+    },
+    {
+      "number": 16,
+      "english": "Chief Skeleton Warrior",
+      "chinese": "骷髅战士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [16]",
+      "official_text": "骷髅战士"
+    },
+    {
+      "number": 17,
+      "english": "Cyclops",
+      "chinese": "独眼巨人",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [17]",
+      "official_text": "独眼巨人"
+    },
+    {
+      "number": 18,
+      "english": "Gorgon",
+      "chinese": "魔鬼戈登",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [18]",
+      "official_text": "魔鬼戈登"
+    },
+    {
+      "number": 19,
+      "english": "Yeti",
+      "chinese": "雪人",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [19]",
+      "official_text": "雪人"
+    },
+    {
+      "number": 20,
+      "english": "Elite Yeti",
+      "chinese": "雪人王",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [20]",
+      "official_text": "雪人王"
+    },
+    {
+      "number": 21,
+      "english": "Assassin",
+      "chinese": "暗杀者",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [21]",
+      "official_text": "暗杀者"
+    },
+    {
+      "number": 22,
+      "english": "Ice Monster",
+      "chinese": "寒冰魔",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [22]",
+      "official_text": "寒冰魔"
+    },
+    {
+      "number": 23,
+      "english": "Hommerd",
+      "chinese": "蓝魔怪",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [23]",
+      "official_text": "蓝魔怪"
+    },
+    {
+      "number": 24,
+      "english": "Worm",
+      "chinese": "雪虫",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [24]",
+      "official_text": "雪虫"
+    },
+    {
+      "number": 25,
+      "english": "Ice Queen",
+      "chinese": "冰后",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [25]",
+      "official_text": "冰后"
+    },
+    {
+      "number": 26,
+      "english": "Goblin",
+      "chinese": "小哥布林",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [26]",
+      "official_text": "小哥布林"
+    },
+    {
+      "number": 27,
+      "english": "Chain Scorpion",
+      "chinese": "勾尾蝎",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [27]",
+      "official_text": "勾尾蝎"
+    },
+    {
+      "number": 28,
+      "english": "Beetle Monster",
+      "chinese": "瓢虫怪",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [28]",
+      "official_text": "瓢虫怪"
+    },
+    {
+      "number": 29,
+      "english": "Hunter",
+      "chinese": "偷猎者",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [29]",
+      "official_text": "偷猎者"
+    },
+    {
+      "number": 30,
+      "english": "Forest Monster",
+      "chinese": "树妖",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [30]",
+      "official_text": "树妖"
+    },
+    {
+      "number": 31,
+      "english": "Agon",
+      "chinese": "亚昆",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [31]",
+      "official_text": "亚昆"
+    },
+    {
+      "number": 32,
+      "english": "Stone Golem",
+      "chinese": "石巨人",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [32]",
+      "official_text": "石巨人"
+    },
+    {
+      "number": 33,
+      "english": "Elite Goblin",
+      "chinese": "大哥布林",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [33]",
+      "official_text": "大哥布林"
+    },
+    {
+      "number": 34,
+      "english": "Cursed Wizard",
+      "chinese": "诅咒巫师",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [34]",
+      "official_text": "诅咒巫师"
+    },
+    {
+      "number": 35,
+      "english": "Death Gorgon",
+      "chinese": "死神戈登",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [35]",
+      "official_text": "死神戈登"
+    },
+    {
+      "number": 36,
+      "english": "Shadow",
+      "chinese": "鬼魂",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [36]",
+      "official_text": "鬼魂"
+    },
+    {
+      "number": 37,
+      "english": "Devil",
+      "chinese": "恶魔",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [37]",
+      "official_text": "恶魔"
+    },
+    {
+      "number": 38,
+      "english": "Balrog",
+      "chinese": "魔王巴洛克",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [38]",
+      "official_text": "魔王巴洛克"
+    },
+    {
+      "number": 39,
+      "english": "Poison Shadow",
+      "chinese": "剧毒鬼魂",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [39]",
+      "official_text": "剧毒鬼魂"
+    },
+    {
+      "number": 40,
+      "english": "Death Knight",
+      "chinese": "死神骑士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [40]",
+      "official_text": "死神骑士"
+    },
+    {
+      "number": 41,
+      "english": "Death Cow",
+      "chinese": "牛魔王",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [41]",
+      "official_text": "牛魔王"
+    },
+    {
+      "number": 45,
+      "english": "Bahamut",
+      "chinese": "小巴哈姆特",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [45]",
+      "official_text": "小巴哈姆特"
+    },
+    {
+      "number": 46,
+      "english": "Vepar",
+      "chinese": "死亡美人鱼",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [46]",
+      "official_text": "死亡美人鱼"
+    },
+    {
+      "number": 47,
+      "english": "Valkyrie",
+      "chinese": "蓝翼海怪",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [47]",
+      "official_text": "蓝翼海怪"
+    },
+    {
+      "number": 48,
+      "english": "Lizard King",
+      "chinese": "巫师王",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [48]",
+      "official_text": "巫师王"
+    },
+    {
+      "number": 49,
+      "english": "Hydra",
+      "chinese": "海魔希特拉",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [49]",
+      "official_text": "海魔希特拉"
+    },
+    {
+      "number": 51,
+      "english": "Great Bahamut",
+      "chinese": "大巴哈姆特",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [51]",
+      "official_text": "大巴哈姆特"
+    },
+    {
+      "number": 52,
+      "english": "Silver Valkyrie",
+      "chinese": "银弓海怪",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [52]",
+      "official_text": "银弓海怪"
+    },
+    {
+      "number": 57,
+      "english": "Iron Wheel",
+      "chinese": "铁轮战士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [57]",
+      "official_text": "铁轮战士"
+    },
+    {
+      "number": 58,
+      "english": "Tantalos",
+      "chinese": "破坏骑士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [58]",
+      "official_text": "破坏骑士"
+    },
+    {
+      "number": 59,
+      "english": "Zaikan",
+      "chinese": "魔王扎坎",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [59]",
+      "official_text": "魔王扎坎"
+    },
+    {
+      "number": 60,
+      "english": "Bloody wolf",
+      "chinese": "巨齿兽",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [60]",
+      "official_text": "巨齿兽"
+    },
+    {
+      "number": 61,
+      "english": "Beam Knight",
+      "chinese": "黑炎魔",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [61]",
+      "official_text": "黑炎魔"
+    },
+    {
+      "number": 62,
+      "english": "Mutant",
+      "chinese": "铁脊怪",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [62]",
+      "official_text": "铁脊怪"
+    },
+    {
+      "number": 63,
+      "english": "Death Beam Knight",
+      "chinese": "炽炎魔",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [63]",
+      "official_text": "炽炎魔"
+    },
+    {
+      "number": 69,
+      "english": "Alquamos",
+      "chinese": "阿卡摩斯",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [69]",
+      "official_text": "阿卡摩斯"
+    },
+    {
+      "number": 70,
+      "english": "Queen Rainier",
+      "chinese": "风后",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [70]",
+      "official_text": "风后"
+    },
+    {
+      "number": 71,
+      "english": "Mega Crust",
+      "chinese": "恶灵",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [71]",
+      "official_text": "恶灵"
+    },
+    {
+      "number": 72,
+      "english": "Phantom Knight",
+      "chinese": "幻影骑士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [72]",
+      "official_text": "幻影骑士"
+    },
+    {
+      "number": 73,
+      "english": "Drakan",
+      "chinese": "蓝魔龙",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [73]",
+      "official_text": "蓝魔龙"
+    },
+    {
+      "number": 74,
+      "english": "Alpha Crust",
+      "chinese": "恶灵王",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [74]",
+      "official_text": "恶灵王"
+    },
+    {
+      "number": 75,
+      "english": "Great Drakan",
+      "chinese": "红魔龙",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [75]",
+      "official_text": "红魔龙"
+    },
+    {
+      "number": 76,
+      "english": "Phoenix Darkness shield",
+      "chinese": "天魔菲尼斯",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [76]",
+      "official_text": "天魔菲尼斯"
+    },
+    {
+      "number": 77,
+      "english": "Phoenix of Darkness",
+      "chinese": "天魔菲尼斯",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [77]",
+      "official_text": "天魔菲尼斯"
+    },
+    {
+      "number": 144,
+      "english": "Death Angel",
+      "chinese": "死亡天使",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [144]",
+      "official_text": "死亡天使"
+    },
+    {
+      "number": 174,
+      "english": "Death Angel",
+      "chinese": "死亡天使",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [174]",
+      "official_text": "死亡天使"
+    },
+    {
+      "number": 182,
+      "english": "Death Angel",
+      "chinese": "死亡天使",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [182]",
+      "official_text": "死亡天使"
+    },
+    {
+      "number": 190,
+      "english": "Death Angel",
+      "chinese": "死亡天使",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [190]",
+      "official_text": "死亡天使"
+    },
+    {
+      "number": 260,
+      "english": "Death Angel",
+      "chinese": "死亡天使",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [260]",
+      "official_text": "死亡天使"
+    },
+    {
+      "number": 268,
+      "english": "Death Angel",
+      "chinese": "死亡天使",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [268]",
+      "official_text": "死亡天使"
+    },
+    {
+      "number": 334,
+      "english": "Death Angel",
+      "chinese": "死亡天使",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [334]",
+      "official_text": "死亡天使"
+    },
+    {
+      "number": 145,
+      "english": "Death Centurion",
+      "chinese": "狂武士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [145]",
+      "official_text": "狂武士"
+    },
+    {
+      "number": 175,
+      "english": "Death Centurion",
+      "chinese": "狂武士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [175]",
+      "official_text": "狂武士"
+    },
+    {
+      "number": 183,
+      "english": "Death Centurion",
+      "chinese": "狂武士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [183]",
+      "official_text": "狂武士"
+    },
+    {
+      "number": 191,
+      "english": "Death Centurion",
+      "chinese": "狂武士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [191]",
+      "official_text": "狂武士"
+    },
+    {
+      "number": 261,
+      "english": "Death Centurion",
+      "chinese": "狂武士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [261]",
+      "official_text": "狂武士"
+    },
+    {
+      "number": 269,
+      "english": "Death Centurion",
+      "chinese": "狂武士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [269]",
+      "official_text": "狂武士"
+    },
+    {
+      "number": 336,
+      "english": "Death Centurion",
+      "chinese": "狂武士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [336]",
+      "official_text": "狂武士"
+    },
+    {
+      "number": 146,
+      "english": "Blood Soldier",
+      "chinese": "龙虾守卫",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [146]",
+      "official_text": "龙虾守卫"
+    },
+    {
+      "number": 176,
+      "english": "Blood Soldier",
+      "chinese": "龙虾守卫",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [176]",
+      "official_text": "龙虾守卫"
+    },
+    {
+      "number": 184,
+      "english": "Blood Soldier",
+      "chinese": "龙虾守卫",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [184]",
+      "official_text": "龙虾守卫"
+    },
+    {
+      "number": 192,
+      "english": "Blood Soldier",
+      "chinese": "龙虾守卫",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [192]",
+      "official_text": "龙虾守卫"
+    },
+    {
+      "number": 262,
+      "english": "Blood Soldier",
+      "chinese": "龙虾守卫",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [262]",
+      "official_text": "龙虾守卫"
+    },
+    {
+      "number": 270,
+      "english": "Blood Soldier",
+      "chinese": "龙虾守卫",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [270]",
+      "official_text": "龙虾守卫"
+    },
+    {
+      "number": 333,
+      "english": "Blood Soldier",
+      "chinese": "龙虾守卫",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [333]",
+      "official_text": "龙虾守卫"
+    },
+    {
+      "number": 147,
+      "english": "Aegis",
+      "chinese": "阿卡斯",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [147]",
+      "official_text": "阿卡斯"
+    },
+    {
+      "number": 177,
+      "english": "Aegis",
+      "chinese": "阿卡斯",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [177]",
+      "official_text": "阿卡斯"
+    },
+    {
+      "number": 185,
+      "english": "Aegis",
+      "chinese": "阿卡斯",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [185]",
+      "official_text": "阿卡斯"
+    },
+    {
+      "number": 193,
+      "english": "Aegis",
+      "chinese": "阿卡斯",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [193]",
+      "official_text": "阿卡斯"
+    },
+    {
+      "number": 263,
+      "english": "Aegis",
+      "chinese": "阿卡斯",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [263]",
+      "official_text": "阿卡斯"
+    },
+    {
+      "number": 271,
+      "english": "Aegis",
+      "chinese": "阿卡斯",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [271]",
+      "official_text": "阿卡斯"
+    },
+    {
+      "number": 331,
+      "english": "Aegis",
+      "chinese": "阿卡斯",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [331]",
+      "official_text": "阿卡斯"
+    },
+    {
+      "number": 148,
+      "english": "Rogue Centurion",
+      "chinese": "武士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [148]",
+      "official_text": "武士"
+    },
+    {
+      "number": 178,
+      "english": "Rogue Centurion",
+      "chinese": "武士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [178]",
+      "official_text": "武士"
+    },
+    {
+      "number": 186,
+      "english": "Rogue Centurion",
+      "chinese": "武士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [186]",
+      "official_text": "武士"
+    },
+    {
+      "number": 194,
+      "english": "Rogue Centurion",
+      "chinese": "武士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [194]",
+      "official_text": "武士"
+    },
+    {
+      "number": 264,
+      "english": "Rogue Centurion",
+      "chinese": "武士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [264]",
+      "official_text": "武士"
+    },
+    {
+      "number": 272,
+      "english": "Rogue Centurion",
+      "chinese": "武士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [272]",
+      "official_text": "武士"
+    },
+    {
+      "number": 332,
+      "english": "Rogue Centurion",
+      "chinese": "武士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [332]",
+      "official_text": "武士"
+    },
+    {
+      "number": 149,
+      "english": "Necron",
+      "chinese": "暗黑巫师",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [149]",
+      "official_text": "暗黑巫师"
+    },
+    {
+      "number": 179,
+      "english": "Necron",
+      "chinese": "暗黑巫师",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [179]",
+      "official_text": "暗黑巫师"
+    },
+    {
+      "number": 187,
+      "english": "Necron",
+      "chinese": "暗黑巫师",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [187]",
+      "official_text": "暗黑巫师"
+    },
+    {
+      "number": 195,
+      "english": "Necron",
+      "chinese": "暗黑巫师",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [195]",
+      "official_text": "暗黑巫师"
+    },
+    {
+      "number": 265,
+      "english": "Necron",
+      "chinese": "暗黑巫师",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [265]",
+      "official_text": "暗黑巫师"
+    },
+    {
+      "number": 273,
+      "english": "Necron",
+      "chinese": "暗黑巫师",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [273]",
+      "official_text": "暗黑巫师"
+    },
+    {
+      "number": 335,
+      "english": "Necron",
+      "chinese": "暗黑巫师",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [335]",
+      "official_text": "暗黑巫师"
+    },
+    {
+      "number": 160,
+      "english": "Schriker",
+      "chinese": "暗黑傀儡",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [160]",
+      "official_text": "暗黑傀儡"
+    },
+    {
+      "number": 180,
+      "english": "Schriker",
+      "chinese": "暗黑傀儡",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [180]",
+      "official_text": "暗黑傀儡"
+    },
+    {
+      "number": 188,
+      "english": "Schriker",
+      "chinese": "暗黑傀儡",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [188]",
+      "official_text": "暗黑傀儡"
+    },
+    {
+      "number": 196,
+      "english": "Schriker",
+      "chinese": "暗黑傀儡",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [196]",
+      "official_text": "暗黑傀儡"
+    },
+    {
+      "number": 266,
+      "english": "Schriker",
+      "chinese": "暗黑傀儡",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [266]",
+      "official_text": "暗黑傀儡"
+    },
+    {
+      "number": 274,
+      "english": "Schriker",
+      "chinese": "暗黑傀儡",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [274]",
+      "official_text": "暗黑傀儡"
+    },
+    {
+      "number": 337,
+      "english": "Schriker",
+      "chinese": "暗黑傀儡",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [337]",
+      "official_text": "暗黑傀儡"
+    },
+    {
+      "number": 161,
+      "english": "Illusion of Kundun",
+      "chinese": "昆顿",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [161]",
+      "official_text": "昆顿"
+    },
+    {
+      "number": 181,
+      "english": "Illusion of Kundun",
+      "chinese": "昆顿",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [181]",
+      "official_text": "昆顿"
+    },
+    {
+      "number": 189,
+      "english": "Illusion of Kundun",
+      "chinese": "昆顿",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [189]",
+      "official_text": "昆顿"
+    },
+    {
+      "number": 197,
+      "english": "Illusion of Kundun",
+      "chinese": "昆顿",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [197]",
+      "official_text": "昆顿"
+    },
+    {
+      "number": 267,
+      "english": "Illusion of Kundun",
+      "chinese": "昆顿",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [267]",
+      "official_text": "昆顿"
+    },
+    {
+      "number": 338,
+      "english": "Illusion of Kundun",
+      "chinese": "昆顿",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [338]",
+      "official_text": "昆顿"
+    },
+    {
+      "number": 277,
+      "english": "Castle Gate",
+      "chinese": "城门1",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [277]",
+      "official_text": "城门1"
+    },
+    {
+      "number": 278,
+      "english": "Life Stone",
+      "chinese": "复活石",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [278]",
+      "official_text": "复活石"
+    },
+    {
+      "number": 283,
+      "english": "Guardian Statue",
+      "chinese": "守护石像",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [283]",
+      "official_text": "守护石像"
+    },
+    {
+      "number": 288,
+      "english": "Canon Tower",
+      "chinese": "神堡",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [288]",
+      "official_text": "神堡"
+    },
+    {
+      "number": 290,
+      "english": "Lizard Warrior",
+      "chinese": "冷血变异者",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [290]",
+      "official_text": "冷血变异者"
+    },
+    {
+      "number": 291,
+      "english": "Fire Golem",
+      "chinese": "熔岩巨魔",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [291]",
+      "official_text": "熔岩巨魔"
+    },
+    {
+      "number": 292,
+      "english": "Queen Bee",
+      "chinese": "嗜血蜂后",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [292]",
+      "official_text": "嗜血蜂后"
+    },
+    {
+      "number": 293,
+      "english": "Poison Golem",
+      "chinese": "毒巨魔",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [293]",
+      "official_text": "毒巨魔"
+    },
+    {
+      "number": 294,
+      "english": "Ax Warrior",
+      "chinese": "巨斧战士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [294]",
+      "official_text": "巨斧战士"
+    },
+    {
+      "number": 295,
+      "english": "Erohim",
+      "chinese": "炼狱魔王",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [295]",
+      "official_text": "炼狱魔王"
+    },
+    {
+      "number": 304,
+      "english": "Witch Queen",
+      "chinese": "丛林女巫师",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [304]",
+      "official_text": "丛林女巫师"
+    },
+    {
+      "number": 305,
+      "english": "Blue Golem",
+      "chinese": "丛林生命体",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [305]",
+      "official_text": "丛林生命体"
+    },
+    {
+      "number": 306,
+      "english": "Death Rider",
+      "chinese": "丛林暗杀者",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [306]",
+      "official_text": "丛林暗杀者"
+    },
+    {
+      "number": 307,
+      "english": "Forest Orc",
+      "chinese": "丛林残暴者",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [307]",
+      "official_text": "丛林残暴者"
+    },
+    {
+      "number": 308,
+      "english": "Death Tree",
+      "chinese": "丛林树精灵",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [308]",
+      "official_text": "丛林树精灵"
+    },
+    {
+      "number": 309,
+      "english": "Hell Maine",
+      "chinese": "丛林召唤者",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [309]",
+      "official_text": "丛林召唤者"
+    },
+    {
+      "number": 310,
+      "english": "Hammer Scout",
+      "chinese": "刺锤侦察兵",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [310]",
+      "official_text": "刺锤侦察兵"
+    },
+    {
+      "number": 311,
+      "english": "Lance Scout",
+      "chinese": "长矛侦察兵",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [311]",
+      "official_text": "长矛侦察兵"
+    },
+    {
+      "number": 312,
+      "english": "Bow Scout",
+      "chinese": "魔弓侦察兵",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [312]",
+      "official_text": "魔弓侦察兵"
+    },
+    {
+      "number": 313,
+      "english": "Werewolf",
+      "chinese": "暗黑血狼人",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [313]",
+      "official_text": "暗黑血狼人"
+    },
+    {
+      "number": 314,
+      "english": "Scout(Hero)",
+      "chinese": "英雄侦察兵",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [314]",
+      "official_text": "英雄侦察兵"
+    },
+    {
+      "number": 315,
+      "english": "Werewolf(Hero)",
+      "chinese": "英雄血狼人",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [315]",
+      "official_text": "英雄血狼人"
+    },
+    {
+      "number": 316,
+      "english": "Balram",
+      "chinese": "暗黑防御者",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [316]",
+      "official_text": "暗黑防御者"
+    },
+    {
+      "number": 344,
+      "english": "Balram",
+      "chinese": "暗黑防御者",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [344]",
+      "official_text": "暗黑防御者"
+    },
+    {
+      "number": 317,
+      "english": "Soram",
+      "chinese": "暗黑扫荡者",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [317]",
+      "official_text": "暗黑扫荡者"
+    },
+    {
+      "number": 341,
+      "english": "Soram",
+      "chinese": "暗黑扫荡者",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [341]",
+      "official_text": "暗黑扫荡者"
+    },
+    {
+      "number": 340,
+      "english": "Dark Elf",
+      "chinese": "暗黑指挥官",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [340]",
+      "official_text": "暗黑指挥官"
+    },
+    {
+      "number": 440,
+      "english": "Dark Elf",
+      "chinese": "暗黑指挥官",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [440]",
+      "official_text": "暗黑指挥官"
+    },
+    {
+      "number": 350,
+      "english": "Berserker",
+      "chinese": "疯魔",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [350]",
+      "official_text": "疯魔"
+    },
+    {
+      "number": 435,
+      "english": "Berserker",
+      "chinese": "疯魔",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [435]",
+      "official_text": "疯魔"
+    },
+    {
+      "number": 351,
+      "english": "Splinter Wolf",
+      "chinese": "裂角狼",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [351]",
+      "official_text": "裂角狼"
+    },
+    {
+      "number": 352,
+      "english": "Iron Rider",
+      "chinese": "金甲兽",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [352]",
+      "official_text": "金甲兽"
+    },
+    {
+      "number": 353,
+      "english": "Satyros",
+      "chinese": "半兽人",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [353]",
+      "official_text": "半兽人"
+    },
+    {
+      "number": 354,
+      "english": "Blade Hunter",
+      "chinese": "刀刃猎手",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [354]",
+      "official_text": "刀刃猎手"
+    },
+    {
+      "number": 355,
+      "english": "Kentauros",
+      "chinese": "寒冰刺客",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [355]",
+      "official_text": "寒冰刺客"
+    },
+    {
+      "number": 356,
+      "english": "Gigantis",
+      "chinese": "狂巨人",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [356]",
+      "official_text": "狂巨人"
+    },
+    {
+      "number": 434,
+      "english": "Gigantis",
+      "chinese": "狂巨人",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [434]",
+      "official_text": "狂巨人"
+    },
+    {
+      "number": 357,
+      "english": "Genocider",
+      "chinese": "屠杀者",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [357]",
+      "official_text": "屠杀者"
+    },
+    {
+      "number": 358,
+      "english": "Persona",
+      "chinese": "假面巫",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [358]",
+      "official_text": "假面巫"
+    },
+    {
+      "number": 438,
+      "english": "Persona",
+      "chinese": "假面巫",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [438]",
+      "official_text": "假面巫"
+    },
+    {
+      "number": 359,
+      "english": "Twin Tale",
+      "chinese": "毒步妖",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [359]",
+      "official_text": "毒步妖"
+    },
+    {
+      "number": 360,
+      "english": "Dreadfear",
+      "chinese": "恐惧天使",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [360]",
+      "official_text": "恐惧天使"
+    },
+    {
+      "number": 439,
+      "english": "Dreadfear",
+      "chinese": "恐惧天使",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [439]",
+      "official_text": "恐惧天使"
+    },
+    {
+      "number": 361,
+      "english": "Nightmare",
+      "chinese": "咒怨魔王",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [361]",
+      "official_text": "咒怨魔王"
+    },
+    {
+      "number": 362,
+      "english": "Maya Hand",
+      "chinese": "玛雅副手",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [362]",
+      "official_text": "玛雅副手"
+    },
+    {
+      "number": 363,
+      "english": "Maya Hand",
+      "chinese": "玛雅副手",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [363]",
+      "official_text": "玛雅副手"
+    },
+    {
+      "number": 364,
+      "english": "Maya",
+      "chinese": "玛雅生命体",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [364]",
+      "official_text": "玛雅生命体"
+    },
+    {
+      "number": 409,
+      "english": "Balram (Trainee Soldier)",
+      "chinese": "暗黑防御者（训练兵）",
+      "basis": "official_client_normalized",
+      "source": "Data/Local/npcname.bmd [409]",
+      "official_text": "暗黑防御者(训练兵)"
+    },
+    {
+      "number": 436,
+      "english": "Balram (Trainee Soldier)",
+      "chinese": "暗黑防御者（训练兵）",
+      "basis": "official_client_normalized",
+      "source": "Data/Local/npcname.bmd [436]",
+      "official_text": "暗黑防御者(训练兵)"
+    },
+    {
+      "number": 410,
+      "english": "Death Spirit (Trainee Soldier)",
+      "chinese": "暗黑咒术师（训练兵）",
+      "basis": "official_client_normalized",
+      "source": "Data/Local/npcname.bmd [410]",
+      "official_text": "暗黑咒术师(训练兵)"
+    },
+    {
+      "number": 411,
+      "english": "Soram (Trainee Soldier)",
+      "chinese": "暗黑扫荡者（训练兵）",
+      "basis": "official_client_normalized",
+      "source": "Data/Local/npcname.bmd [411]",
+      "official_text": "暗黑扫荡者(训练兵)"
+    },
+    {
+      "number": 437,
+      "english": "Soram (Trainee Soldier)",
+      "chinese": "暗黑扫荡者（训练兵）",
+      "basis": "official_client_normalized",
+      "source": "Data/Local/npcname.bmd [437]",
+      "official_text": "暗黑扫荡者(训练兵)"
+    },
+    {
+      "number": 412,
+      "english": "Dark Elf (Trainee Soldier)",
+      "chinese": "暗黑指挥官（训练兵）",
+      "basis": "official_client_normalized",
+      "source": "Data/Local/npcname.bmd [412]",
+      "official_text": "暗黑指挥官(训练兵)"
+    },
+    {
+      "number": 418,
+      "english": "Strange Rabbit",
+      "chinese": "怪异的兔子",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [418]",
+      "official_text": "怪异的兔子"
+    },
+    {
+      "number": 422,
+      "english": "Cursed Lich",
+      "chinese": "诅咒巫师",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [422]",
+      "official_text": "诅咒巫师"
+    },
+    {
+      "number": 423,
+      "english": "Totem Golem",
+      "chinese": "图腾树人",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [423]",
+      "official_text": "图腾树人"
+    },
+    {
+      "number": 424,
+      "english": "Grizzly",
+      "chinese": "灰熊",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [424]",
+      "official_text": "灰熊"
+    },
+    {
+      "number": 425,
+      "english": "Captain Grizzly",
+      "chinese": "残暴的灰熊",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [425]",
+      "official_text": "残暴的灰熊"
+    },
+    {
+      "number": 441,
+      "english": "Sapi-Unus",
+      "chinese": "树妖",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [441]",
+      "official_text": "树妖"
+    },
+    {
+      "number": 442,
+      "english": "Sapi-Duo",
+      "chinese": "毒树妖",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [442]",
+      "official_text": "毒树妖"
+    },
+    {
+      "number": 443,
+      "english": "Sapi-Tres",
+      "chinese": "残忍的树妖",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [443]",
+      "official_text": "残忍的树妖"
+    },
+    {
+      "number": 444,
+      "english": "Shadow Pawn",
+      "chinese": "暗影爪牙",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [444]",
+      "official_text": "暗影爪牙"
+    },
+    {
+      "number": 445,
+      "english": "Shadow Knight",
+      "chinese": "暗影骑士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [445]",
+      "official_text": "暗影骑士"
+    },
+    {
+      "number": 446,
+      "english": "Shadow Look",
+      "chinese": "暗影武士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [446]",
+      "official_text": "暗影武士"
+    },
+    {
+      "number": 447,
+      "english": "Thunder Napin",
+      "chinese": "闪电巨人",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [447]",
+      "official_text": "闪电巨人"
+    },
+    {
+      "number": 448,
+      "english": "Ghost Napin",
+      "chinese": "幽灵巨人",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [448]",
+      "official_text": "幽灵巨人"
+    },
+    {
+      "number": 449,
+      "english": "Blaze Napin",
+      "chinese": "火焰巨人",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [449]",
+      "official_text": "火焰巨人",
+      "official_document_reference": "https://mu.zhaouc.com/Guide/GameIntro/02_area17.html",
+      "official_document_text": "寒冰巨人",
+      "choice_note": "The official area guide calls this monster 寒冰巨人; the available official Chinese client names number 449 火焰巨人. Adopt the official-client name under the required source order. Both are official-source wording; this is a source/version naming difference."
+    },
+    {
+      "number": 454,
+      "english": "Ice Walker",
+      "chinese": "冰之魔犬",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [454]",
+      "official_text": "冰之魔犬"
+    },
+    {
+      "number": 531,
+      "english": "Ice Walker",
+      "chinese": "冰之魔犬",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [531]",
+      "official_text": "冰之魔犬"
+    },
+    {
+      "number": 455,
+      "english": "Giant Mammoth",
+      "chinese": "冰之魔象",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [455]",
+      "official_text": "冰之魔象"
+    },
+    {
+      "number": 456,
+      "english": "Ice Giant",
+      "chinese": "冰之巨魔",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [456]",
+      "official_text": "冰之巨魔"
+    },
+    {
+      "number": 457,
+      "english": "Coolutin",
+      "chinese": "冰之魔蛛",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [457]",
+      "official_text": "冰之魔蛛"
+    },
+    {
+      "number": 458,
+      "english": "Iron Knight",
+      "chinese": "冰铁剑魂",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [458]",
+      "official_text": "冰铁剑魂"
+    },
+    {
+      "number": 459,
+      "english": "Selupan",
+      "chinese": "冰霜巨蛛",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [459]",
+      "official_text": "冰霜巨蛛"
+    },
+    {
+      "number": 480,
+      "english": "Zombie Fighter",
+      "chinese": "幽灵斗士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [480]",
+      "official_text": "幽灵斗士"
+    },
+    {
+      "number": 481,
+      "english": "Zombie Fighter",
+      "chinese": "幽灵斗士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [481]",
+      "official_text": "幽灵斗士"
+    },
+    {
+      "number": 482,
+      "english": "Resurrected Gladiator",
+      "chinese": "幽灵角斗士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [482]",
+      "official_text": "幽灵角斗士"
+    },
+    {
+      "number": 483,
+      "english": "Resurrected Gladiator",
+      "chinese": "幽灵角斗士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [483]",
+      "official_text": "幽灵角斗士"
+    },
+    {
+      "number": 484,
+      "english": "Ash Slaughterer",
+      "chinese": "幽灵屠杀者",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [484]",
+      "official_text": "幽灵屠杀者"
+    },
+    {
+      "number": 485,
+      "english": "Ash Slaughterer",
+      "chinese": "幽灵屠杀者",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [485]",
+      "official_text": "幽灵屠杀者"
+    },
+    {
+      "number": 486,
+      "english": "Blood Assassin",
+      "chinese": "幽灵暗杀者",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [486]",
+      "official_text": "幽灵暗杀者"
+    },
+    {
+      "number": 487,
+      "english": "Cruel Blood Assassin",
+      "chinese": "幽灵残酷暗杀者",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [487]",
+      "official_text": "幽灵残酷暗杀者"
+    },
+    {
+      "number": 488,
+      "english": "Cruel Blood Assassin",
+      "chinese": "幽灵残酷暗杀者",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [488]",
+      "official_text": "幽灵残酷暗杀者"
+    },
+    {
+      "number": 489,
+      "english": "Burning Lava Giant",
+      "chinese": "幽灵巨人",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [489]",
+      "official_text": "幽灵巨人"
+    },
+    {
+      "number": 490,
+      "english": "Ruthless Lava Giant",
+      "chinese": "幽灵残酷巨人",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [490]",
+      "official_text": "幽灵残酷巨人"
+    },
+    {
+      "number": 491,
+      "english": "Ruthless Lava Giant",
+      "chinese": "幽灵残酷巨人",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [491]",
+      "official_text": "幽灵残酷巨人"
+    },
+    {
+      "number": 529,
+      "english": "Furious Slaughterer",
+      "chinese": "愤怒的屠夫",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [529]",
+      "official_text": "愤怒的屠夫"
+    },
+    {
+      "number": 530,
+      "english": "Slaughterer",
+      "chinese": "屠夫",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [530]",
+      "official_text": "屠夫"
+    },
+    {
+      "number": 534,
+      "english": "Doppelganger Elf",
+      "chinese": "生魂弓箭手",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [534]",
+      "official_text": "生魂弓箭手"
+    },
+    {
+      "number": 535,
+      "english": "Doppelganger Knight",
+      "chinese": "生魂剑士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [535]",
+      "official_text": "生魂剑士"
+    },
+    {
+      "number": 536,
+      "english": "Doppelganger Wizard",
+      "chinese": "生魂魔法师",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [536]",
+      "official_text": "生魂魔法师"
+    },
+    {
+      "number": 537,
+      "english": "Doppelganger Magic Gladiator",
+      "chinese": "生魂魔剑士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [537]",
+      "official_text": "生魂魔剑士"
+    },
+    {
+      "number": 538,
+      "english": "Doppelganger Dark Lord",
+      "chinese": "生魂圣导师",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [538]",
+      "official_text": "生魂圣导师"
+    },
+    {
+      "number": 539,
+      "english": "Doppelganger Summoner",
+      "chinese": "生魂召唤术师",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [539]",
+      "official_text": "生魂召唤术师"
+    },
+    {
+      "number": 549,
+      "english": "Bloody Orc",
+      "chinese": "血色兽人",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [549]",
+      "official_text": "血色兽人"
+    },
+    {
+      "number": 550,
+      "english": "Bloody Death Rider",
+      "chinese": "血色亡灵",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [550]",
+      "official_text": "血色亡灵"
+    },
+    {
+      "number": 551,
+      "english": "Bloody Golem",
+      "chinese": "血色石人",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [551]",
+      "official_text": "血色石人"
+    },
+    {
+      "number": 552,
+      "english": "Bloody Witch Queen",
+      "chinese": "血色魔女王",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [552]",
+      "official_text": "血色魔女王"
+    },
+    {
+      "number": 553,
+      "english": "Berserker Warrior",
+      "chinese": "狂暴战士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [553]",
+      "official_text": "狂暴战士"
+    },
+    {
+      "number": 554,
+      "english": "Kentauros Warrior",
+      "chinese": "半人马战士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [554]",
+      "official_text": "半人马战士"
+    },
+    {
+      "number": 555,
+      "english": "Gigantis Warrior",
+      "chinese": "巨人战士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [555]",
+      "official_text": "巨人战士"
+    },
+    {
+      "number": 556,
+      "english": "Genocider Warrior",
+      "chinese": "刽子手战士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [556]",
+      "official_text": "刽子手战士"
+    },
+    {
+      "number": 557,
+      "english": "Sapi Queen",
+      "chinese": "邪恶女王",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [557]",
+      "official_text": "邪恶女王"
+    },
+    {
+      "number": 560,
+      "english": "Sapi Queen",
+      "chinese": "邪恶女王",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [560]",
+      "official_text": "邪恶女王"
+    },
+    {
+      "number": 562,
+      "english": "Dark Mammoth",
+      "chinese": "黑暗猛犸",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [562]",
+      "official_text": "黑暗猛犸"
+    },
+    {
+      "number": 563,
+      "english": "Dark Giant",
+      "chinese": "黑暗巨人",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [563]",
+      "official_text": "黑暗巨人"
+    },
+    {
+      "number": 564,
+      "english": "Dark Coolutin",
+      "chinese": "黑暗魔蛛",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [564]",
+      "official_text": "黑暗魔蛛"
+    },
+    {
+      "number": 565,
+      "english": "Dark Iron Knight",
+      "chinese": "黑暗钢铁骑士",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [565]",
+      "official_text": "黑暗钢铁骑士"
+    },
+    {
+      "number": 569,
+      "english": "Venomous Chain Scorpion",
+      "chinese": "猛毒钩蝎",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [569]",
+      "official_text": "猛毒钩蝎"
+    },
+    {
+      "number": 570,
+      "english": "Bone Scorpion",
+      "chinese": "骷髅毒蝎",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [570]",
+      "official_text": "骷髅毒蝎"
+    },
+    {
+      "number": 571,
+      "english": "Orcus",
+      "chinese": "冥神",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [571]",
+      "official_text": "冥神"
+    },
+    {
+      "number": 572,
+      "english": "Gollock",
+      "chinese": "戈洛",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [572]",
+      "official_text": "戈洛"
+    },
+    {
+      "number": 573,
+      "english": "Crypta",
+      "chinese": "克里塔",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [573]",
+      "official_text": "克里塔"
+    },
+    {
+      "number": 574,
+      "english": "Crypos",
+      "chinese": "克里波斯",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [574]",
+      "official_text": "克里波斯"
+    },
+    {
+      "number": 575,
+      "english": "Condra",
+      "chinese": "坎德拉",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [575]",
+      "official_text": "坎德拉"
+    },
+    {
+      "number": 576,
+      "english": "Narcondra",
+      "chinese": "纳尔坎德拉",
+      "basis": "official_client",
+      "source": "Data/Local/npcname.bmd [576]",
+      "official_text": "纳尔坎德拉"
+    }
+  ],
+  "option_texts": [
+    {
+      "key": "additionalCurseDamage",
+      "english": "Additional Curse Spell +{value}",
+      "chinese": "追加诅咒力 +{value}",
+      "basis": "translated_from_english_meaning",
+      "source": "current English template",
+      "notes": "Contributor wording, not asserted to be verbatim official-client text; preserve the current values and placeholders."
+    },
+    {
+      "key": "additionalDamage",
+      "english": "Additional Dmg +{value}",
+      "chinese": "追加攻击力 +{value}",
+      "basis": "official_client_terms_adapted_to_current_english_template",
+      "source": "Data/Local/itemtooltiptext.bmd [327]",
+      "official_text": "追加攻击力 +1"
+    },
+    {
+      "key": "additionalDefense",
+      "english": "Additional defense +{value}",
+      "chinese": "追加防御力 +{value}",
+      "basis": "official_client_terms_adapted_to_current_english_template",
+      "source": "Data/Local/itemtooltiptext.bmd [1082]",
+      "official_text": "追加防御力  +20"
+    },
+    {
+      "key": "additionalDefenseRate",
+      "english": "Additional defense rate +{value}",
+      "chinese": "追加防御率 +{value}",
+      "basis": "translated_from_english_meaning",
+      "source": "current English template",
+      "notes": "Contributor wording, not asserted to be verbatim official-client text; preserve the current values and placeholders."
+    },
+    {
+      "key": "additionalWizardryDamage",
+      "english": "Additional Wizardry Dmg +{value}",
+      "chinese": "追加魔法攻击力 +{value}",
+      "basis": "translated_from_english_meaning",
+      "source": "current English template",
+      "notes": "Contributor wording, not asserted to be verbatim official-client text; preserve the current values and placeholders."
+    },
+    {
+      "key": "automaticHpRecovery",
+      "english": "Automatic HP recovery {value}%",
+      "chinese": "生命值自动恢复 {value}%",
+      "basis": "official_document_terms_adapted_to_current_english_template",
+      "source": "https://mu.zhaouc.com/Guide/ItemSystem/03_itemSys.html",
+      "notes": "Adopt automatic life recovery terminology; keep the current percentage template."
+    },
+    {
+      "key": "damageDecrease",
+      "english": "Damage Decrease +{value}%",
+      "chinese": "伤害减少 +{value}%",
+      "basis": "official_client_terms_adapted_to_current_english_template",
+      "source": "Data/Local/excellentcommonoption.bmd:2/2",
+      "official_text": "伤害减少 %d%%"
+    },
+    {
+      "key": "defenseSuccessRate",
+      "english": "Defense success rate +{value}%",
+      "chinese": "防御成功率增加 +{value}%",
+      "basis": "official_client_terms_adapted_to_current_english_template",
+      "source": "Data/Local/excellentcommonoption.bmd:2/4",
+      "official_text": "防御成功率增加%d%%"
+    },
+    {
+      "key": "excellentDamageRate",
+      "english": "Excellent Damage rate +{value}%",
+      "chinese": "卓越一击概率增加 +{value}%",
+      "basis": "official_client_terms_adapted_to_current_english_template",
+      "source": "Data/Local/excellentcommonoption.bmd:1/0",
+      "official_text": "卓越一击概率 增加 %d%%"
+    },
+    {
+      "key": "increaseAttackSpeed",
+      "english": "Increase Attacking(Wizardry)speed +{value}",
+      "chinese": "攻击（魔法）速度增加 +{value}",
+      "basis": "official_client_terms_adapted_to_current_english_template",
+      "source": "Data/Local/excellentcommonoption.bmd:1/3",
+      "official_text": "攻击(魔法)速度增加 %d"
+    },
+    {
+      "key": "increaseDamageLevel20",
+      "english": "Increase Damage +level/{divisor}",
+      "chinese": "攻击力增加 +等级/{divisor}",
+      "basis": "official_client_terms_adapted_to_current_english_template",
+      "source": "Data/Local/excellentcommonoption.bmd:1/1",
+      "official_text": "%s 每20等级增加 %d"
+    },
+    {
+      "key": "increaseDamagePercent",
+      "english": "Increase Damage +{value}%",
+      "chinese": "攻击力增加 +{value}%",
+      "basis": "official_client_terms_adapted_to_current_english_template",
+      "source": "Data/Local/excellentcommonoption.bmd:1/2",
+      "official_text": "%s 增加%d%%"
+    },
+    {
+      "key": "increaseMaxHp",
+      "english": "Increase Max HP +{value}%",
+      "chinese": "最大生命值增加 +{value}%",
+      "basis": "official_client_terms_adapted_to_current_english_template",
+      "source": "Data/Local/excellentcommonoption.bmd:2/0",
+      "official_text": "最大生命值增加 %d%%"
+    },
+    {
+      "key": "increaseMaxMana",
+      "english": "Increase Max Mana +{value}%",
+      "chinese": "最大魔法值增加 +{value}%",
+      "basis": "official_client_terms_adapted_to_current_english_template",
+      "source": "Data/Local/excellentcommonoption.bmd:2/1",
+      "official_text": "最大魔法值增加 %d%%"
+    },
+    {
+      "key": "increaseWizardryLevel20",
+      "english": "Increase Wizardry Dmg +level/{divisor}",
+      "chinese": "魔法攻击力增加 +等级/{divisor}",
+      "basis": "official_client_terms_adapted_to_current_english_template",
+      "source": "Data/Local/excellentcommonoption.bmd:1/1",
+      "official_text": "%s 每20等级增加 %d"
+    },
+    {
+      "key": "increaseWizardryPercent",
+      "english": "Increase Wizardry Dmg +{value}%",
+      "chinese": "魔法攻击力增加 +{value}%",
+      "basis": "official_client_terms_adapted_to_current_english_template",
+      "source": "Data/Local/excellentcommonoption.bmd:1/2",
+      "official_text": "%s 增加%d%%"
+    },
+    {
+      "key": "lifeAfterKill",
+      "english": "Increases acquisition rate of Life after hunting monsters +life/{value}",
+      "chinese": "杀死怪物时所获生命值 +生命值/{value}",
+      "basis": "official_client_terms_adapted_to_current_english_template",
+      "source": "Data/Local/excellentcommonoption.bmd:1/4",
+      "official_text": "杀死怪物时所获（生命值/%d） "
+    },
+    {
+      "key": "luckCriticalDamage",
+      "english": "Luck (critical damage rate +{value}%)",
+      "chinese": "幸运（暴击概率 +{value}%）",
+      "basis": "translated_from_english_meaning",
+      "source": "current English template",
+      "notes": "Contributor wording, not asserted to be verbatim official-client text; preserve the current values and placeholders."
+    },
+    {
+      "key": "luckJewelOfSoul",
+      "english": "Luck (success rate of Jewel of Soul +25%)",
+      "chinese": "幸运（灵魂宝石成功率 +25%）",
+      "basis": "translated_from_english_meaning",
+      "source": "current English template",
+      "notes": "Contributor wording, not asserted to be verbatim official-client text; preserve the current values and placeholders."
+    },
+    {
+      "key": "manaAfterKill",
+      "english": "Increases acquisition rate of Mana after hunting monsters +Mana/{value}",
+      "chinese": "杀死怪物时所获魔法值 +魔法值/{value}",
+      "basis": "official_client_terms_adapted_to_current_english_template",
+      "source": "Data/Local/excellentcommonoption.bmd:1/5",
+      "official_text": "杀死怪物时所获（魔法值/%d） "
+    },
+    {
+      "key": "maxAgIncrease",
+      "english": "Max AG increased by {value}%",
+      "chinese": "最大 AG 增加 {value}%",
+      "basis": "translated_from_english_meaning",
+      "source": "current English template",
+      "terminology_reference": "Data/Local/excellentwingoption.bmd:24/2",
+      "notes": "The current percentage is preserved; the reference supplies the AG name only."
+    },
+    {
+      "key": "maxManaIncrease",
+      "english": "Max mana increased by {value}%",
+      "chinese": "最大魔法值增加 {value}%",
+      "basis": "official_client_terms_adapted_to_current_english_template",
+      "source": "Data/Local/excellentcommonoption.bmd:2/1",
+      "official_text": "最大魔法值增加 %d%%"
+    },
+    {
+      "key": "reflectDamage",
+      "english": "Reflect Damage +{value}%",
+      "chinese": "伤害反射 +{value}%",
+      "basis": "official_client_terms_adapted_to_current_english_template",
+      "source": "Data/Local/excellentcommonoption.bmd:2/3",
+      "official_text": "伤害反射 %d%%"
+    },
+    {
+      "key": "zenAfterKill",
+      "english": "Increases acquisition rate of Zen after hunting monsters +{value}%",
+      "chinese": "杀死怪物时所获金币增加 +{value}%",
+      "basis": "official_client_terms_adapted_to_current_english_template",
+      "source": "Data/Local/excellentcommonoption.bmd:2/5",
+      "official_text": "杀死怪物时所获金增加%d%%"
+    }
+  ],
+  "name_templates": [
+    {
+      "item": "13/37",
+      "english": "{name} +Destroy",
+      "chinese": "{name} +破坏",
+      "basis": "official_document_terms_with_current_name_placeholder",
+      "source": "https://mu.zhaouc.com/01_news/updatecn/fourthupdate/other_update.htm"
+    },
+    {
+      "item": "13/37",
+      "english": "{name} +Protect",
+      "chinese": "{name} +守护",
+      "basis": "official_document_terms_with_current_name_placeholder",
+      "source": "https://mu.zhaouc.com/01_news/updatecn/fourthupdate/other_update.htm"
+    },
+    {
+      "item": "13/37",
+      "english": "{name} +Illusion",
+      "chinese": "{name} +幻影",
+      "basis": "translated_from_english_meaning",
+      "source": "current English name template"
+    }
+  ],
+  "resource_labels": [
+    {
+      "key": "Excellent",
+      "chinese": "卓越的",
+      "basis": "official_document_term_with_current_english_grammar",
+      "source": "https://mu.zhaouc.com/Guide/ItemSystem/03_itemSys.html"
+    },
+    {
+      "key": "+Luck",
+      "chinese": "+幸运",
+      "basis": "translated_from_english_meaning",
+      "source": "current English label",
+      "notes": "Preserve the leading plus sign."
+    }
+  ],
+  "counts": {
+    "equipment_names": 541,
+    "monster_names": 237,
+    "option_texts": 24,
+    "name_templates": 3,
+    "resource_labels": 2
+  },
+  "translation_commit": "f7a4bb910c7a212d5cd661ac91d2d929f623c783"
+}
