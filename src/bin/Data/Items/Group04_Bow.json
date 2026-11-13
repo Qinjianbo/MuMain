@@ -9,7 +9,8 @@
         "de": "Kurzbogen",
         "es": "Arco Corto",
         "pl": "Krótki łuk",
-        "pt": "Arco curto"
+        "pt": "Arco curto",
+        "zh-CN": "短弓"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,
@@ -40,7 +41,8 @@
         "de": "Bogen",
         "es": "Arco",
         "pl": "Łuk",
-        "pt": "Arco"
+        "pt": "Arco",
+        "zh-CN": "长弓"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,
@@ -71,7 +73,8 @@
         "de": "Elfenbogen",
         "es": "Arco de los Elfos",
         "pl": "Elfi łuk",
-        "pt": "Arco élfico"
+        "pt": "Arco élfico",
+        "zh-CN": "精灵之弓"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,
@@ -102,7 +105,8 @@
         "de": "Kampfbogen",
         "es": "Arco de Batalla",
         "pl": "Łuk bojowy",
-        "pt": "Arco de batalha"
+        "pt": "Arco de batalha",
+        "zh-CN": "巴特之弓"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,
@@ -133,7 +137,8 @@
         "de": "Tigerbogen",
         "es": "Arco Tigre",
         "pl": "Tygrysi łuk",
-        "pt": "Arco do tigre"
+        "pt": "Arco do tigre",
+        "zh-CN": "黄金之虎"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,
@@ -164,7 +169,8 @@
         "de": "Silberbogen",
         "es": "Arco Plateado",
         "pl": "Srebrny łuk",
-        "pt": "Arco de prata"
+        "pt": "Arco de prata",
+        "zh-CN": "银翼之弓"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,
@@ -195,7 +201,8 @@
         "de": "Chaos-Naturbogen",
         "es": "Arco Naturaleza del Caos",
         "pl": "Łuk Natury Chaosu",
-        "pt": "Arco da natureza do caos"
+        "pt": "Arco da natureza do caos",
+        "zh-CN": "玛雅神弓"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,
@@ -226,7 +233,8 @@
         "de": "Bolzen",
         "es": "Rayo",
         "pl": "Bełty",
-        "pt": "Dardo"
+        "pt": "Dardo",
+        "zh-CN": "弩箭"
       },
       "tags": ["ammunition"],
       "description": [
@@ -262,7 +270,8 @@
         "de": "Armbrust",
         "es": "Ballesta",
         "pl": "Kusza",
-        "pt": "Besta"
+        "pt": "Besta",
+        "zh-CN": "石弩"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,
@@ -293,7 +302,8 @@
         "de": "Goldene Armbrust",
         "es": "Ballesta Dorada",
         "pl": "Złota kusza",
-        "pt": "Besta dourada"
+        "pt": "Besta dourada",
+        "zh-CN": "黄金石弩"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,
@@ -324,7 +334,8 @@
         "de": "Arkebuse",
         "es": "Arcabuz",
         "pl": "Arkebuz",
-        "pt": "Arquebus"
+        "pt": "Arquebus",
+        "zh-CN": "火神弩"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,
@@ -355,7 +366,8 @@
         "de": "Leichte Armbrust",
         "es": "Ballesta de Luz",
         "pl": "Lekka kusza",
-        "pt": "Besta leve"
+        "pt": "Besta leve",
+        "zh-CN": "巨人弩"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,
@@ -386,7 +398,8 @@
         "de": "Schlangenarmbrust",
         "es": "Ballesta Serpiente",
         "pl": "Wężowa kusza",
-        "pt": "Besta da serpente"
+        "pt": "Besta da serpente",
+        "zh-CN": "诱惑之弩"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,
@@ -417,7 +430,8 @@
         "de": "Blauschwingen-Armbrust",
         "es": "Ballesta Ala Azul",
         "pl": "Kusza Błękitnego Skrzydła",
-        "pt": "Besta Bluewing"
+        "pt": "Besta Bluewing",
+        "zh-CN": "蓝翎弩"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,
@@ -448,7 +462,8 @@
         "de": "Aquagold-Armbrust",
         "es": "Ballesta Acuadorada",
         "pl": "Kusza Wodnego Złota",
-        "pt": "Besta Aquagold"
+        "pt": "Besta Aquagold",
+        "zh-CN": "温蒂妮"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,
@@ -479,7 +494,8 @@
         "de": "Pfeil",
         "es": "Flecha",
         "pl": "Strzały",
-        "pt": "Flecha"
+        "pt": "Flecha",
+        "zh-CN": "弓箭"
       },
       "tags": ["ammunition"],
       "description": [
@@ -515,7 +531,8 @@
         "de": "Heilige Armbrust",
         "es": "Ballesta de Santo",
         "pl": "Święta kusza",
-        "pt": "Besta do santo"
+        "pt": "Besta do santo",
+        "zh-CN": "圣者之弩"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,
@@ -546,7 +563,8 @@
         "de": "Himmlischer Bogen",
         "es": "Arco Celestial",
         "pl": "Niebiański łuk",
-        "pt": "Arco celestial"
+        "pt": "Arco celestial",
+        "zh-CN": "圣灵之弓"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,
@@ -577,7 +595,8 @@
         "de": "Göttliche Armbrust des Erzengels",
         "es": "Ballesta Divina de Arcángel",
         "pl": "Boska Kusza Archanioła",
-        "pt": "Besta divina do arcanjo"
+        "pt": "Besta divina do arcanjo",
+        "zh-CN": "大天使之弩"
       },
       "tags": ["divineArchangelWeapon", "valuable"],
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
@@ -623,7 +642,8 @@
         "de": "Großartige Herrschaftsarmbrust",
         "es": "Ballesta del Gran Reino",
         "pl": "Kusza Wielkich Rządów",
-        "pt": "Grande besta do Império"
+        "pt": "Grande besta do Império",
+        "zh-CN": "追月神弩"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,
@@ -654,7 +674,8 @@
         "de": "Pfeilvipernbogen",
         "es": "Arco Flecha Víbora",
         "pl": "Łuk Żmii",
-        "pt": "Arco víbora de flecha"
+        "pt": "Arco víbora de flecha",
+        "zh-CN": "红羽神弓"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,
@@ -685,7 +706,8 @@
         "de": "Sylphenwindbogen",
         "es": "Arco Viento Sílfide",
         "pl": "Łuk Wiatru Sylfy",
-        "pt": "Arco vento da silfe"
+        "pt": "Arco vento da silfe",
+        "zh-CN": "紫焰之弓"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,
@@ -717,7 +739,8 @@
         "de": "Albatrosbogen",
         "es": "Arco Albatros",
         "pl": "Łuk Albatrosa",
-        "pt": "Arco do albatroz"
+        "pt": "Arco do albatroz",
+        "zh-CN": "碧影魔弓"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,
@@ -747,7 +770,8 @@
         "de": "Dunkler Stachel",
         "es": "Punzón Oscuro",
         "pl": "Mroczne Żądło",
-        "pt": "Golpeador negro"
+        "pt": "Golpeador negro",
+        "zh-CN": "神羽之弓"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,
@@ -779,7 +803,8 @@
         "de": "Aileen-Bogen",
         "es": "Arco Aileen",
         "pl": "Łuk Aileen",
-        "pt": "Arco do Aileen"
+        "pt": "Arco do Aileen",
+        "zh-CN": "傲视魔弓"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,

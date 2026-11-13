@@ -9,7 +9,8 @@
         "de": "Kleiner Schild",
         "es": "Escudo Pequeño",
         "pl": "Mała tarcza",
-        "pt": "Escudo pequeno"
+        "pt": "Escudo pequeno",
+        "zh-CN": "圆盾"
       },
       "options": ["luck", "defenseRateOption", "excellentDefense"],
       "width": 2,
@@ -40,7 +41,8 @@
         "de": "Hornschild",
         "es": "Escudo Cuerno",
         "pl": "Rogowa tarcza",
-        "pt": "Escudo de chifre"
+        "pt": "Escudo de chifre",
+        "zh-CN": "战士之盾"
       },
       "options": ["luck", "defenseRateOption", "excellentDefense"],
       "width": 2,
@@ -69,7 +71,8 @@
         "de": "Normannenschild",
         "es": "Escudo Cometa",
         "pl": "Tarcza migdałowa",
-        "pt": "Escudo ogival"
+        "pt": "Escudo ogival",
+        "zh-CN": "风之盾"
       },
       "options": ["luck", "defenseRateOption", "excellentDefense"],
       "width": 2,
@@ -98,7 +101,8 @@
         "de": "Elfenschild",
         "es": "Escudo de los Elfos",
         "pl": "Elfia tarcza",
-        "pt": "Escudo élfico"
+        "pt": "Escudo élfico",
+        "zh-CN": "魔法之盾"
       },
       "options": ["luck", "defenseRateOption", "excellentDefense"],
       "width": 2,
@@ -126,7 +130,8 @@
         "de": "Faustschild",
         "es": "Broquel",
         "pl": "Puklerz",
-        "pt": "Broquel"
+        "pt": "Broquel",
+        "zh-CN": "钢铁之盾"
       },
       "options": ["luck", "defenseRateOption", "excellentDefense"],
       "width": 2,
@@ -158,7 +163,8 @@
         "de": "Drachentöterschild",
         "es": "Escudo Mata Dragones",
         "pl": "Tarcza Pogromcy Smoków",
-        "pt": "Escudo do matador de dragões"
+        "pt": "Escudo do matador de dragões",
+        "zh-CN": "龙之盾"
       },
       "options": ["luck", "defenseRateOption", "excellentDefense"],
       "width": 2,
@@ -189,7 +195,8 @@
         "de": "Schädelschild",
         "es": "Escudo Calavera",
         "pl": "Tarcza czaszki",
-        "pt": "Escudo da caveira"
+        "pt": "Escudo da caveira",
+        "zh-CN": "骷髅之盾"
       },
       "options": ["luck", "defenseRateOption", "excellentDefense"],
       "width": 2,
@@ -221,7 +228,8 @@
         "de": "Stachelschild",
         "es": "Escudo con Púas",
         "pl": "Kolczasta tarcza",
-        "pt": "Escudo com espinhos"
+        "pt": "Escudo com espinhos",
+        "zh-CN": "尖刺之盾"
       },
       "options": ["luck", "defenseRateOption", "excellentDefense"],
       "width": 2,
@@ -251,7 +259,8 @@
         "de": "Turmschild",
         "es": "Escudo Torre",
         "pl": "Tarcza wieżowa",
-        "pt": "Escudo de torre"
+        "pt": "Escudo de torre",
+        "zh-CN": "失落之盾"
       },
       "options": ["luck", "defenseRateOption", "excellentDefense"],
       "width": 2,
@@ -282,7 +291,8 @@
         "de": "Plattenschild",
         "es": "Escudo de Plata",
         "pl": "Płytowa tarcza",
-        "pt": "Escudo de placa"
+        "pt": "Escudo de placa",
+        "zh-CN": "远古之盾"
       },
       "options": ["luck", "defenseRateOption", "excellentDefense"],
       "width": 2,
@@ -312,7 +322,8 @@
         "de": "Großer Rundschild",
         "es": "Escudo Redondo Grande",
         "pl": "Duża okrągła tarcza",
-        "pt": "Grande escudo redondo"
+        "pt": "Grande escudo redondo",
+        "zh-CN": "自由之盾"
       },
       "options": ["luck", "defenseRateOption", "excellentDefense"],
       "width": 2,
@@ -342,7 +353,8 @@
         "de": "Schlangenschild",
         "es": "Escudo Serpiente",
         "pl": "Wężowa tarcza",
-        "pt": "Escudo da serpente"
+        "pt": "Escudo da serpente",
+        "zh-CN": "毒蛇之盾"
       },
       "options": ["luck", "defenseRateOption", "excellentDefense"],
       "width": 2,
@@ -373,7 +385,8 @@
         "de": "Bronzeschild",
         "es": "Escudo de Bronce",
         "pl": "Brązowa tarcza",
-        "pt": "Escudo de bronze"
+        "pt": "Escudo de bronze",
+        "zh-CN": "布朗司"
       },
       "options": ["luck", "defenseRateOption", "excellentDefense"],
       "width": 2,
@@ -402,7 +415,8 @@
         "de": "Drachenschild",
         "es": "Escudo Dragón",
         "pl": "Smocza tarcza",
-        "pt": "Escudo do dragão"
+        "pt": "Escudo do dragão",
+        "zh-CN": "火龙之盾"
       },
       "options": ["luck", "defenseRateOption", "excellentDefense"],
       "width": 2,
@@ -432,7 +446,8 @@
         "de": "Legendärer Schild",
         "es": "Escudo Legendario",
         "pl": "Legendarna tarcza",
-        "pt": "Escudo lendário"
+        "pt": "Escudo lendário",
+        "zh-CN": "传说之盾"
       },
       "options": ["luck", "defenseRateOption", "excellentDefense"],
       "width": 2,
@@ -462,7 +477,8 @@
         "de": "Großseelenschild",
         "es": "Escudo Gran Alma",
         "pl": "Tarcza Wielkiej Duszy",
-        "pt": "Grande escudo da alma"
+        "pt": "Grande escudo da alma",
+        "zh-CN": "麒麟之盾"
       },
       "options": ["luck", "defenseRateOption", "excellentDefense"],
       "width": 2,
@@ -490,7 +506,8 @@
         "de": "Elementarschild",
         "es": "Escudo Elemental",
         "pl": "Tarcza żywiołów",
-        "pt": "Escudo elemental"
+        "pt": "Escudo elemental",
+        "zh-CN": "精灵之盾"
       },
       "options": ["luck", "defenseRateOption", "excellentDefense"],
       "width": 2,
@@ -519,7 +536,8 @@
         "de": "Purpurruhm",
         "es": "Gloria Carmesí",
         "pl": "Szkarłatna Chwała",
-        "pt": "Glória carmesim"
+        "pt": "Glória carmesim",
+        "zh-CN": "荣誉之盾"
       },
       "options": ["luck", "defenseRateOption", "excellentDefense"],
       "width": 2,
@@ -549,7 +567,8 @@
         "de": "Salamanderschild",
         "es": "Escudo Salamandra",
         "pl": "Tarcza Salamandry",
-        "pt": "Escudo da salamandra"
+        "pt": "Escudo da salamandra",
+        "zh-CN": "火蛇之盾"
       },
       "options": ["luck", "defenseRateOption", "excellentDefense"],
       "width": 2,
@@ -579,7 +598,8 @@
         "de": "Frostbarriere",
         "es": "Barrera Congelada",
         "pl": "Mroźna Bariera",
-        "pt": "Barreira gelada"
+        "pt": "Barreira gelada",
+        "zh-CN": "寒冰之盾"
       },
       "options": ["luck", "defenseRateOption", "excellentDefense"],
       "width": 2,
@@ -609,7 +629,8 @@
         "de": "Wächterschild",
         "es": "Escudo Guardián",
         "pl": "Tarcza Strażnika",
-        "pt": "Escudo do guardião"
+        "pt": "Escudo do guardião",
+        "zh-CN": "亡魂之盾"
       },
       "options": ["luck", "defenseRateOption", "excellentDefense"],
       "width": 2,
@@ -639,7 +660,8 @@
         "de": "Kreuzschild",
         "es": "Escudo Cruz",
         "pl": "Tarcza z krzyżem",
-        "pt": "Escudo em cruz"
+        "pt": "Escudo em cruz",
+        "zh-CN": "十字架之盾"
       },
       "options": ["luck", "defenseRateOption", "excellentDefense"],
       "width": 2,

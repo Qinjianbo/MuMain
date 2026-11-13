@@ -12,6 +12,7 @@
       "ru": "Дополнительное заклинание проклятия +{value}",
       "tl": "Karagdagang Curse Spell +{value}",
       "uk": "Додаткове закляття +{value}",
+      "zh-CN": "追加诅咒力 +{value}",
       "zh-TW": "附加詛咒法術+{value}"
     },
     "additionalDamage": {
@@ -25,6 +26,7 @@
       "ru": "Дополнительный урон +{value}",
       "tl": "Karagdagang Dmg +{value}",
       "uk": "Додатковий Dmg +{value}",
+      "zh-CN": "追加攻击力 +{value}",
       "zh-TW": "附加傷害+{value}"
     },
     "additionalDefense": {
@@ -38,6 +40,7 @@
       "ru": "Дополнительная защита +{value}",
       "tl": "Karagdagang depensa +{value}",
       "uk": "Додатковий захист +{value}",
+      "zh-CN": "追加防御力 +{value}",
       "zh-TW": "附加防禦+{value}"
     },
     "additionalDefenseRate": {
@@ -51,6 +54,7 @@
       "ru": "Дополнительный коэффициент защиты +{value}",
       "tl": "Karagdagang antas ng pagtatanggol +{value}",
       "uk": "Швидкість додаткового захисту +{value}",
+      "zh-CN": "追加防御率 +{value}",
       "zh-TW": "附加防禦率+{value}"
     },
     "additionalWizardryDamage": {
@@ -64,6 +68,7 @@
       "ru": "Дополнительный магический урон +{value}",
       "tl": "Karagdagang Wizardry Dmg +{value}",
       "uk": "Додатковий Wizardry Dmg +{value}",
+      "zh-CN": "追加魔法攻击力 +{value}",
       "zh-TW": "額外魔法傷害+{value}"
     },
     "automaticHpRecovery": {
@@ -77,6 +82,7 @@
       "ru": "Автоматическое восстановление HP {value}%",
       "tl": "Awtomatikong pagbawi ng HP {value}%",
       "uk": "Автоматичне відновлення HP {value}%",
+      "zh-CN": "生命值自动恢复 {value}%",
       "zh-TW": "HP自動恢復 {value}%"
     },
     "damageDecrease": {
@@ -90,6 +96,7 @@
       "ru": "Уменьшение урона +{value}%",
       "tl": "Pagbawas ng Pinsala +{value}%",
       "uk": "Зменшення шкоди +{value}%",
+      "zh-CN": "伤害减少 +{value}%",
       "zh-TW": "傷害減少 +{value}%"
     },
     "defenseSuccessRate": {
@@ -103,6 +110,7 @@
       "ru": "Вероятность успеха защиты +{value}%",
       "tl": "Rate ng tagumpay sa pagtatanggol +{value}%",
       "uk": "Відсоток успішного захисту +{value}%",
+      "zh-CN": "防御成功率增加 +{value}%",
       "zh-TW": "防禦成功率+{value}%"
     },
     "excellentDamageRate": {
@@ -116,6 +124,7 @@
       "ru": "Отличный урон +{value}%",
       "tl": "Napakahusay na Damage rate +{value}%",
       "uk": "Відмінний рівень шкоди +{value}%",
+      "zh-CN": "卓越一击概率增加 +{value}%",
       "zh-TW": "優 破損率+{value}%"
     },
     "increaseAttackSpeed": {
@@ -129,6 +138,7 @@
       "ru": "Увеличение скорости атаки (волшебства) +{value}",
       "tl": "Dagdagan ang bilis ng Pag-atake(Wizardry) +{value}",
       "uk": "Збільшити швидкість атаки (чарівництво) +{value}",
+      "zh-CN": "攻击（魔法）速度增加 +{value}",
       "zh-TW": "增加攻擊（魔法）速度+{value}"
     },
     "increaseDamageLevel20": {
@@ -142,6 +152,7 @@
       "ru": "Увеличение урона +уровень/{divisor}",
       "tl": "Taasan ang Damage +level/{divisor}",
       "uk": "Збільшення шкоди + рівень/{divisor}",
+      "zh-CN": "攻击力增加 +等级/{divisor}",
       "zh-TW": "傷害增加+level/{divisor}"
     },
     "increaseDamagePercent": {
@@ -155,6 +166,7 @@
       "ru": "Увеличение урона +{value}%",
       "tl": "Palakihin ang Pinsala +{value}%",
       "uk": "Збільшення шкоди +{value}%",
+      "zh-CN": "攻击力增加 +{value}%",
       "zh-TW": "增加傷害+{value}%"
     },
     "increaseMaxHp": {
@@ -168,6 +180,7 @@
       "ru": "Увеличение максимального запаса здоровья +{value}%",
       "tl": "Taasan ang Max HP +{value}%",
       "uk": "Збільшити макс. HP +{value}%",
+      "zh-CN": "最大生命值增加 +{value}%",
       "zh-TW": "最大生命值增加+{value}%"
     },
     "increaseMaxMana": {
@@ -181,6 +194,7 @@
       "ru": "Увеличение максимального запаса маны +{value}%",
       "tl": "Taasan ang Max Mana +{value}%",
       "uk": "Збільшення максимальної мани +{value}%",
+      "zh-CN": "最大魔法值增加 +{value}%",
       "zh-TW": "增加最大法力 +{value}%"
     },
     "increaseWizardryLevel20": {
@@ -194,6 +208,7 @@
       "ru": "Увеличение магического урона +уровень/{divisor}",
       "tl": "Taasan ang Wizardry Dmg +level/{divisor}",
       "uk": "Збільшити Wizardry Dmg +level/{divisor}",
+      "zh-CN": "魔法攻击力增加 +等级/{divisor}",
       "zh-TW": "增加魔法傷害+level/{divisor}"
     },
     "increaseWizardryPercent": {
@@ -207,6 +222,7 @@
       "ru": "Увеличение урона от волшебства +{value}%",
       "tl": "Dagdagan ang Wizardry Dmg +{value}%",
       "uk": "Збільшити шкоду магії +{value}%",
+      "zh-CN": "魔法攻击力增加 +{value}%",
       "zh-TW": "增加魔法傷害+{value}%"
     },
     "lifeAfterKill": {
@@ -220,6 +236,7 @@
       "ru": "Увеличивает скорость получения жизни после охоты на монстров +жизнь/{value}.",
       "tl": "Pinapataas ang rate ng pagkuha ng Buhay pagkatapos manghuli ng mga halimaw +buhay/{value}",
       "uk": "Збільшує швидкість отримання життя після полювання на монстрів + життя/{value}",
+      "zh-CN": "杀死怪物时所获生命值 +生命值/{value}",
       "zh-TW": "狩獵怪物後生命獲得率增加+life/{value}"
     },
     "luckCriticalDamage": {
@@ -233,6 +250,7 @@
       "ru": "Удача (коэффициент критического урона +{value}%)",
       "tl": "Swerte (critical damage rate +{value}%)",
       "uk": "Удача (рівень критичної шкоди +{value}%)",
+      "zh-CN": "幸运（暴击概率 +{value}%）",
       "zh-TW": "幸運（暴擊傷害率+{value}%）"
     },
     "luckJewelOfSoul": {
@@ -246,6 +264,7 @@
       "ru": "Удача (шанс успеха «Драгоценности души» +25%)",
       "tl": "Suwerte (rate ng tagumpay ng Jewel of Soul +25%)",
       "uk": "Удача (швидкість успіху Jewel of Soul +25%)",
+      "zh-CN": "幸运（灵魂宝石成功率 +25%）",
       "zh-TW": "幸運（靈魂寶石成功率+25%）"
     },
     "manaAfterKill": {
@@ -259,6 +278,7 @@
       "ru": "Увеличивает скорость получения маны после охоты на монстров +Мана/{value}.",
       "tl": "Pinapataas ang rate ng pagkuha ng Mana pagkatapos manghuli ng mga halimaw +Mana/{value}",
       "uk": "Збільшує швидкість отримання мани після полювання на монстрів +Мана/{value}",
+      "zh-CN": "杀死怪物时所获魔法值 +魔法值/{value}",
       "zh-TW": "狩獵怪物後魔力獲取率增加+魔力/{value}"
     },
     "maxAgIncrease": {
@@ -272,6 +292,7 @@
       "ru": "Макс. AG увеличен на {value}%",
       "tl": "Ang Max AG ay tumaas ng {value}%",
       "uk": "Макс. AG збільшено на {value}%",
+      "zh-CN": "最大 AG 增加 {value}%",
       "zh-TW": "最大 AG 增加 {value}%"
     },
     "maxManaIncrease": {
@@ -285,6 +306,7 @@
       "ru": "Максимальное количество маны увеличено на {value}%",
       "tl": "Ang max mana ay tumaas ng {value}%",
       "uk": "Макс мани збільшено на {value}%",
+      "zh-CN": "最大魔法值增加 {value}%",
       "zh-TW": "最大法力值增加 {value}%"
     },
     "reflectDamage": {
@@ -298,6 +320,7 @@
       "ru": "Отражение урона +{value}%",
       "tl": "Sumasalamin sa Pinsala +{value}%",
       "uk": "Відбитий збиток +{value}%",
+      "zh-CN": "伤害反射 +{value}%",
       "zh-TW": "反射傷害+{value}%"
     },
     "zenAfterKill": {
@@ -311,6 +334,7 @@
       "ru": "Увеличивает скорость получения Дзен после охоты на монстров +{value}%",
       "tl": "Pinapataas ang rate ng pagkuha ng Zen pagkatapos ng pangangaso ng mga halimaw +{value}%",
       "uk": "Збільшує швидкість отримання Дзен після полювання на монстрів +{value}%",
+      "zh-CN": "杀死怪物时所获金币增加 +{value}%",
       "zh-TW": "狩獵怪物後禪的獲得率增加+{value}%"
     }
   }

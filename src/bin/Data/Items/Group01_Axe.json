@@ -9,7 +9,8 @@
         "de": "Kleine Axt",
         "es": "Hacha Pequeña",
         "pl": "Mały topór",
-        "pt": "Machado pequeno"
+        "pt": "Machado pequeno",
+        "zh-CN": "短斧"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 1,
@@ -43,7 +44,8 @@
         "de": "Handaxt",
         "es": "Hacha de Mano",
         "pl": "Toporek",
-        "pt": "Machado de mão"
+        "pt": "Machado de mão",
+        "zh-CN": "手斧"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 1,
@@ -77,7 +79,8 @@
         "de": "Doppelaxt",
         "es": "Hacha Doble",
         "pl": "Podwójny topór",
-        "pt": "Machado duplo"
+        "pt": "Machado duplo",
+        "zh-CN": "双刃斧"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 1,
@@ -108,7 +111,8 @@
         "de": "Tomahawk",
         "es": "Tomahawk",
         "pl": "Tomahawk",
-        "pt": "Machadinha"
+        "pt": "Machadinha",
+        "zh-CN": "飞翔斧"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 1,
@@ -140,7 +144,8 @@
         "de": "Elfenaxt",
         "es": "Hacha de los Elfos",
         "pl": "Elfi topór",
-        "pt": "Machado élfico"
+        "pt": "Machado élfico",
+        "zh-CN": "精灵之斧"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 1,
@@ -172,7 +177,8 @@
         "de": "Kampfaxt",
         "es": "Hacha de Batalla",
         "pl": "Topór bojowy",
-        "pt": "Machado de batalha"
+        "pt": "Machado de batalha",
+        "zh-CN": "战士之斧"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,
@@ -204,7 +210,8 @@
         "de": "Nikea-Axt",
         "es": "Hacha Nikea",
         "pl": "Topór Nikei",
-        "pt": "Machado de Nikea"
+        "pt": "Machado de Nikea",
+        "zh-CN": "斗士之斧"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,
@@ -236,7 +243,8 @@
         "de": "Larkan-Axt",
         "es": "Hacha Larkan",
         "pl": "Topór Larkana",
-        "pt": "Machado de Larkan"
+        "pt": "Machado de Larkan",
+        "zh-CN": "斗神之斧"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,
@@ -267,7 +275,8 @@
         "de": "Halbmondaxt",
         "es": "Hacha Medialuna",
         "pl": "Topór półksiężyca",
-        "pt": "Machado crescente"
+        "pt": "Machado crescente",
+        "zh-CN": "末日之斧"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,

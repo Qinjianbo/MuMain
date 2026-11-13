@@ -9,7 +9,8 @@
         "de": "Bronzehose",
         "es": "Pantalones de Bronce",
         "pl": "Brązowe spodnie",
-        "pt": "Calças de bronze"
+        "pt": "Calças de bronze",
+        "zh-CN": "青铜护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -37,7 +38,8 @@
         "de": "Drachenhose",
         "es": "Pantalones Dragón",
         "pl": "Smocze spodnie",
-        "pt": "Calças do dragão"
+        "pt": "Calças do dragão",
+        "zh-CN": "龙王护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -64,7 +66,8 @@
         "de": "Polsterhose",
         "es": "Pantalones Rellenos",
         "pl": "Pikowane spodnie",
-        "pt": "Calças acolchoadas"
+        "pt": "Calças acolchoadas",
+        "zh-CN": "革护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -90,7 +93,8 @@
         "de": "Legendäre Hose",
         "es": "Pantalones Legendarios",
         "pl": "Legendarne spodnie",
-        "pt": "Calças lendárias"
+        "pt": "Calças lendárias",
+        "zh-CN": "传说之护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -116,7 +120,8 @@
         "de": "Knochenhose",
         "es": "Pantalones de Hueso",
         "pl": "Kościane spodnie",
-        "pt": "Calças de osso"
+        "pt": "Calças de osso",
+        "zh-CN": "骷髅护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -142,7 +147,8 @@
         "de": "Lederhose",
         "es": "Pantalones de Cuero",
         "pl": "Skórzane spodnie",
-        "pt": "Calças de couro"
+        "pt": "Calças de couro",
+        "zh-CN": "皮护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -170,7 +176,8 @@
         "de": "Schuppenhose",
         "es": "Pantalones de Escamas",
         "pl": "Łuskowe spodnie",
-        "pt": "Calças de escamas"
+        "pt": "Calças de escamas",
+        "zh-CN": "翡翠护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -198,7 +205,8 @@
         "de": "Sphinxhose",
         "es": "Pantalones Esfinge",
         "pl": "Spodnie Sfinksa",
-        "pt": "Calças da esfinge"
+        "pt": "Calças da esfinge",
+        "zh-CN": "魔王之护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -224,7 +232,8 @@
         "de": "Messinghose",
         "es": "Pantalones de Metal",
         "pl": "Mosiężne spodnie",
-        "pt": "Calças de latão"
+        "pt": "Calças de latão",
+        "zh-CN": "黄金护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -252,7 +261,8 @@
         "de": "Plattenhose",
         "es": "Pantalones de Plata",
         "pl": "Płytowe spodnie",
-        "pt": "Calças de placa"
+        "pt": "Calças de placa",
+        "zh-CN": "白金护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -279,7 +289,8 @@
         "de": "Rankenhose",
         "es": "Pantalones Vid",
         "pl": "Spodnie z pnączy",
-        "pt": "Calças da vinha"
+        "pt": "Calças da vinha",
+        "zh-CN": "藤护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -305,7 +316,8 @@
         "de": "Seidenhose",
         "es": "Pantalones de Seda",
         "pl": "Jedwabne spodnie",
-        "pt": "Calças de seda"
+        "pt": "Calças de seda",
+        "zh-CN": "天蚕之护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -331,7 +343,8 @@
         "de": "Windhose",
         "es": "Pantalones Viento",
         "pl": "Spodnie Wiatru",
-        "pt": "Calças do vento"
+        "pt": "Calças do vento",
+        "zh-CN": "风之护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -357,7 +370,8 @@
         "de": "Geisterhose",
         "es": "Pantalones Espíritu",
         "pl": "Spodnie Ducha",
-        "pt": "Calças do espírito"
+        "pt": "Calças do espírito",
+        "zh-CN": "精灵之护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -383,7 +397,8 @@
         "de": "Wächterhose",
         "es": "Pantalones Guardián",
         "pl": "Spodnie Strażnika",
-        "pt": "Calças do guardião"
+        "pt": "Calças do guardião",
+        "zh-CN": "女神之护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -409,7 +424,8 @@
         "de": "Sturmkrähenhose",
         "es": "Pantalones Cuervo de Tormenta",
         "pl": "Spodnie Burzowej Wrony",
-        "pt": "Calças do corvo da tempestade"
+        "pt": "Calças do corvo da tempestade",
+        "zh-CN": "亚特兰蒂斯之护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -435,7 +451,8 @@
         "de": "Schwarzdrachenhose",
         "es": "Pantalones Dragón Negro",
         "pl": "Spodnie Czarnego Smoka",
-        "pt": "Calças do dragão negro"
+        "pt": "Calças do dragão negro",
+        "zh-CN": "黑龙王护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -461,7 +478,8 @@
         "de": "Dunkelphönixhose",
         "es": "Pantalones Fénix Oscuro",
         "pl": "Spodnie Mrocznego Feniksa",
-        "pt": "Calças da fênix negra"
+        "pt": "Calças da fênix negra",
+        "zh-CN": "黑凤凰护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -487,7 +505,8 @@
         "de": "Großseelenhose",
         "es": "Pantalones Gran Alma",
         "pl": "Spodnie Wielkiej Duszy",
-        "pt": "Calças da grande alma"
+        "pt": "Calças da grande alma",
+        "zh-CN": "火麒麟护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -513,7 +532,8 @@
         "de": "Göttliche Hose",
         "es": "Pantalones Divinos",
         "pl": "Boskie spodnie",
-        "pt": "Calças divinas"
+        "pt": "Calças divinas",
+        "zh-CN": "圣灵护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -539,7 +559,8 @@
         "de": "Donnerfalkenhose",
         "es": "Pantalones Halcón de Trueno",
         "pl": "Spodnie Gromowego Jastrzębia",
-        "pt": "Calças de Thunder Hawk"
+        "pt": "Calças de Thunder Hawk",
+        "zh-CN": "奔雷护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -565,7 +586,8 @@
         "de": "Großartige Drachenhose",
         "es": "Pantalones Gran Dragón",
         "pl": "Spodnie Wielkiego Smoka",
-        "pt": "Calças do grande dragão"
+        "pt": "Calças do grande dragão",
+        "zh-CN": "龙炎护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -591,7 +613,8 @@
         "de": "Dunkelseelenhose",
         "es": "Pantalones Alma Oscura",
         "pl": "Spodnie Mrocznej Duszy",
-        "pt": "Calças da alma negra"
+        "pt": "Calças da alma negra",
+        "zh-CN": "黑炎护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -617,7 +640,8 @@
         "de": "Orkanhose",
         "es": "Pantalones Huracán",
         "pl": "Spodnie Huraganu",
-        "pt": "Calças do furacão"
+        "pt": "Calças do furacão",
+        "zh-CN": "魔神护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -643,7 +667,8 @@
         "de": "Rotgeisterhose",
         "es": "Pantalones Espíritu Rojo",
         "pl": "Spodnie Czerwonego Ducha",
-        "pt": "Calças do espírito vermelho"
+        "pt": "Calças do espírito vermelho",
+        "zh-CN": "红羽护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -669,7 +694,8 @@
         "de": "Leichtplattenhose",
         "es": "Pantalones Plata de Luz",
         "pl": "Lekkie spodnie płytowe",
-        "pt": "Calças de placa Leve"
+        "pt": "Calças de placa Leve",
+        "zh-CN": "圣元护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -695,7 +721,8 @@
         "de": "Adamanthose",
         "es": "Pantalones Adamantinos",
         "pl": "Adamantytowe spodnie",
-        "pt": "Calças de adamantina"
+        "pt": "Calças de adamantina",
+        "zh-CN": "圣魂护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -721,7 +748,8 @@
         "de": "Dunkelstahlhose",
         "es": "Pantalones Acero Oscuro",
         "pl": "Spodnie z mrocznej stali",
-        "pt": "Calças de aço negro"
+        "pt": "Calças de aço negro",
+        "zh-CN": "神圣护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -747,7 +775,8 @@
         "de": "Dunkelmeisterhose",
         "es": "Pantalones Amo Oscuro",
         "pl": "Spodnie Mrocznego Mistrza",
-        "pt": "Calças do Mestre negro"
+        "pt": "Calças do Mestre negro",
+        "zh-CN": "至尊护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -773,7 +802,8 @@
         "de": "Drachenritterhose",
         "es": "Pantalones Caballero Dragón",
         "pl": "Spodnie Smoczego Rycerza",
-        "pt": "Calças do cavaleiro dragão"
+        "pt": "Calças do cavaleiro dragão",
+        "zh-CN": "暗黑斗神护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -800,7 +830,8 @@
         "de": "Giftnebelhose",
         "es": "Pantalones Bruma de Veneno",
         "pl": "Spodnie Jadowitej Mgły",
-        "pt": "Calças da névoa de veneno"
+        "pt": "Calças da névoa de veneno",
+        "zh-CN": "法魂玄灵护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -827,7 +858,8 @@
         "de": "Sylphenstrahlhose",
         "es": "Pantalones Rayo de Sílfide",
         "pl": "Spodnie Sylphid Ray",
-        "pt": "Calças do raio silfídico"
+        "pt": "Calças do raio silfídico",
+        "zh-CN": "紫灵护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -854,7 +886,8 @@
         "de": "Vulkanhose",
         "es": "Pantalones Volcán",
         "pl": "Spodnie Wulkanu",
-        "pt": "Calças do vulcão"
+        "pt": "Calças do vulcão",
+        "zh-CN": "天魔斗神护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -881,7 +914,8 @@
         "de": "Sonnenlichthose",
         "es": "Pantalones Luz Solar",
         "pl": "Spodnie Słońca",
-        "pt": "Calças da luz do sol"
+        "pt": "Calças da luz do sol",
+        "zh-CN": "宙斯护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -908,7 +942,8 @@
         "de": "Aschkrähenhose",
         "es": "Pantalones Cuervo Ceniza",
         "pl": "Spodnie Ashcrow",
-        "pt": "Calças de Ashcrow"
+        "pt": "Calças de Ashcrow",
+        "zh-CN": "暴风护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -933,7 +968,8 @@
         "de": "Finsternishose",
         "es": "Pantalones Eclipse",
         "pl": "Spodnie Zaćmienia",
-        "pt": "Calças do eclipse"
+        "pt": "Calças do eclipse",
+        "zh-CN": "幻月护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -958,7 +994,8 @@
         "de": "Iris-Hose",
         "es": "Pantalones Iris",
         "pl": "Spodnie Iris",
-        "pt": "Calças de Iris"
+        "pt": "Calças de Iris",
+        "zh-CN": "碧影护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -983,7 +1020,8 @@
         "de": "Kühne Hose",
         "es": "Pantalones Valientes",
         "pl": "Waleczne spodnie",
-        "pt": "Calças do valor"
+        "pt": "Calças do valor",
+        "zh-CN": "烈火护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -1008,7 +1046,8 @@
         "de": "Glorreiche Hose",
         "es": "Pantalones Gloriosos",
         "pl": "Chwalebne spodnie",
-        "pt": "Calças gloriosas"
+        "pt": "Calças gloriosas",
+        "zh-CN": "圣光护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -1033,7 +1072,8 @@
         "de": "Sturmwindhose",
         "es": "Pantalones Viento Violento",
         "pl": "Spodnie Gwałtownego Wiatru",
-        "pt": "Calças do vento violento"
+        "pt": "Calças do vento violento",
+        "zh-CN": "飓风之护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -1058,7 +1098,8 @@
         "de": "Rotschwingenhose",
         "es": "Pantalones Ala Roja",
         "pl": "Spodnie Czerwonego Skrzydła",
-        "pt": "Calças da asa vermelha"
+        "pt": "Calças da asa vermelha",
+        "zh-CN": "红翼之护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -1084,7 +1125,8 @@
         "de": "Uralte Hose",
         "es": "Pantalones Antiguo",
         "pl": "Pradawne spodnie",
-        "pt": "Calças antigas"
+        "pt": "Calças antigas",
+        "zh-CN": "远古之护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -1110,7 +1152,8 @@
         "de": "Dämonische Hose",
         "es": "Pantalones Demoníacos",
         "pl": "Demoniczne spodnie",
-        "pt": "Calças demoníacas"
+        "pt": "Calças demoníacas",
+        "zh-CN": "魔灵之护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -1135,7 +1178,8 @@
         "de": "Sturmblitzhose",
         "es": "Pantalones Ráfaga Tormentosa",
         "pl": "Spodnie Burzowego Błysku",
-        "pt": "Calças Relâmpago de Tempest."
+        "pt": "Calças Relâmpago de Tempest.",
+        "zh-CN": "风影护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -1162,7 +1206,8 @@
         "de": "Ewigschwingenhose",
         "es": "Pantalones Ala Eterna",
         "pl": "Spodnie Wiecznego Skrzydła",
-        "pt": "Calças da asa eterna"
+        "pt": "Calças da asa eterna",
+        "zh-CN": "恒翼护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -1189,7 +1234,8 @@
         "de": "Titanenhose",
         "es": "Pantalones Titán",
         "pl": "Spodnie Tytana",
-        "pt": "Calças do titã"
+        "pt": "Calças do titã",
+        "zh-CN": "泰坦之护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -1215,7 +1261,8 @@
         "de": "Tapfere Hose",
         "es": "Pantalones Valerosos",
         "pl": "Spodnie Śmiałka",
-        "pt": "Calças da coragem"
+        "pt": "Calças da coragem",
+        "zh-CN": "勇气之护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -1241,7 +1288,8 @@
         "de": "Phantom-Hose",
         "es": "Pantalones Fantasma",
         "pl": "Spodnie Widma",
-        "pt": "Calças do fantasma"
+        "pt": "Calças do fantasma",
+        "zh-CN": "巨石之护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -1267,7 +1315,8 @@
         "de": "Zerstörerhose",
         "es": "Pantalones Destructores",
         "pl": "Spodnie Zniszczenia",
-        "pt": "Calças da destruição"
+        "pt": "Calças da destruição",
+        "zh-CN": "破灭之护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -1294,7 +1343,8 @@
         "de": "Seraphim-Hose",
         "es": "Pantalones Serafín",
         "pl": "Spodnie Serafina",
-        "pt": "Calças do serafim"
+        "pt": "Calças do serafim",
+        "zh-CN": "恐惧之护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -1320,7 +1370,8 @@
         "de": "Glaubenshose",
         "es": "Pantalones de Fe",
         "pl": "Spodnie Wiary",
-        "pt": "Calças da fé"
+        "pt": "Calças da fé",
+        "zh-CN": "灵光之护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -1347,7 +1398,8 @@
         "de": "Königliche Hose",
         "es": "Pantalones Reales",
         "pl": "Królewskie spodnie",
-        "pt": "Calças reais"
+        "pt": "Calças reais",
+        "zh-CN": "霸王之护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -1373,7 +1425,8 @@
         "de": "Hades-Hose",
         "es": "Pantalones Hades",
         "pl": "Spodnie Hadesa",
-        "pt": "Calças de Hades"
+        "pt": "Calças de Hades",
+        "zh-CN": "冥王之护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -1403,7 +1456,8 @@
         "de": "Heiligfeuerhose",
         "es": "Pantalones de Fuego Sagrado",
         "pl": "Spodnie Świętego Ognia",
-        "pt": "Calças de Fogo Sagrado"
+        "pt": "Calças de Fogo Sagrado",
+        "zh-CN": "神圣火焰护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -1429,7 +1483,8 @@
         "de": "Sturm-Jahad-Hose",
         "es": "Pantalones de Tormenta Zahard",
         "pl": "Spodnie Storm Jahad",
-        "pt": "Calças de  Tempestade Zahard"
+        "pt": "Calças de  Tempestade Zahard",
+        "zh-CN": "暴风毁灭护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -1454,7 +1509,8 @@
         "de": "Durchbohrerhose",
         "es": "Pantalones de Tallo Perforador",
         "pl": "Spodnie Piercing Groove",
-        "pt": "Calças de Entalhe Perfurante"
+        "pt": "Calças de Entalhe Perfurante",
+        "zh-CN": "刀锋护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,
@@ -1479,7 +1535,8 @@
         "de": "Schuppenhose",
         "es": "Pantalones de Escamas",
         "pl": "Łuskowe spodnie",
-        "pt": "Calças de escamas"
+        "pt": "Calças de escamas",
+        "zh-CN": "翡翠护腿"
       },
       "tags": ["luckyItem"],
       "options": ["luck", "defenseOption", "excellentDefense"],
@@ -1514,7 +1571,8 @@
         "de": "Seidenhose",
         "es": "Pantalones de Seda",
         "pl": "Jedwabne spodnie",
-        "pt": "Calças de seda"
+        "pt": "Calças de seda",
+        "zh-CN": "天蚕之护腿"
       },
       "tags": ["luckyItem"],
       "options": ["luck", "defenseOption", "excellentDefense"],
@@ -1546,7 +1604,8 @@
         "de": "Sphinxhose",
         "es": "Pantalones Esfinge",
         "pl": "Spodnie Sfinksa",
-        "pt": "Calças de Esfinge"
+        "pt": "Calças de Esfinge",
+        "zh-CN": "魔王之护腿"
       },
       "tags": ["luckyItem"],
       "options": ["luck", "defenseOption", "excellentDefense"],
@@ -1579,7 +1638,8 @@
         "de": "Sturmwindhose",
         "es": "Pantalones Viento Violento",
         "pl": "Spodnie Gwałtownego Wiatru",
-        "pt": "Calças do vento violento"
+        "pt": "Calças do vento violento",
+        "zh-CN": "飓风之护腿"
       },
       "tags": ["luckyItem"],
       "options": ["luck", "defenseOption", "excellentDefense"],
@@ -1611,7 +1671,8 @@
         "de": "Adamanthose",
         "es": "Pantalones Adamantinos",
         "pl": "Adamantytowe spodnie",
-        "pt": "Calças de adamantina"
+        "pt": "Calças de adamantina",
+        "zh-CN": "圣魂护腿"
       },
       "tags": ["luckyItem"],
       "options": ["luck", "defenseOption", "excellentDefense"],
@@ -1643,7 +1704,8 @@
         "de": "Drachenhose",
         "es": "Pantalones Dragón",
         "pl": "Smocze spodnie",
-        "pt": "Calças de Dragão"
+        "pt": "Calças de Dragão",
+        "zh-CN": "龙王之护腿"
       },
       "tags": ["luckyItem"],
       "options": ["luck", "defenseOption", "excellentDefense"],
@@ -1676,7 +1738,8 @@
         "de": "Wächterhose",
         "es": "Pantalones Guardián",
         "pl": "Spodnie Strażnika",
-        "pt": "Calças de Guardião"
+        "pt": "Calças de Guardião",
+        "zh-CN": "女神之护腿"
       },
       "tags": ["luckyItem"],
       "options": ["luck", "defenseOption", "excellentDefense"],
@@ -1708,7 +1771,8 @@
         "de": "Legendäre Hose",
         "es": "Pantalones Legendarios",
         "pl": "Legendarne spodnie",
-        "pt": "Calças Lendárias"
+        "pt": "Calças Lendárias",
+        "zh-CN": "传说之护腿"
       },
       "tags": ["luckyItem"],
       "options": ["luck", "defenseOption", "excellentDefense"],
@@ -1741,7 +1805,8 @@
         "de": "Rotschwingenhose",
         "es": "Pantalones Ala Roja",
         "pl": "Spodnie Czerwonego Skrzydła",
-        "pt": "Calças da asa vermelha"
+        "pt": "Calças da asa vermelha",
+        "zh-CN": "红翼之护腿"
       },
       "tags": ["luckyItem"],
       "options": ["luck", "defenseOption", "excellentDefense"],
@@ -1773,7 +1838,8 @@
         "de": "Atlans-Hose",
         "es": "Pantalones Cuervo de Tormenta",
         "pl": "Spodnie Atlans",
-        "pt": "Calças do corvo da tempestade"
+        "pt": "Calças do corvo da tempestade",
+        "zh-CN": "亚特兰蒂斯之护腿"
       },
       "tags": ["luckyItem"],
       "options": ["luck", "defenseOption", "excellentDefense"],
@@ -1805,7 +1871,8 @@
         "de": "Sturm-Jahad-Hose",
         "es": "Pantalones de Tormenta Zahard",
         "pl": "Spodnie Storm Jahad",
-        "pt": "Calças de  Tempestade Zahard"
+        "pt": "Calças de  Tempestade Zahard",
+        "zh-CN": "暴风毁灭护腿"
       },
       "tags": ["luckyItem"],
       "options": ["luck", "defenseOption", "excellentDefense"],
@@ -1837,7 +1904,8 @@
         "de": "Phönixseelenhose",
         "es": "Pantalones de Alma de Fénix",
         "pl": "Spodnie Duszy Feniksa",
-        "pt": "Calças de Alma de Fogo"
+        "pt": "Calças de Alma de Fogo",
+        "zh-CN": "凤魂护腿"
       },
       "options": ["luck", "defenseOption", "excellentDefense"],
       "width": 2,

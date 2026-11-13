@@ -9,7 +9,8 @@
         "de": "Streitkolben",
         "es": "Maza",
         "pl": "Buława",
-        "pt": "Maça"
+        "pt": "Maça",
+        "zh-CN": "石槌"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 1,
@@ -40,7 +41,8 @@
         "de": "Morgenstern",
         "es": "Estrella del Alba",
         "pl": "Morgenstern",
-        "pt": "Estrela da manhã"
+        "pt": "Estrela da manhã",
+        "zh-CN": "流星槌"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 1,
@@ -72,7 +74,8 @@
         "de": "Flegel",
         "es": "Mayal",
         "pl": "Cep bojowy",
-        "pt": "Mangual"
+        "pt": "Mangual",
+        "zh-CN": "破坏之槌"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 1,
@@ -104,7 +107,8 @@
         "de": "Großartiger Hammer",
         "es": "Gran Martillo",
         "pl": "Wielki młot",
-        "pt": "Martelo grande"
+        "pt": "Martelo grande",
+        "zh-CN": "白金之槌"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,
@@ -136,7 +140,8 @@
         "de": "Kristallmorgenstern",
         "es": "Estrella del Alba de Cristal",
         "pl": "Kryształowy morgenstern",
-        "pt": "Estrela da manhã de cristal"
+        "pt": "Estrela da manhã de cristal",
+        "zh-CN": "水晶流星"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,
@@ -170,7 +175,8 @@
         "de": "Kristallschwert",
         "es": "Espada de Cristal",
         "pl": "Kryształowy miecz",
-        "pt": "Espada de cristal"
+        "pt": "Espada de cristal",
+        "zh-CN": "玄冰剑"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,
@@ -204,7 +210,8 @@
         "de": "Chaos-Drachenaxt",
         "es": "Hacha Dragón del Caos",
         "pl": "Topór Smoka Chaosu",
-        "pt": "Machado do dragão do caos"
+        "pt": "Machado do dragão do caos",
+        "zh-CN": "玛雅龙斧"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 2,
@@ -236,7 +243,8 @@
         "de": "Elementarstreitkolben",
         "es": "Maza Elemental",
         "pl": "Buława żywiołów",
-        "pt": "Maça elemental"
+        "pt": "Maça elemental",
+        "zh-CN": "精灵之槌"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 1,
@@ -265,7 +273,8 @@
         "de": "Kampfzepter",
         "es": "Cetro de Batalla",
         "pl": "Berło bojowe",
-        "pt": "Cetro de batalha"
+        "pt": "Cetro de batalha",
+        "zh-CN": "战斗权杖"
       },
       "tags": ["sceptre"],
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
@@ -297,7 +306,8 @@
         "de": "Meisterzepter",
         "es": "Cetro Maestro",
         "pl": "Berło Mistrza",
-        "pt": "Cetro do mestre"
+        "pt": "Cetro do mestre",
+        "zh-CN": "征服权杖"
       },
       "tags": ["sceptre"],
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
@@ -329,7 +339,8 @@
         "de": "Großartiges Zepter",
         "es": "Gran Cetro",
         "pl": "Wielkie berło",
-        "pt": "Grande cetro"
+        "pt": "Grande cetro",
+        "zh-CN": "圣剑权杖"
       },
       "tags": ["sceptre"],
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
@@ -361,7 +372,8 @@
         "de": "Lordzepter",
         "es": "Cetro del Señor",
         "pl": "Berło Lorda",
-        "pt": "Cetro do Lorde"
+        "pt": "Cetro do Lorde",
+        "zh-CN": "王者权杖"
       },
       "tags": ["sceptre"],
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
@@ -393,7 +405,8 @@
         "de": "Großartiges Lordzepter",
         "es": "Gran Cetro del Señor",
         "pl": "Berło Wielkiego Lorda",
-        "pt": "Grande cetro do Lorde"
+        "pt": "Grande cetro do Lorde",
+        "zh-CN": "至尊权杖"
       },
       "tags": ["sceptre"],
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
@@ -425,7 +438,8 @@
         "de": "Göttliches Zepter des Erzengels",
         "es": "Cetro Divino de Arcángel",
         "pl": "Boskie Berło Archanioła",
-        "pt": "Cetro divino do arcanjo"
+        "pt": "Cetro divino do arcanjo",
+        "zh-CN": "大天使绝对权杖"
       },
       "tags": ["divineArchangelWeapon", "sceptre", "valuable"],
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
@@ -472,7 +486,8 @@
         "de": "Sonnenzepter",
         "es": "Cetro Soleil",
         "pl": "Berło Soleil",
-        "pt": "Cetro Soleil"
+        "pt": "Cetro Soleil",
+        "zh-CN": "圣尊天使权杖"
       },
       "tags": ["sceptre"],
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
@@ -505,7 +520,8 @@
         "de": "Strahlendes Zepter",
         "es": "Cetro Brillante",
         "pl": "Lśniące berło",
-        "pt": "Cetro brilhante"
+        "pt": "Cetro brilhante",
+        "zh-CN": "圣光权杖"
       },
       "tags": ["sceptre"],
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
@@ -536,7 +552,8 @@
         "de": "Froststreitkolben",
         "es": "Mazo Congelado",
         "pl": "Mroźna buława",
-        "pt": "Maça de gelo"
+        "pt": "Maça de gelo",
+        "zh-CN": "巨毒之刺"
       },
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
       "width": 1,
@@ -566,7 +583,8 @@
         "de": "Absolutes Zepter",
         "es": "Cetro Absoluto",
         "pl": "Absolutne berło",
-        "pt": "Cetro absoluto"
+        "pt": "Cetro absoluto",
+        "zh-CN": "独裁权杖"
       },
       "tags": ["sceptre"],
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],
@@ -598,7 +616,8 @@
         "de": "Stürmerzepter",
         "es": "Cero Ariete",
         "pl": "Berło Uderzenia",
-        "pt": "Cetro golpeador"
+        "pt": "Cetro golpeador",
+        "zh-CN": "弹奏权杖"
       },
       "tags": ["sceptre"],
       "options": ["luck", "physicalDamageOption", "excellentPhysicalAttack"],

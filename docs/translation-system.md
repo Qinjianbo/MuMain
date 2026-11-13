@@ -546,6 +546,20 @@ missing attribute amounts. These shared tooltips also appear in shops and other
 item windows. Item names still depend on **Translate item names** and the item's
 available name translations.
 
+Simplified Chinese equipment names cover weapons, shields, armor (including lucky
+sets), wings, and selected rings, pendants and pets. Lucky, excellent and additional
+option lines are translated, as are the Fenrir's Destroy, Protect and Illusion name
+suffixes. Enable **Translate item names** to show these equipment names; turning it
+off keeps the names in English while the option descriptions remain Chinese.
+Ancient set prefixes and equipment without a reviewed name still use English.
+
+Reviewed monster names cover the early hunting areas, Atlans, Tarkan, Icarus and
+parts of the later areas and events. They follow the UI language independently of
+**Translate item names**. Unreviewed monsters, NPCs and version-specific names
+continue to use English. Event tiers that share a Chinese name show it without
+adding a tier number. Monsters that share an English name can have distinct Chinese
+names: the dungeon's Larva (12) is 毒虫 and the Doppelganger's Larva (532) is 幼虫.
+
 The storage and expanded-vault windows translate their titles, fees, Zen deposit
 and withdrawal controls, vault locking and password prompts, and related error
 messages.

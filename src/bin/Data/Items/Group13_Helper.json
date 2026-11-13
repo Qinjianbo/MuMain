@@ -9,7 +9,8 @@
         "de": "Schutzengel",
         "es": "Angel Guardián",
         "pl": "Anioł Stróż",
-        "pt": "Anjo guardião"
+        "pt": "Anjo guardião",
+        "zh-CN": "守护天使"
       },
       "description": [
         {
@@ -76,7 +77,8 @@
         "de": "Imp",
         "es": "Diablillo",
         "pl": "Chochlik",
-        "pt": "Diabrete"
+        "pt": "Diabrete",
+        "zh-CN": "小恶魔"
       },
       "description": [
         {
@@ -127,7 +129,8 @@
         "de": "Horn der Uniria",
         "es": "Cuerno de Uniria",
         "pl": "Róg Unirii",
-        "pt": "Chifre de Uniria"
+        "pt": "Chifre de Uniria",
+        "zh-CN": "兽角"
       },
       "tags": ["mount", "hornMount"],
       "description": [
@@ -164,7 +167,8 @@
         "de": "Horn des Dinorant",
         "es": "Cuerno de Dinorant",
         "pl": "Róg Dinoranta",
-        "pt": "Chifre de Dinorant"
+        "pt": "Chifre de Dinorant",
+        "zh-CN": "彩云兽"
       },
       "tags": ["mount", "hornMount", "flying", "valuable"],
       "description": [
@@ -234,7 +238,8 @@
         "de": "Dunkles Pferd",
         "es": "Caballo Oscuro",
         "pl": "Mroczny Koń",
-        "pt": "Cavalo negro"
+        "pt": "Cavalo negro",
+        "zh-CN": "黑王马"
       },
       "tags": ["mount", "flying", "darkLordPet", "valuable"],
       "description": [
@@ -343,7 +348,8 @@
         "de": "Eisring",
         "es": "Anillo de Hielo",
         "pl": "Pierścień Lodu",
-        "pt": "Anel de gelo"
+        "pt": "Anel de gelo",
+        "zh-CN": "冰之指环"
       },
       "options": ["jewelryHealthRecovery", "excellentDefense"],
       "width": 1,
@@ -376,7 +382,8 @@
         "de": "Giftring",
         "es": "Anillo de Veneno",
         "pl": "Pierścień Trucizny",
-        "pt": "Anel do veneno"
+        "pt": "Anel do veneno",
+        "zh-CN": "毒之指环"
       },
       "options": ["jewelryHealthRecovery", "excellentDefense"],
       "width": 1,
@@ -610,7 +617,8 @@
         "de": "Blitzanhänger",
         "es": "Pendiente de Luz",
         "pl": "Wisior Błyskawic",
-        "pt": "Pingente da luz"
+        "pt": "Pingente da luz",
+        "zh-CN": "雷之项链"
       },
       "options": ["jewelryHealthRecovery", "excellentWizardryAttack"],
       "width": 1,
@@ -643,7 +651,8 @@
         "de": "Feueranhänger",
         "es": "Pendiente de Fuego",
         "pl": "Wisior Ognia",
-        "pt": "Pingente do fogo"
+        "pt": "Pingente do fogo",
+        "zh-CN": "火之项链"
       },
       "options": ["jewelryHealthRecovery", "excellentPhysicalAttack"],
       "width": 1,
@@ -1735,7 +1744,8 @@
         "de": "Feuerring",
         "es": "Anillo del Fuego",
         "pl": "Pierścień Ognia",
-        "pt": "Anel do fogo"
+        "pt": "Anel do fogo",
+        "zh-CN": "火之指环"
       },
       "options": ["jewelryHealthRecovery", "excellentDefense"],
       "width": 1,
@@ -1768,7 +1778,8 @@
         "de": "Erdring",
         "es": "Anillo de la Tierra",
         "pl": "Pierścień Ziemi",
-        "pt": "Anel da terra"
+        "pt": "Anel da terra",
+        "zh-CN": "地之指环"
       },
       "options": ["jewelryHealthRecovery", "excellentDefense"],
       "width": 1,
@@ -1801,7 +1812,8 @@
         "de": "Windring",
         "es": "Anillo del Viento",
         "pl": "Pierścień Wiatru",
-        "pt": "Anel do vento"
+        "pt": "Anel do vento",
+        "zh-CN": "风之指环"
       },
       "options": ["jewelryHealthRecovery", "excellentDefense"],
       "width": 1,
@@ -1834,7 +1846,8 @@
         "de": "Magiering",
         "es": "Anillo de lo Mágico",
         "pl": "Pierścień Magii",
-        "pt": "Anel da magia"
+        "pt": "Anel da magia",
+        "zh-CN": "魔之指环"
       },
       "options": ["ringOfMagicMana", "excellentDefense"],
       "width": 1,
@@ -1864,7 +1877,8 @@
         "de": "Eisanhänger",
         "es": "Pendiente del Hielo",
         "pl": "Wisior Lodu",
-        "pt": "Pingente do gelo"
+        "pt": "Pingente do gelo",
+        "zh-CN": "冰之项链"
       },
       "options": ["jewelryHealthRecovery", "excellentWizardryAttack"],
       "width": 1,
@@ -1897,7 +1911,8 @@
         "de": "Windanhänger",
         "es": "Pendiente del Viento",
         "pl": "Wisior Wiatru",
-        "pt": "Pingente do vento"
+        "pt": "Pingente do vento",
+        "zh-CN": "风之项链"
       },
       "options": ["jewelryHealthRecovery", "excellentPhysicalAttack"],
       "width": 1,
@@ -1930,7 +1945,8 @@
         "de": "Wasseranhänger",
         "es": "Pendiente del Agua",
         "pl": "Wisior Wody",
-        "pt": "Pingente da água"
+        "pt": "Pingente da água",
+        "zh-CN": "水之项链"
       },
       "options": ["jewelryHealthRecovery", "excellentWizardryAttack"],
       "width": 1,
@@ -1963,7 +1979,8 @@
         "de": "Fähigkeitsanhänger",
         "es": "Pendiente de la Destreza",
         "pl": "Wisior Zdolności",
-        "pt": "Pingente da habilidade"
+        "pt": "Pingente da habilidade",
+        "zh-CN": "紫晶项链"
       },
       "options": ["pendantOfAbilityAg", "excellentPhysicalAttack"],
       "width": 1,
@@ -2015,7 +2032,8 @@
         "de": "Umhang des Lords",
         "es": "Capa de Señor",
         "pl": "Peleryna Lorda",
-        "pt": "Capa do Lorde"
+        "pt": "Capa do Lorde",
+        "zh-CN": "王者披风"
       },
       "tags": ["cape", "valuable"],
       "options": ["luck"],
@@ -2416,7 +2434,8 @@
         "de": "Horn des Fenrir",
         "es": "Cuerno de Fenrir",
         "pl": "Róg Fenrira",
-        "pt": "Chifre de Fenrir"
+        "pt": "Chifre de Fenrir",
+        "zh-CN": "炎狼兽之角"
       },
       "tags": ["mount", "hornMount", "flying", "valuable"],
       "description": [
@@ -2438,6 +2457,7 @@
             "ru": "{name} +Уничтожить",
             "tl": "{name} + Wasakin",
             "uk": "{name} +Знищити",
+            "zh-CN": "{name} +破坏",
             "zh-TW": "{name} +摧毀"
           },
           "when": ["excellentFlags=1"],
@@ -2455,6 +2475,7 @@
             "ru": "{name} +Защитить",
             "tl": "{name} +Protektahan",
             "uk": "{name} +Захистити",
+            "zh-CN": "{name} +守护",
             "zh-TW": "{name} +保護"
           },
           "when": ["excellentFlags=2"],
@@ -2472,6 +2493,7 @@
             "ru": "{name} +Иллюзия",
             "tl": "{name} +Ilusyon",
             "uk": "{name} +Ілюзія",
+            "zh-CN": "{name} +幻影",
             "zh-TW": "{name} +幻象"
           },
           "when": ["excellentFlags=4"],
@@ -2513,7 +2535,8 @@
         "de": "Mondsteinanhänger",
         "es": "Pendiente de Piedra Lunar",
         "pl": "Wisior z kamieniem księżycowym",
-        "pt": "Pingente da pedra da lua"
+        "pt": "Pingente da pedra da lua",
+        "zh-CN": "悬石"
       },
       "description": [
         {
@@ -2575,7 +2598,8 @@
         "de": "Elite-Skelett-Verwandlungsring",
         "es": "Aro Esqueleto Traslado Élite",
         "pl": "Elitarny Pierścień Przemiany w Szkieleta",
-        "pt": "Anel Esqueleto Transf. Acel."
+        "pt": "Anel Esqueleto Transf. Acel.",
+        "zh-CN": "骷髅战士变身指环"
       },
       "tags": ["transformationRing"],
       "description": [
@@ -2653,7 +2677,8 @@
         "de": "Jack-O'Lantern-Verwandlungsring",
         "es": "Anillo de Jack O'Lantern",
         "pl": "Pierścień Jack O'Lantern",
-        "pt": "Anel do Jack Olantern"
+        "pt": "Anel do Jack Olantern",
+        "zh-CN": "南瓜灯变身指环"
       },
       "tags": ["transformationRing"],
       "description": [
@@ -2691,7 +2716,8 @@
         "de": "Weihnachts-Verwandlungsring",
         "es": "Aro de Traslado de Navidad",
         "pl": "Świąteczny Pierścień Przemiany",
-        "pt": "Anel do Natal de Transf."
+        "pt": "Anel do Natal de Transf.",
+        "zh-CN": "圣诞变身指环"
       },
       "tags": ["transformationRing"],
       "description": [
@@ -2788,7 +2814,8 @@
         "de": "GM-Verwandlungsring",
         "es": "Anillo de GM",
         "pl": "Pierścień GM",
-        "pt": "Anel de GM"
+        "pt": "Anel de GM",
+        "zh-CN": "GM变身指环"
       },
       "tags": ["transformationRing"],
       "description": [
@@ -3934,7 +3961,8 @@
         "de": "Dämon",
         "es": "Demonio",
         "pl": "Demon",
-        "pt": "Demônio"
+        "pt": "Demônio",
+        "zh-CN": "强化恶魔"
       },
       "tags": ["guardianPet", "cashShop", "valuable"],
       "description": [
@@ -3997,7 +4025,8 @@
         "de": "Schutzgeist",
         "es": "Espír. Guardián",
         "pl": "Duch Strażnika",
-        "pt": "Espír. Guardião"
+        "pt": "Espír. Guardião",
+        "zh-CN": "强化天使"
       },
       "tags": ["guardianPet", "cashShop", "valuable"],
       "description": [
@@ -4124,7 +4153,8 @@
         "de": "Haustier Rudolf",
         "es": "Mascota Rudolf",
         "pl": "Zwierzak Rudolf",
-        "pt": "Animal de estimação Rodolfo"
+        "pt": "Animal de estimação Rodolfo",
+        "zh-CN": "鲁道夫"
       },
       "description": [
         {
@@ -4165,7 +4195,8 @@
         "de": "Schneemann-Verwandlungsring",
         "es": "Aro Mutación Hombre de Nieve",
         "pl": "Pierścień Przemiany w Bałwana",
-        "pt": "Anel Transf. Homem da Neve"
+        "pt": "Anel Transf. Homem da Neve",
+        "zh-CN": "雪人变身指环"
       },
       "tags": ["transformationRing"],
       "description": [
@@ -4468,7 +4499,8 @@
         "de": "Panda-Verwandlungsring",
         "es": "Anillo Panda",
         "pl": "Pierścień Pandy",
-        "pt": "Anel do Panda"
+        "pt": "Anel do Panda",
+        "zh-CN": "熊猫变身指环"
       },
       "tags": ["pandaOrSkeleton", "transformationRing", "valuable"],
       "description": [
@@ -4567,7 +4599,8 @@
         "de": "Haustier Panda",
         "es": "Mascota Panda",
         "pl": "Zwierzak Panda",
-        "pt": "Animal de estimação Panda"
+        "pt": "Animal de estimação Panda",
+        "zh-CN": "熊猫"
       },
       "tags": ["pandaOrSkeleton", "valuable"],
       "description": [
@@ -5484,7 +5517,8 @@
         "de": "Haustier Einhorn",
         "es": "Unicornio",
         "pl": "Zwierzak Jednorożec",
-        "pt": "Unic. Est."
+        "pt": "Unic. Est.",
+        "zh-CN": "独角兽"
       },
       "tags": ["cashShop"],
       "description": [
@@ -5551,7 +5585,8 @@
         "de": "Ring des tödlichen Zauberers",
         "es": "Anillo Letal de Mago",
         "pl": "Zabójczy Pierścień Czarodzieja",
-        "pt": "Anel do Mago Letal"
+        "pt": "Anel do Mago Letal",
+        "zh-CN": "致命魔法指环"
       },
       "tags": ["cashShop"],
       "description": [
@@ -5595,7 +5630,8 @@
         "de": "Saphirring",
         "es": "Anillo de Zafiro",
         "pl": "Szafirowy pierścień",
-        "pt": "Anel de safira"
+        "pt": "Anel de safira",
+        "zh-CN": "蓝宝石戒指"
       },
       "tags": ["cashShop", "gemJewelry", "valuable"],
       "description": [
@@ -5645,7 +5681,8 @@
         "de": "Rubinring",
         "es": "Anillo de Rubí",
         "pl": "Rubinowy pierścień",
-        "pt": "Anel de rubi"
+        "pt": "Anel de rubi",
+        "zh-CN": "红宝石戒指"
       },
       "tags": ["cashShop", "gemJewelry", "valuable"],
       "description": [
@@ -5695,7 +5732,8 @@
         "de": "Topasring",
         "es": "Anillo de Topacio",
         "pl": "Topazowy pierścień",
-        "pt": "Anel de topázio"
+        "pt": "Anel de topázio",
+        "zh-CN": "黄宝石戒指"
       },
       "tags": ["cashShop", "gemJewelry", "valuable"],
       "description": [
@@ -5745,7 +5783,8 @@
         "de": "Amethystring",
         "es": "Anillo de Amatista",
         "pl": "Ametystowy pierścień",
-        "pt": "Anel de ametista"
+        "pt": "Anel de ametista",
+        "zh-CN": "紫水晶戒指"
       },
       "tags": ["cashShop", "gemJewelry", "valuable"],
       "description": [
@@ -5795,7 +5834,8 @@
         "de": "Rubinhalskette",
         "es": "Collar de Rubíes",
         "pl": "Rubinowy naszyjnik",
-        "pt": "Colar de rubi"
+        "pt": "Colar de rubi",
+        "zh-CN": "红宝石项链"
       },
       "tags": ["cashShop", "gemJewelry", "valuable"],
       "description": [
@@ -5845,7 +5885,8 @@
         "de": "Smaragdhalskette",
         "es": "Collar de Esmeraldas",
         "pl": "Szmaragdowy naszyjnik",
-        "pt": "Colar de esmeralda"
+        "pt": "Colar de esmeralda",
+        "zh-CN": "绿宝石项链"
       },
       "tags": ["cashShop", "gemJewelry", "valuable"],
       "description": [
@@ -5895,7 +5936,8 @@
         "de": "Saphirhalskette",
         "es": "Collar de Zafiros",
         "pl": "Szafirowy naszyjnik",
-        "pt": "Colar de safira"
+        "pt": "Colar de safira",
+        "zh-CN": "蓝宝石项链"
       },
       "tags": ["cashShop", "gemJewelry", "valuable"],
       "description": [
@@ -6125,7 +6167,8 @@
         "de": "Skelett-Verwandlungsring",
         "es": "Aro Mutación de Esqueleto",
         "pl": "Pierścień Przemiany w Szkieleta",
-        "pt": "Anel Transf. de Esqueleto"
+        "pt": "Anel Transf. de Esqueleto",
+        "zh-CN": "骷髅变身戒指"
       },
       "tags": ["pandaOrSkeleton", "transformationRing", "valuable"],
       "description": [
@@ -6245,7 +6288,8 @@
         "de": "Haustier Skelett",
         "es": "Mascota Esqueleto",
         "pl": "Zwierzak Szkielet",
-        "pt": "Mascote esqueleto"
+        "pt": "Mascote esqueleto",
+        "zh-CN": "幼龙骨架"
       },
       "tags": ["pandaOrSkeleton", "valuable"],
       "description": [

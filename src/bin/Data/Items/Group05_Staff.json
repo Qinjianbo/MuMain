@@ -9,7 +9,8 @@
         "de": "Schädelstab",
         "es": "Báculo Calavera",
         "pl": "Kostur czaszki",
-        "pt": "Bastão da caveira"
+        "pt": "Bastão da caveira",
+        "zh-CN": "骷髅杖"
       },
       "options": ["luck", "wizardryDamageOption", "excellentWizardryAttack"],
       "width": 1,
@@ -40,7 +41,8 @@
         "de": "Engelsstab",
         "es": "Báculo Angelical",
         "pl": "Anielski kostur",
-        "pt": "Bastão angelical"
+        "pt": "Bastão angelical",
+        "zh-CN": "天使杖"
       },
       "options": ["luck", "wizardryDamageOption", "excellentWizardryAttack"],
       "width": 2,
@@ -71,7 +73,8 @@
         "de": "Schlangenstab",
         "es": "Báculo Serpiente",
         "pl": "Wężowy kostur",
-        "pt": "Bastão da serpente"
+        "pt": "Bastão da serpente",
+        "zh-CN": "毒蛇杖"
       },
       "options": ["luck", "wizardryDamageOption", "excellentWizardryAttack"],
       "width": 2,
@@ -102,7 +105,8 @@
         "de": "Donnerstab",
         "es": "Báculo Trueno",
         "pl": "Kostur gromu",
-        "pt": "Bastão do trovão"
+        "pt": "Bastão do trovão",
+        "zh-CN": "闪电杖"
       },
       "options": ["luck", "wizardryDamageOption", "excellentWizardryAttack"],
       "width": 2,
@@ -134,7 +138,8 @@
         "de": "Gorgonenstab",
         "es": "Báculo Gorgon",
         "pl": "Kostur Gorgony",
-        "pt": "Bastão da górgone"
+        "pt": "Bastão da górgone",
+        "zh-CN": "戈登之杖"
       },
       "options": ["luck", "wizardryDamageOption", "excellentWizardryAttack"],
       "width": 2,
@@ -165,7 +170,8 @@
         "de": "Legendärer Stab",
         "es": "Báculo Legendario",
         "pl": "Legendarny kostur",
-        "pt": "Bastão lendário"
+        "pt": "Bastão lendário",
+        "zh-CN": "传说之杖"
       },
       "options": ["luck", "wizardryDamageOption", "excellentWizardryAttack"],
       "width": 1,
@@ -195,7 +201,8 @@
         "de": "Stab der Auferstehung",
         "es": "Báculo de la Resurrección",
         "pl": "Kostur Wskrzeszenia",
-        "pt": "Bastão da ressurreição"
+        "pt": "Bastão da ressurreição",
+        "zh-CN": "复活之杖"
       },
       "options": ["luck", "wizardryDamageOption", "excellentWizardryAttack"],
       "width": 1,
@@ -226,7 +233,8 @@
         "de": "Chaos-Blitzstab",
         "es": "Báculo Relámpago de Caos",
         "pl": "Kostur Błyskawic Chaosu",
-        "pt": "Bastão do relâmpago do caos"
+        "pt": "Bastão do relâmpago do caos",
+        "zh-CN": "玛雅雷杖"
       },
       "options": ["luck", "wizardryDamageOption", "excellentWizardryAttack"],
       "width": 2,
@@ -258,7 +266,8 @@
         "de": "Stab der Zerstörung",
         "es": "Báculo de la Destrucción",
         "pl": "Kostur Zniszczenia",
-        "pt": "Bastão da destruição"
+        "pt": "Bastão da destruição",
+        "zh-CN": "毁灭之杖"
       },
       "options": ["luck", "wizardryDamageOption", "excellentWizardryAttack"],
       "width": 2,
@@ -290,7 +299,8 @@
         "de": "Drachenseelenstab",
         "es": "Báculo Alma de Dragón",
         "pl": "Kostur Smoczej Duszy",
-        "pt": "Bastão da alma do dragão"
+        "pt": "Bastão da alma do dragão",
+        "zh-CN": "麒麟之杖"
       },
       "options": ["luck", "wizardryDamageOption", "excellentWizardryAttack"],
       "width": 1,
@@ -320,7 +330,8 @@
         "de": "Göttlicher Stab des Erzengels",
         "es": "Báculo Divino de Arcángel",
         "pl": "Boski Kostur Archanioła",
-        "pt": "Bastão divino do arcanjo"
+        "pt": "Bastão divino do arcanjo",
+        "zh-CN": "大天使之杖"
       },
       "tags": ["divineArchangelWeapon", "valuable"],
       "options": ["luck", "wizardryDamageOption", "excellentWizardryAttack"],
@@ -366,7 +377,8 @@
         "de": "Stab von Kundun",
         "es": "Báculo de Kundun",
         "pl": "Kostur Kunduna",
-        "pt": "Bastão de Kundun"
+        "pt": "Bastão de Kundun",
+        "zh-CN": "昆顿之杖"
       },
       "options": ["luck", "wizardryDamageOption", "excellentWizardryAttack"],
       "width": 1,
@@ -396,7 +408,8 @@
         "de": "Großvipernstab",
         "es": "Gran Báculo Víbora",
         "pl": "Kostur Wielkiej Żmii",
-        "pt": "Grande bastão da víbora"
+        "pt": "Grande bastão da víbora",
+        "zh-CN": "死神之杖"
       },
       "options": ["luck", "wizardryDamageOption", "excellentWizardryAttack"],
       "width": 1,
@@ -427,7 +440,8 @@
         "de": "Platinstab",
         "es": "Báculo Platina",
         "pl": "Platynowy kostur",
-        "pt": "Bastão de platina"
+        "pt": "Bastão de platina",
+        "zh-CN": "幻月雷杖"
       },
       "options": ["luck", "wizardryDamageOption", "excellentWizardryAttack"],
       "width": 1,
@@ -456,7 +470,8 @@
         "de": "Mysterienstock",
         "es": "Vara del Misterio",
         "pl": "Różdżka tajemnic",
-        "pt": "Cajado misterioso"
+        "pt": "Cajado misterioso",
+        "zh-CN": "迷之杖"
       },
       "options": ["luck", "wizardryDamageOption", "excellentWizardryAttack"],
       "width": 1,
@@ -485,7 +500,8 @@
         "de": "Sturmwindstock",
         "es": "Vara Viento Violento",
         "pl": "Różdżka Gwałtownego Wiatru",
-        "pt": "Cajado do vento violento"
+        "pt": "Cajado do vento violento",
+        "zh-CN": "飓风之杖"
       },
       "options": ["luck", "wizardryDamageOption", "excellentWizardryAttack"],
       "width": 1,
@@ -514,7 +530,8 @@
         "de": "Rotschwingenstock",
         "es": "Vara Ala Roja",
         "pl": "Różdżka Czerwonego Skrzydła",
-        "pt": "Cajado da asa vermelha"
+        "pt": "Cajado da asa vermelha",
+        "zh-CN": "红翼之杖"
       },
       "options": ["luck", "wizardryDamageOption", "excellentWizardryAttack"],
       "width": 1,
@@ -543,7 +560,8 @@
         "de": "Uralter Stock",
         "es": "Vara Antigua",
         "pl": "Pradawna różdżka",
-        "pt": "Cajado ancestral"
+        "pt": "Cajado ancestral",
+        "zh-CN": "远古之杖"
       },
       "options": ["luck", "wizardryDamageOption", "excellentWizardryAttack"],
       "width": 1,
@@ -572,7 +590,8 @@
         "de": "Dämonischer Stock",
         "es": "Vara Demoníaca",
         "pl": "Demoniczna różdżka",
-        "pt": "Cajado demoníaco"
+        "pt": "Cajado demoníaco",
+        "zh-CN": "魔灵之杖"
       },
       "options": ["luck", "wizardryDamageOption", "excellentWizardryAttack"],
       "width": 1,
@@ -601,7 +620,8 @@
         "de": "Sturmblitzstock",
         "es": "Vara Ráfaga Tormentosa",
         "pl": "Różdżka Burzowego Błysku",
-        "pt": "Caj. Relâmpago de Tempestade"
+        "pt": "Caj. Relâmpago de Tempestade",
+        "zh-CN": "风影之杖"
       },
       "options": ["luck", "wizardryDamageOption", "excellentWizardryAttack"],
       "width": 1,
@@ -632,7 +652,8 @@
         "de": "Ewigschwingenstock",
         "es": "Vara Ala Eterna",
         "pl": "Różdżka Wiecznego Skrzydła",
-        "pt": "Cajado da asa eterna"
+        "pt": "Cajado da asa eterna",
+        "zh-CN": "恒翼之杖"
       },
       "options": ["luck", "wizardryDamageOption", "excellentWizardryAttack"],
       "width": 1,
@@ -662,7 +683,8 @@
         "de": "Buch von Samut",
         "es": "Libro de Samut",
         "pl": "Księga Samuta",
-        "pt": "Livro de Samut"
+        "pt": "Livro de Samut",
+        "zh-CN": "火龙兽之书"
       },
       "tags": ["summonerBook"],
       "options": ["luck", "curseDamageOption", "excellentWizardryAttack"],
@@ -691,7 +713,8 @@
         "de": "Buch von Neil",
         "es": "Libro de Neil",
         "pl": "Księga Neila",
-        "pt": "Livro de Neil"
+        "pt": "Livro de Neil",
+        "zh-CN": "异灵之书"
       },
       "tags": ["summonerBook"],
       "options": ["luck", "curseDamageOption", "excellentWizardryAttack"],
@@ -720,7 +743,8 @@
         "de": "Buch von Lagle",
         "es": "Libro de Lagle",
         "pl": "Księga Lagle’a",
-        "pt": "Livro de Lagle"
+        "pt": "Livro de Lagle",
+        "zh-CN": "污灵之书"
       },
       "tags": ["summonerBook"],
       "options": ["luck", "curseDamageOption", "excellentWizardryAttack"],
@@ -749,7 +773,8 @@
         "de": "Todesstab",
         "es": "Báculo Mortal",
         "pl": "Śmiercionośny kostur",
-        "pt": "Bastão letal"
+        "pt": "Bastão letal",
+        "zh-CN": "致命魔杖"
       },
       "options": ["luck", "wizardryDamageOption", "excellentWizardryAttack"],
       "width": 1,
@@ -780,7 +805,8 @@
         "de": "Kaiserlicher Stab",
         "es": "Báculo Inberial",
         "pl": "Imperialny kostur",
-        "pt": "Bastão inberial"
+        "pt": "Bastão inberial",
+        "zh-CN": "魔狱之杖"
       },
       "options": ["luck", "wizardryDamageOption", "excellentWizardryAttack"],
       "width": 1,
@@ -813,7 +839,8 @@
         "de": "Chromatischer Stab",
         "es": "Báculo Cromático",
         "pl": "Chromatyczny kostur",
-        "pt": "Bastão cromático"
+        "pt": "Bastão cromático",
+        "zh-CN": "多彩魔杖"
       },
       "options": ["luck", "wizardryDamageOption", "excellentWizardryAttack"],
       "width": 1,
@@ -843,7 +870,8 @@
         "de": "Rabenstock",
         "es": "Vara Cuervo",
         "pl": "Różdżka Kruka",
-        "pt": "Cajado do corvo"
+        "pt": "Cajado do corvo",
+        "zh-CN": "乌鸦之杖"
       },
       "options": ["luck", "wizardryDamageOption", "excellentWizardryAttack"],
       "width": 1,
@@ -872,7 +900,8 @@
         "de": "Göttlicher Stock des Erzengels",
         "es": "Bastón Divino de Arcángel",
         "pl": "Boska Różdżka Archanioła",
-        "pt": "Bastão Divino do Arcanjo"
+        "pt": "Bastão Divino do Arcanjo",
+        "zh-CN": "大天使绝对魔杖"
       },
       "tags": ["divineArchangelWeapon", "valuable"],
       "options": ["luck", "wizardryDamageOption", "excellentWizardryAttack"],

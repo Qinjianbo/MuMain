@@ -831,6 +831,12 @@
   <data name="Base Attributes" xml:space="preserve">
     <value>基础属性</value>
   </data>
+  <data name="Excellent" xml:space="preserve">
+    <value>卓越的</value>
+  </data>
+  <data name="+Luck" xml:space="preserve">
+    <value>+幸运</value>
+  </data>
   <data name="Storage" xml:space="preserve">
     <value>仓库</value>
   </data>
